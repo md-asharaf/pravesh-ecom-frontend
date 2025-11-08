@@ -1,48 +1,37 @@
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/providers/auth";
+import { cartService } from "@/services/cart.service";
+import { Product } from "@/types";
+import { useQuery } from "@tanstack/react-query";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { mockProducts } from "@/data/mockData";
-import { useToast } from "@/hooks/use-toast";
 
 const Cart = () => {
-  const { toast } = useToast();
-  const [cartItems, setCartItems] = useState([
-    { product: mockProducts[0], quantity: 2 },
-    { product: mockProducts[1], quantity: 1 },
-  ]);
-  const [promoCode, setPromoCode] = useState("");
+  const { user } = useAuth()
+  const { data: cart } = useQuery({
+    queryKey: ["cart", user?._id],
+    queryFn: async () => {
+      const response = await cartService.getMyCart();
+      return response.data;
+    },
+    enabled: !!user
+  });
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.product.final * item.quantity, 0);
-  const shipping = subtotal > 10000 ? 0 : 500;
-  const total = subtotal + shipping;
+  const { data: cartSummary } = useQuery({
+    queryKey: ["cart-summary", user?._id],
+    queryFn: async () => {
+      const response = await cartService.getCartSummary();
+      return response.data;
+    },
+    enabled: !!cart
+  })
 
-  const updateQuantity = (index: number, newQty: number) => {
-    const newItems = [...cartItems];
-    newItems[index].quantity = Math.max(1, Math.min(newQty, newItems[index].product.stock));
-    setCartItems(newItems);
-  };
+  const shipping = cartSummary?.totalPrice <= 10000 ? 50 : 0;
 
-  const removeItem = (index: number) => {
-    setCartItems(cartItems.filter((_, i) => i !== index));
-    toast({
-      title: "Item Removed",
-      description: "Product removed from cart",
-    });
-  };
-
-  const applyPromoCode = () => {
-    toast({
-      title: "Promo Code Applied",
-      description: "10% discount applied to your order",
-    });
-  };
-
-  if (cartItems.length === 0) {
+  if (cart?.items.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -72,25 +61,26 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cartItems.map((item, index) => (
-              <Card key={item.product.id}>
+            {cart.items.map((item, index) => {
+              const product = item.product as Product;
+              return <Card key={product._id}>
                 <CardContent className="p-6">
                   <div className="flex gap-6">
-                    <Link to={`/product/${item.product.slug}`}>
+                    <Link to={`/product/${product._id}`}>
                       <img
-                        src={item.product.thumb}
-                        alt={item.product.name}
+                        src={product.thumbnail}
+                        alt={product.name}
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                     </Link>
                     <div className="flex-1">
-                      <Link to={`/product/${item.product.slug}`}>
+                      <Link to={`/product/${product.slug}`}>
                         <h3 className="font-semibold text-lg mb-1 hover:text-primary transition-colors">
-                          {item.product.name}
+                          {product.name}
                         </h3>
                       </Link>
                       <p className="text-sm text-muted-foreground mb-3">
-                        SKU: {item.product.sku}
+                        SKU: {product.sku}
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center border border-border rounded-lg">
@@ -107,17 +97,17 @@ const Cart = () => {
                             variant="ghost"
                             size="icon"
                             onClick={() => updateQuantity(index, item.quantity + 1)}
-                            disabled={item.quantity >= item.product.stock}
+                            disabled={item.quantity >= product.stock}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="text-right">
                           <p className="text-2xl font-bold text-primary">
-                            ₹{(item.product.final * item.quantity).toLocaleString()}
+                            ₹{(product.finalPrice * item.quantity).toLocaleString()}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            ₹{item.product.final} per {item.product.unit}
+                            ₹{product.finalPrice} per {product.unit}
                           </p>
                         </div>
                       </div>
@@ -133,7 +123,8 @@ const Cart = () => {
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            }
+            )}
           </div>
 
           {/* Order Summary */}
@@ -141,11 +132,11 @@ const Cart = () => {
             <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
-                
+
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span className="font-semibold">₹{subtotal.toLocaleString()}</span>
+                    <span className="font-semibold">₹{cartSummary.totalPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
@@ -153,9 +144,9 @@ const Cart = () => {
                       {shipping === 0 ? "FREE" : `₹${shipping}`}
                     </span>
                   </div>
-                  {subtotal <= 10000 && (
+                  {cartSummary.totalPrice <= 10000 && (
                     <p className="text-sm text-muted-foreground">
-                      Add ₹{(10000 - subtotal).toLocaleString()} more for free shipping
+                      Add ₹{(10000 - cartSummary.totalPrice).toLocaleString()} more for free shipping
                     </p>
                   )}
                 </div>
@@ -164,18 +155,7 @@ const Cart = () => {
 
                 <div className="flex justify-between mb-6">
                   <span className="text-lg font-bold">Total</span>
-                  <span className="text-2xl font-bold text-primary">₹{total.toLocaleString()}</span>
-                </div>
-
-                <div className="space-y-3 mb-6">
-                  <Input
-                    placeholder="Enter promo code"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                  />
-                  <Button variant="outline" className="w-full" onClick={applyPromoCode}>
-                    Apply Code
-                  </Button>
+                  <span className="text-2xl font-bold text-primary">₹{cartSummary.totalPrice.toLocaleString()}</span>
                 </div>
 
                 <Button size="lg" className="w-full" asChild>

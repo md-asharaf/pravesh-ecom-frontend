@@ -15,16 +15,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <Link to={`/product/${product.slug}`}>
         <div className="relative overflow-hidden rounded-t-lg">
           <img
-            src={product.thumb}
+            src={product.thumbnail}
             alt={product.name}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          {product.discount && (
+          {product.discountValue && (
             <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground">
-              {product.discType === "percentage" ? `${product.discVal}% OFF` : `₹${product.discVal} OFF`}
+              {product.discountType === "percentage" ? `${product.discountValue}% OFF` : `₹${product.discountValue} OFF`}
             </Badge>
           )}
-          {product.new && (
+          {product.isNewArrival && (
             <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
               NEW
             </Badge>
@@ -37,16 +37,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
             {product.name}
           </h3>
         </Link>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.shortDesc}</p>
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.shortDescription}</p>
         <div className="flex items-center gap-1 mb-3">
           <Star className="h-4 w-4 fill-accent text-accent" />
           <span className="text-sm font-medium">{product.rating}</span>
-          <span className="text-sm text-muted-foreground">({product.reviews})</span>
+          <span className="text-sm text-muted-foreground">({product.reviewCount})</span>
         </div>
         <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-2xl font-bold text-primary">₹{product.final.toLocaleString()}</span>
-          {product.discount && (
-            <span className="text-sm text-muted-foreground line-through">₹{product.orig.toLocaleString()}</span>
+          <span className="text-2xl font-bold text-primary">₹{product.finalPrice.toLocaleString()}</span>
+          {product.discountValue && (
+            <span className="text-sm text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
           )}
         </div>
         <p className="text-xs text-muted-foreground">Per {product.unit}</p>

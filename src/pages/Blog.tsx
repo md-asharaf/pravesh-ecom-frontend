@@ -5,19 +5,20 @@ import { Link } from "react-router-dom";
 import { Calendar } from "lucide-react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { blogService } from "@/services/blog.service";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useIntersection } from "@mantine/hooks";
 const Blog = () => {
-  const lastBlogRef = useRef<HTMLElement>(null);
-
+  const lastBlogRef = useRef<HTMLDivElement>(null);
   const {
     data,
     hasNextPage,
     fetchNextPage,
     isLoading,
+    isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["blogs"],
-    queryFn: async ({ pageParam }):Promise<> => {
+    queryFn: async ({ pageParam }) => {
       const response = await blogService.getAllPosts({
         limit: 12,
         page: pageParam,
@@ -26,32 +27,28 @@ const Blog = () => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 12 ? allPages.length + 1 : null;
+      return lastPage.blogs.length === 12 ? allPages.length + 1 : null;
     },
   });
-  const blogs = data?.pages?.flatMap((page) => page.);
-  const { isLoading: isShortsLoading } = useQuery({
-    queryKey: ["recommended-shorts", userId, null],
-    queryFn: async () => {
-      const data = await shortService.recommendedShorts(1, null, userId);
-      dispatch(setShorts(data.recommendations));
-      return true;
-    },
-  });
+  const blogs = data?.pages?.flatMap((page) => page.blogs) ?? [];
   const { ref, entry } = useIntersection({
-    root: lastVideoRef.current,
+    root: lastBlogRef.current,
     threshold: 1,
   });
   useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage) {
+    if (entry?.isIntersecting && hasNextPage && !isFetching) {
       fetchNextPage();
     }
-  }, [entry]);
+  }, [entry, hasNextPage, isFetching, fetchNextPage]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8" ref={lastBlogRef}>
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Blog</h1>
           <p className="text-muted-foreground">
@@ -60,12 +57,12 @@ const Blog = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockBlogs.map((blog) => (
-            <Link key={blog.id} to={`/blog/${blog.slug}`}>
+          {blogs.map((blog) => (
+            <Link key={blog.slug} to={`/blog/${blog.slug}`}>
               <Card className="group hover:shadow-lg transition-all duration-300 bg-gradient-card h-full">
                 <div className="relative h-48 overflow-hidden rounded-t-lg">
                   <img
-                    src={blog.img}
+                    src={blog.featuredImage}
                     alt={blog.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -95,6 +92,14 @@ const Blog = () => {
             </Link>
           ))}
         </div>
+
+        <div ref={ref} className="h-1" />
+
+        {(isFetchingNextPage || isFetching) && (
+          <div className="text-center py-4 text-sm text-muted-foreground">
+            Loading more...
+          </div>
+        )}
       </div>
     </div>
   );

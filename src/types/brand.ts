@@ -4,6 +4,7 @@ export type Brand = {
   _id: string;
   name: string;
   image: string;
+  productCount?: number;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;

@@ -4,11 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Calendar, User } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { blogService } from "@/services/blog.service";
 
 const BlogDetail = () => {
   const { slug } = useParams();
-  const blog = mockBlogs.find((b) => b.slug === slug);
-
+  const { data: blog, isLoading } = useQuery({
+    queryKey: ["blog", slug],
+    queryFn: async () => {
+      const response = await blogService.getPostBySlug(slug);
+      return response.data;
+    },
+    enabled: !!slug,
+  });
   if (!blog) {
     return (
       <div className="min-h-screen bg-background">
@@ -21,6 +29,9 @@ const BlogDetail = () => {
         </div>
       </div>
     );
+  }
+  if (isLoading) {
+    return <div>Loading...</div>
   }
 
   return (
@@ -59,10 +70,10 @@ const BlogDetail = () => {
             )}
           </div>
 
-          {blog.img && (
+          {blog.featuredImage && (
             <div className="mb-8 rounded-lg overflow-hidden">
               <img
-                src={blog.img}
+                src={blog.featuredImage}
                 alt={blog.title}
                 className="w-full h-96 object-cover"
               />

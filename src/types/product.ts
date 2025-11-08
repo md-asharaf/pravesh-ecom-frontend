@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Brand, Category, PaginatedData, Review } from ".";
 
-export const stockStatusSchema = z.enum(["in-stock", "out-of-stock", "low-stock"]);
+export const stockStatusSchema = z.enum(["in_stock", "out_of_stock", "low_stock"]);
 export const discountTypeSchema = z.enum(["percentage", "fixed"]);
 export const unitSchema = z.enum([
   "bag",

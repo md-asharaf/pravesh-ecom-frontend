@@ -1,4 +1,4 @@
-import { Review } from "@/types";
+import { Review, User } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star } from "lucide-react";
 
@@ -21,7 +21,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           ))}
         </div>
         <p className="text-foreground mb-4 italic">"{review.comment}"</p>
-        <p className="text-sm font-semibold text-muted-foreground">— {review.user}</p>
+        <p className="text-sm font-semibold text-muted-foreground">— {(review.user as User).name}</p>
       </CardContent>
     </Card>
   );

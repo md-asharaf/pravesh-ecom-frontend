@@ -11,7 +11,7 @@ const instance: AxiosInstance = axios.create({
 let isRefreshing = false;
 let refreshQueue: Array<() => void> = [];
 
-const processQueue = (error) => {
+const processQueue = (error?: any) => {
   refreshQueue.forEach((cb) => cb());
   refreshQueue = [];
 };

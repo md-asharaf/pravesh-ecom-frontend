@@ -3,6 +3,7 @@ import { PaginatedData } from ".";
 export type Blog = {
   _id: string;
   title: string;
+  slug: string;
   content: string;
   featuredImage: string | null;
   tags: string[] | null;
