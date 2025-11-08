@@ -7,41 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Wallet, Package, Heart, User, LogOut, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { mockProducts } from "@/data/mockData";
+import { useAuth } from "@/providers/auth";
 
 const Dashboard = () => {
-  const user = {
-    name: "Rajesh Kumar",
-    email: "rajesh@example.com",
-    phone: "+91 98765 43210",
-    img: "/placeholder.svg",
-    wallet: 5420,
-  };
-
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2024-01-15",
-      items: [mockProducts[0], mockProducts[1]],
-      total: 6750,
-      status: "delivered" as const,
-    },
-    {
-      id: "ORD-002",
-      date: "2024-01-20",
-      items: [mockProducts[2]],
-      total: 2720,
-      status: "shipped" as const,
-    },
-    {
-      id: "ORD-003",
-      date: "2024-01-22",
-      items: [mockProducts[6]],
-      total: 4480,
-      status: "processing" as const,
-    },
-  ];
-
+  const { user } = useAuth();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "delivered":

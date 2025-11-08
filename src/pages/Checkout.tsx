@@ -7,8 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { mockProducts } from "@/data/mockData";
 import { useState } from "react";
 
 const Checkout = () => {

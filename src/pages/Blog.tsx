@@ -2,10 +2,51 @@ import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { mockBlogs } from "@/data/mockData";
 import { Calendar } from "lucide-react";
-
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { blogService } from "@/services/blog.service";
+import { useRef } from "react";
 const Blog = () => {
+  const lastBlogRef = useRef<HTMLElement>(null);
+
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["blogs"],
+    queryFn: async ({ pageParam }):Promise<> => {
+      const response = await blogService.getAllPosts({
+        limit: 12,
+        page: pageParam,
+      });
+      return response.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 12 ? allPages.length + 1 : null;
+    },
+  });
+  const blogs = data?.pages?.flatMap((page) => page.);
+  const { isLoading: isShortsLoading } = useQuery({
+    queryKey: ["recommended-shorts", userId, null],
+    queryFn: async () => {
+      const data = await shortService.recommendedShorts(1, null, userId);
+      dispatch(setShorts(data.recommendations));
+      return true;
+    },
+  });
+  const { ref, entry } = useIntersection({
+    root: lastVideoRef.current,
+    threshold: 1,
+  });
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [entry]);
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

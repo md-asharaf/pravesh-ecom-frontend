@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
-import { mockBrands, mockProducts } from "@/data/mockData";
 import { Link } from "react-router-dom";
 
 const Brands = () => {

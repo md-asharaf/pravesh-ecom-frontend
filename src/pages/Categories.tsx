@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import CategoryCard from "@/components/CategoryCard";
-import { mockCategories, mockProducts } from "@/data/mockData";
 
 const Categories = () => {
   return (

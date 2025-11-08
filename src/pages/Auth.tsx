@@ -1,47 +1,75 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, Link } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft } from "lucide-react";
+import { useAuth } from "@/providers/auth";
+import { useMutation } from "@tanstack/react-query";
+import { authService } from "@/services/auth.service";
+import { Login, Register } from "@/types";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, registerSchema } from "@/types/auth";
+import { Form, FormField, FormItem, FormControl, FormLabel, FormMessage } from "@/components/ui/form";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+  const { loading, login, user } = useAuth()
+  useEffect(() => {
+    if (loading) return;
+    if (user) navigate("/")
+    if (!user) navigate("/auth")
+  }, [loading, user, navigate])
+  const loginMutation = useMutation({
+    mutationFn: async (data: Login) => {
+      const response = await authService.login(data)
+      return response.data;
+    },
+    onSuccess: (data) => {
+      toast.success("Login successful")
+      const { accessToken, refreshToken, ...user } = data;
+      login(user)
+    },
+    onError: (error) => {
+      toast.error("Login failed")
+    }
+  })
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate login
-    setTimeout(() => {
-      toast({
-        title: "Login Successful",
-        description: "Welcome back!",
-      });
-      setIsLoading(false);
-      navigate("/");
-    }, 1000);
-  };
+  const form = useForm<Login>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      phoneOrEmail: "",
+      password: "",
+    },
+  });
 
-  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate registration
-    setTimeout(() => {
-      toast({
-        title: "Registration Successful",
-        description: "Your account has been created!",
-      });
-      setIsLoading(false);
-      navigate("/");
-    }, 1000);
-  };
+  const registerForm = useForm<Register>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      image: "",
+    },
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: async (data: Register) => {
+      const response = await authService.register(data);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Account created");
+      navigate("/auth");
+    },
+    onError: () => {
+      toast.error("Registration failed");
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
@@ -53,7 +81,7 @@ const Auth = () => {
           </Link>
         </Button>
       </div>
-      
+
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Welcome to SteelMart</CardTitle>
@@ -67,83 +95,116 @@ const Auth = () => {
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email or Phone</Label>
-                  <Input
-                    id="login-email"
-                    type="text"
-                    placeholder="Enter email or phone"
-                    required
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit((values) => loginMutation.mutate(values))} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="phoneOrEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone or Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter email or phone" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    placeholder="Enter password"
-                    required
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Enter password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
-                </Button>
-              </form>
+                  <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+                    {loginMutation.isPending ? "Logging in..." : "Login"}
+                  </Button>
+                </form>
+              </Form>
             </TabsContent>
-            
+
             <TabsContent value="register">
-              <form onSubmit={handleRegister} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="register-name">Full Name</Label>
-                  <Input
-                    id="register-name"
-                    type="text"
-                    placeholder="Enter your name"
-                    required
+              <Form {...registerForm}>
+                <form onSubmit={registerForm.handleSubmit((values) => registerMutation.mutate(values))} className="space-y-4">
+                  <FormField
+                    control={registerForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter your name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="register-email">Email</Label>
-                  <Input
-                    id="register-email"
-                    type="email"
-                    placeholder="Enter your email"
-                    required
+                  <FormField
+                    control={registerForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="Enter your email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="register-phone">Phone</Label>
-                  <Input
-                    id="register-phone"
-                    type="tel"
-                    placeholder="Enter your phone"
-                    required
+                  <FormField
+                    control={registerForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone</FormLabel>
+                        <FormControl>
+                          <Input type="tel" placeholder="Enter your phone" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="register-password">Password</Label>
-                  <Input
-                    id="register-password"
-                    type="password"
-                    placeholder="Create password"
-                    required
+                  <FormField
+                    control={registerForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="Create password" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="register-image">Profile Image URL (Optional)</Label>
-                  <Input
-                    id="register-image"
-                    type="url"
-                    placeholder="Enter image URL"
+                  <FormField
+                    control={registerForm.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Profile Image URL (Optional)</FormLabel>
+                        <FormControl>
+                          <Input type="url" placeholder="Enter image URL" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating Account..." : "Create Account"}
-                </Button>
-              </form>
+                  <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+                    {registerMutation.isPending ? "Creating Account..." : "Create Account"}
+                  </Button>
+                </form>
+              </Form>
             </TabsContent>
           </Tabs>
         </CardContent>

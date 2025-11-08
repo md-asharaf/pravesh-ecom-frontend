@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import { useParams, Link } from "react-router-dom";
-import { mockBlogs } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -76,12 +75,12 @@ const BlogDetail = () => {
                 <p className="text-foreground leading-relaxed whitespace-pre-line">
                   {blog.content}
                 </p>
-                
+
                 <h2 className="text-2xl font-bold mt-8 mb-4">Understanding TMT Bars</h2>
                 <p className="text-foreground leading-relaxed">
-                  Thermo-Mechanically Treated (TMT) bars are high-strength reinforcement bars with a tough outer core 
-                  and a soft inner core. They are extensively used in construction for their superior strength and 
-                  flexibility. When selecting TMT bars, consider factors like grade (Fe 415, Fe 500, Fe 550), 
+                  Thermo-Mechanically Treated (TMT) bars are high-strength reinforcement bars with a tough outer core
+                  and a soft inner core. They are extensively used in construction for their superior strength and
+                  flexibility. When selecting TMT bars, consider factors like grade (Fe 415, Fe 500, Fe 550),
                   corrosion resistance, and certification standards.
                 </p>
 
@@ -96,8 +95,8 @@ const BlogDetail = () => {
 
                 <h2 className="text-2xl font-bold mt-8 mb-4">Conclusion</h2>
                 <p className="text-foreground leading-relaxed">
-                  Choosing the right TMT bar is crucial for ensuring the longevity and safety of your construction 
-                  project. Always purchase from reputable suppliers and verify certifications. SteelMart offers a 
+                  Choosing the right TMT bar is crucial for ensuring the longevity and safety of your construction
+                  project. Always purchase from reputable suppliers and verify certifications. SteelMart offers a
                   wide range of certified TMT bars from top manufacturers at competitive prices.
                 </p>
               </div>
