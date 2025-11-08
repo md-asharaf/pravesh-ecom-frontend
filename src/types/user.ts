@@ -1,5 +1,5 @@
 import z from "zod";
-import { Address, Cart, Order, PaginatedData, Review, Wallet, Wishlist } from ".";
+import { PaginatedData } from ".";
 
 export type User = {
   _id: string;
@@ -11,13 +11,6 @@ export type User = {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
-  // relations
-  wallet?: Partial<Wallet>;
-  cart?: Partial<Cart>;
-  addresses?: Partial<Address>[];
-  wishlist?: Partial<Wishlist>;
-  orders?: Partial<Order>[];
-  reviews?: Partial<Review>[];
 }
 
 export const updateUserSchema = z.object({

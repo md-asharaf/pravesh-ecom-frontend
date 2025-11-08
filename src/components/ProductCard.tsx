@@ -6,7 +6,7 @@ import { ShoppingCart, Heart, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface ProductCardProps {
-  product: Product;
+  product: Partial<Product>;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {

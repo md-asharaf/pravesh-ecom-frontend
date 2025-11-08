@@ -2,13 +2,12 @@ import { Product } from "./product"; // assuming you already have a productSchem
 import { PaginatedData, User } from ".";
 
 export type CartItem = {
-  product: string | Partial<Product>;
+  product: Partial<Product>;
   quantity: number;
 };
 
 export type Cart = {
   _id: string;
-  user: string | Partial<User>;
   items: CartItem[];
   createdAt: string;
   updatedAt: string;

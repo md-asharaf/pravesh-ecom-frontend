@@ -27,10 +27,9 @@ type OrderItem = {
 
 export type Order = {
   _id: string;
-  user: string | Partial<User>;
   items: OrderItem[];
   totalAmount: number;
-  shippingAddress: string | Partial<Address>;
+  shippingAddress: Partial<Address>;
   status: OrderStatus;
   isCustomOrder: boolean;
   image?: string;

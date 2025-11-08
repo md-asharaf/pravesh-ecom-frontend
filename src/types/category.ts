@@ -7,7 +7,9 @@ export type Category = {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
-  parentCategory?: string | Partial<Category>;
+  productCount?: number;
+  childrenCount?: number;
+  parentCategory?: Partial<Category>;
   // relations
   children?: Partial<Category>[];
   products?: Partial<Product>[];

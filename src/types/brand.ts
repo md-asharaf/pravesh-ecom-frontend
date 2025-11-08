@@ -8,8 +8,6 @@ export type Brand = {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
-  // relations
-  products?: Partial<Product>[];
 };
 
 

@@ -8,6 +8,11 @@ export const authService = {
     return response.data;
   },
 
+  async logout() {
+    const response = await instance.post("/auth/logout");
+    return response.data;
+  },
+
   async register(data: Register) {
     const response = await instance.post<ApiResponse<User>>("/auth/register", data);
     return response.data;

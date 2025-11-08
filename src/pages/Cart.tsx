@@ -5,12 +5,14 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { cartService } from "@/services/cart.service";
 import { Product } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const Cart = () => {
-  const { user } = useAuth()
+  const queryClient = useQueryClient();
+  const { user, loading } = useAuth()
   const { data: cart } = useQuery({
     queryKey: ["cart", user?._id],
     queryFn: async () => {
@@ -19,6 +21,8 @@ const Cart = () => {
     },
     enabled: !!user
   });
+
+  const cartItems = cart?.items || [];
 
   const { data: cartSummary } = useQuery({
     queryKey: ["cart-summary", user?._id],
@@ -29,9 +33,39 @@ const Cart = () => {
     enabled: !!cart
   })
 
+  const updateCartMutation = useMutation({
+    mutationFn: async ({ productId, quantity }: { productId: string, quantity: number }) => {
+      const response = await cartService.updateCart(productId, quantity);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", user?._id] });
+      queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
+      toast.success("Product added to cart");
+    },
+    onError: () => {
+      toast.error("Failed to add product to cart")
+    }
+  });
+
+  const removeFromCartMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      const response = await cartService.removeFromCart(productId);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", user?._id] });
+      queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
+      toast.success("Product removed from cart");
+    },
+    onError: () => {
+      toast.error("Failed to remove product from cart")
+    }
+  });
+
   const shipping = cartSummary?.totalPrice <= 10000 ? 50 : 0;
 
-  if (cart?.items.length === 0) {
+  if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
@@ -61,7 +95,7 @@ const Cart = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            {cart.items.map((item, index) => {
+            {cartItems?.map((item) => {
               const product = item.product as Product;
               return <Card key={product._id}>
                 <CardContent className="p-6">
@@ -87,7 +121,7 @@ const Cart = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => updateQuantity(index, item.quantity - 1)}
+                            onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity - 1 })}
                             disabled={item.quantity <= 1}
                           >
                             <Minus className="h-4 w-4" />
@@ -96,7 +130,7 @@ const Cart = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => updateQuantity(index, item.quantity + 1)}
+                            onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity + 1 })}
                             disabled={item.quantity >= product.stock}
                           >
                             <Plus className="h-4 w-4" />
@@ -116,7 +150,7 @@ const Cart = () => {
                       variant="ghost"
                       size="icon"
                       className="text-destructive"
-                      onClick={() => removeItem(index)}
+                      onClick={() => removeFromCartMutation.mutate(product._id)}
                     >
                       <Trash2 className="h-5 w-5" />
                     </Button>
@@ -128,7 +162,7 @@ const Cart = () => {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          {cartSummary && <div className="lg:col-span-1">
             <Card className="sticky top-24">
               <CardContent className="p-6">
                 <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
@@ -171,7 +205,7 @@ const Cart = () => {
                 </Button>
               </CardContent>
             </Card>
-          </div>
+          </div>}
         </div>
       </div>
     </div>

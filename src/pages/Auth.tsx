@@ -21,7 +21,6 @@ const Auth = () => {
   useEffect(() => {
     if (loading) return;
     if (user) navigate("/")
-    if (!user) navigate("/auth")
   }, [loading, user, navigate])
   const loginMutation = useMutation({
     mutationFn: async (data: Login) => {
@@ -30,10 +29,9 @@ const Auth = () => {
     },
     onSuccess: (data) => {
       toast.success("Login successful")
-      const { accessToken, refreshToken, ...user } = data;
-      login(user)
+      login(data)
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("Login failed")
     }
   })
@@ -70,6 +68,9 @@ const Auth = () => {
       toast.error("Registration failed");
     },
   });
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">

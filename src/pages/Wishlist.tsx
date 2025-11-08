@@ -2,12 +2,25 @@ import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/providers/auth";
+import { wishlistService } from "@/services/wishlist.service";
+import { useQuery } from "@tanstack/react-query";
 import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
-import { mockProducts } from "@/data/mockData";
 
 const Wishlist = () => {
-  const wishlistItems = mockProducts.slice(0, 4);
+  const { user, loading } = useAuth()
+  const { data } = useQuery({
+    queryKey: ['wishlist'],
+    queryFn: async () => {
+      const response = await wishlistService.getWishlist()
+      return response.data
+    },
+    enabled: !!user
+  })
+  const wishlistItems = data?.items || []
+
+  if (loading) return <div>Loading...</div>
 
   if (wishlistItems.length === 0) {
     return (
@@ -46,7 +59,7 @@ const Wishlist = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {wishlistItems.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </div>

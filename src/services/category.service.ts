@@ -2,8 +2,8 @@ import instance from "@/lib/axios";
 import { ApiResponse, Category, PaginatedCategories } from "@/types";
 
 export const categoryService = {
-  async getAll(options?: { page?: number, limit?: number }) {
-    const response = await instance.get<PaginatedCategories>("/categories", {
+  async getAll(options?: { page?: number, limit?: number, isParent?: boolean }) {
+    const response = await instance.get<ApiResponse<PaginatedCategories>>("/categories", {
       params: options
     });
     return response.data;

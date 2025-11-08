@@ -29,7 +29,7 @@ const Brands = () => {
       return lastPage.brands.length === 12 ? allPages.length + 1 : null;
     },
   });
-  const brands = data?.pages?.flatMap((page) => page.brands) ?? [];
+  const brands = data?.pages?.flatMap((page) => page?.brands || []) ?? [];
   const { ref, entry } = useIntersection({
     root: lastBrandRef.current,
     threshold: 1,
@@ -56,7 +56,7 @@ const Brands = () => {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {brands.map((brand) => {
+          {brands?.map((brand) => {
             return (
               <Link key={brand._id} to={`/products?brand=${brand._id}`}>
                 <Card className="group hover:shadow-lg transition-all duration-300 bg-gradient-card">

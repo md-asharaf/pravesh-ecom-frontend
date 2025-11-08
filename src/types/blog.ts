@@ -5,8 +5,8 @@ export type Blog = {
   title: string;
   slug: string;
   content: string;
-  featuredImage: string | null;
-  tags: string[] | null;
+  featuredImage?: string;
+  tags?: string[];
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;

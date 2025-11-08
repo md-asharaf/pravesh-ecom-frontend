@@ -1,25 +1,52 @@
 import Navbar from "@/components/Navbar";
 import { useParams, Link } from "react-router-dom";
-import { mockProducts, mockReviews } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, Heart, Star, Minus, Plus, Truck, Shield, ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import ProductCard from "@/components/ProductCard";
+// import ProductCard from "@/components/ProductCard";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { productService } from "@/services/product.service";
+import { reviewService } from "@/services/review.service";
+import { wishlistService } from "@/services/wishlist.service";
+import { cartService } from "@/services/cart.service";
 
 const ProductDetail = () => {
   const { slug } = useParams();
-  const { toast } = useToast();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const { data: product } = useQuery({
+    queryKey: ["product", slug],
+    queryFn: async () => {
+      const response = await productService.getBySlug(slug);
+      return response.data;
+    }
+  })
 
-  const product = mockProducts.find((p) => p.slug === slug);
-  const relatedProducts = mockProducts.filter((p) => p.cat === product?.cat && p.id !== product?.id).slice(0, 4);
-  const productReviews = mockReviews.filter((r) => r.product === product?.id);
+  const { data: reviewsData } = useQuery({
+    queryKey: ["reviews", slug],
+    queryFn: async () => {
+      const response = await reviewService.getProductReviews(product._id);
+      return response.data;
+    },
+    enabled: !!product
+  })
+  const reviews = reviewsData?.reviews || [];
 
+  const addToCartMutation = useMutation({
+    mutationFn: async () => {
+      const response = await cartService.addToCart(product._id);
+      return response.data;
+    }
+  })
+  const addToWishlistMutation = useMutation({
+    mutationFn: async () => {
+      const response = await wishlistService.addProduct(product._id);
+      return response.data;
+    }
+  })
   if (!product) {
     return (
       <div className="min-h-screen bg-background">
@@ -33,20 +60,6 @@ const ProductDetail = () => {
       </div>
     );
   }
-
-  const handleAddToCart = () => {
-    toast({
-      title: "Added to Cart",
-      description: `${quantity} x ${product.name} added to your cart`,
-    });
-  };
-
-  const handleAddToWishlist = () => {
-    toast({
-      title: "Added to Wishlist",
-      description: `${product.name} added to your wishlist`,
-    });
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -65,24 +78,23 @@ const ProductDetail = () => {
           <div className="space-y-4">
             <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
               <img
-                src={product.imgs[selectedImage]}
+                src={product.images?.[selectedImage]}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
-              {product.discount && (
+              {product.discountValue && (
                 <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
-                  {product.discType === "percentage" ? `${product.discVal}% OFF` : `₹${product.discVal} OFF`}
+                  {product.discountType === "percentage" ? `${product.discountValue}% OFF` : `₹${product.discountValue} OFF`}
                 </Badge>
               )}
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {product.imgs.map((img, idx) => (
+              {product.images?.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(idx)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 ${
-                    selectedImage === idx ? "border-primary" : "border-border"
-                  }`}
+                  className={`aspect-square rounded-lg overflow-hidden border-2 ${selectedImage === idx ? "border-primary" : "border-border"
+                    }`}
                 >
                   <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
@@ -102,24 +114,23 @@ const ProductDetail = () => {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-5 w-5 ${
-                      i < Math.floor(product.rating || 0) ? "fill-accent text-accent" : "text-muted-foreground"
-                    }`}
+                    className={`h-5 w-5 ${i < Math.floor(product.rating || 0) ? "fill-accent text-accent" : "text-muted-foreground"
+                      }`}
                   />
                 ))}
               </div>
               <span className="text-sm text-muted-foreground">
-                {product.rating} ({product.reviews} reviews)
+                {product.rating} ({product.reviewCount} reviews)
               </span>
               <span className="text-sm text-muted-foreground">
-                {product.sold} sold
+                {product.totalSold} sold
               </span>
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-bold text-primary">₹{product.final.toLocaleString()}</span>
-              {product.discount && (
-                <span className="text-xl text-muted-foreground line-through">₹{product.orig.toLocaleString()}</span>
+              <span className="text-4xl font-bold text-primary">₹{product.finalPrice.toLocaleString()}</span>
+              {product.discountValue && (
+                <span className="text-xl text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
               )}
               <span className="text-sm text-muted-foreground">per {product.unit}</span>
             </div>
@@ -131,7 +142,7 @@ const ProductDetail = () => {
               {product.stockStatus === "in_stock" ? `In Stock (${product.stock} ${product.unit}s)` : product.stockStatus === "low_stock" ? "Low Stock" : "Out of Stock"}
             </Badge>
 
-            <p className="text-foreground leading-relaxed">{product.desc}</p>
+            <p className="text-foreground leading-relaxed">{product.description}</p>
 
             {/* Quantity Selector */}
             <div className="flex items-center gap-4">
@@ -162,13 +173,13 @@ const ProductDetail = () => {
               <Button
                 size="lg"
                 className="flex-1"
-                onClick={handleAddToCart}
+                onClick={() => addToCartMutation.mutate()}
                 disabled={product.stockStatus === "out_of_stock"}
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 Add to Cart
               </Button>
-              <Button size="lg" variant="outline" onClick={handleAddToWishlist}>
+              <Button size="lg" variant="outline" onClick={() => addToWishlistMutation.mutate()}>
                 <Heart className="h-5 w-5" />
               </Button>
             </div>
@@ -202,12 +213,12 @@ const ProductDetail = () => {
           <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="description">Description</TabsTrigger>
             <TabsTrigger value="specifications">Specifications</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({productReviews.length})</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews ({product.reviewCount})</TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="mt-8">
             <Card>
               <CardContent className="pt-6">
-                <p className="text-foreground leading-relaxed">{product.desc}</p>
+                <p className="text-foreground leading-relaxed">{product.description}</p>
                 {product.tags && (
                   <div className="mt-6">
                     <h3 className="font-semibold mb-2">Tags:</h3>
@@ -246,7 +257,7 @@ const ProductDetail = () => {
                   {product.brand && (
                     <div className="flex justify-between border-b border-border pb-2">
                       <dt className="font-semibold">Brand:</dt>
-                      <dd className="text-muted-foreground">{product.brand}</dd>
+                      <dd className="text-muted-foreground">{product.brand.name}</dd>
                     </div>
                   )}
                 </dl>
@@ -255,22 +266,21 @@ const ProductDetail = () => {
           </TabsContent>
           <TabsContent value="reviews" className="mt-8">
             <div className="space-y-4">
-              {productReviews.length > 0 ? (
-                productReviews.map((review) => (
-                  <Card key={review.id}>
+              {reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <Card key={review._id}>
                     <CardContent className="pt-6">
                       <div className="flex items-center gap-2 mb-3">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
-                            className={`h-4 w-4 ${
-                              i < review.rating ? "fill-accent text-accent" : "text-muted-foreground"
-                            }`}
+                            className={`h-4 w-4 ${i < review.rating ? "fill-accent text-accent" : "text-muted-foreground"
+                              }`}
                           />
                         ))}
                       </div>
                       <p className="text-foreground mb-2">{review.comment}</p>
-                      <p className="text-sm font-semibold text-muted-foreground">— {review.user}</p>
+                      <p className="text-sm font-semibold text-muted-foreground">— {review.user.name}</p>
                     </CardContent>
                   </Card>
                 ))
@@ -286,7 +296,7 @@ const ProductDetail = () => {
         </Tabs>
 
         {/* Related Products */}
-        {relatedProducts.length > 0 && (
+        {/*{relatedProducts.length > 0 && (
           <div>
             <h2 className="text-3xl font-bold mb-8">Related Products</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -295,7 +305,7 @@ const ProductDetail = () => {
               ))}
             </div>
           </div>
-        )}
+        )}*/}
       </div>
     </div>
   );

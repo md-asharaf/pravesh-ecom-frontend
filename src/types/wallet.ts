@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { User } from "./user";
 import { PaginatedData } from ".";
 
 export const transactionTypeEnum = z.enum(["credit", "debit"]);
@@ -13,7 +12,6 @@ export type Transaction = {
 
 export type Wallet = {
   _id: string;
-  user: string | Partial<User>;
   balance: number;
   transactions: Transaction[];
   createdAt: string;

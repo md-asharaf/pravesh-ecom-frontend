@@ -50,8 +50,8 @@ export type Product = {
   slug: string,
   description?: string,
   shortDescription?: string,
-  brand?: string | Partial<Brand>,
-  category: string | Partial<Category>,
+  brand?: Partial<Brand>,
+  category: Partial<Category>,
   thumbnail: string,
   images: string[],
   originalPrice: number,
@@ -75,8 +75,6 @@ export type Product = {
   createdAt: string,
   updatedAt: string,
   isDeleted: boolean,
-  // relations
-  reviews?: Partial<Review>[];
 };
 
 

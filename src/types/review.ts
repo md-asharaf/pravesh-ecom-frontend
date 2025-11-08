@@ -13,8 +13,7 @@ export type UpdateReview = z.infer<typeof createReviewSchema>
 
 export type Review = {
   _id: string;
-  user: string | Partial<User>;
-  product: string | Partial<Product>;
+  user: Partial<User>;
   rating: number;
   comment?: string;
   createdAt: string;

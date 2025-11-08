@@ -1,21 +1,82 @@
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
-import { mockProducts, mockCategories, mockBrands } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { productService } from "@/services/product.service";
+import { useIntersection } from "@mantine/hooks";
+import { useEffect, useRef } from "react";
 
 const Products = () => {
-  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const lastProductRef = useRef(null);
+  const { data: filtersData } = useQuery({
+    queryKey: ["product-filters"],
+    queryFn: async () => {
+      const response = await productService.getFilters()
+      return response.data;
+    }
+  })
+  const filters = filtersData || {
+    categories: [],
+    brands: [],
+    colors: [],
+    sizes: [],
+    priceRange: {
+      minPrice: 0,
+      maxPrice: 1000
+    }
+  };
+  const categories = filters?.categories || [];
+  const brands = filters?.brands || [];
+  // const colors = filters?.colors || [];
+  // const sizes = filters?.sizes || [];
+  const minPrice = filters?.priceRange.minPrice || 0;
+  const maxPrice = filters?.priceRange.maxPrice || 1000;
 
+  const {
+    data,
+    hasNextPage,
+    fetchNextPage,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["products"],
+    queryFn: async ({ pageParam }) => {
+      const response = await productService.getAll({
+        limit: 12,
+        page: pageParam,
+      });
+      return response.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.products.length === 12 ? allPages.length + 1 : null;
+    },
+  });
+  const products = data?.pages?.flatMap((page) => page.products) ?? [];
+  const totalProducts = data?.pages?.[0]?.total ?? 0;
+  const { ref, entry } = useIntersection({
+    root: lastProductRef.current,
+    threshold: 1,
+  });
+  useEffect(() => {
+    if (entry?.isIntersecting && hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [entry, hasNextPage, isFetching, fetchNextPage]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">All Products</h1>
@@ -34,10 +95,10 @@ const Products = () => {
               <div>
                 <h3 className="font-semibold mb-4">Categories</h3>
                 <div className="space-y-2">
-                  {mockCategories.map((cat) => (
-                    <div key={cat.id} className="flex items-center space-x-2">
-                      <Checkbox id={`cat-${cat.id}`} />
-                      <Label htmlFor={`cat-${cat.id}`} className="text-sm cursor-pointer">
+                  {categories.map((cat) => (
+                    <div key={cat._id} className="flex items-center space-x-2">
+                      <Checkbox id={`cat-${cat._id}`} />
+                      <Label htmlFor={`cat-${cat._id}`} className="text-sm cursor-pointer">
                         {cat.title}
                       </Label>
                     </div>
@@ -48,10 +109,10 @@ const Products = () => {
               <div>
                 <h3 className="font-semibold mb-4">Brands</h3>
                 <div className="space-y-2">
-                  {mockBrands.map((brand) => (
-                    <div key={brand.id} className="flex items-center space-x-2">
-                      <Checkbox id={`brand-${brand.id}`} />
-                      <Label htmlFor={`brand-${brand.id}`} className="text-sm cursor-pointer">
+                  {brands.map((brand) => (
+                    <div key={brand._id} className="flex items-center space-x-2">
+                      <Checkbox id={`brand-${brand._id}`} />
+                      <Label htmlFor={`brand-${brand._id}`} className="text-sm cursor-pointer">
                         {brand.name}
                       </Label>
                     </div>
@@ -62,15 +123,15 @@ const Products = () => {
               <div>
                 <h3 className="font-semibold mb-4">Price Range</h3>
                 <Slider
-                  value={priceRange}
-                  onValueChange={setPriceRange}
-                  max={10000}
+                  min={minPrice}
+                  max={maxPrice}
+                  // onValueChange={(value) => }
                   step={100}
                   className="mb-2"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>₹{priceRange[0]}</span>
-                  <span>₹{priceRange[1]}</span>
+                  <span>₹{filters.priceRange.minPrice}</span>
+                  <span>₹{filters.priceRange.maxPrice}</span>
                 </div>
               </div>
 
@@ -114,7 +175,7 @@ const Products = () => {
           <main className="flex-1">
             <div className="flex justify-between items-center mb-6">
               <p className="text-muted-foreground">
-                Showing {mockProducts.length} products
+                Showing {totalProducts} products
               </p>
               <Select defaultValue="featured">
                 <SelectTrigger className="w-48">
@@ -131,9 +192,16 @@ const Products = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {mockProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {products.map((product) => (
+                <ProductCard key={product._id} product={product} />
               ))}
+              <div ref={ref} className="h-1" />
+
+              {(isFetchingNextPage || isFetching) && (
+                <div className="text-center py-4 text-sm text-muted-foreground">
+                  Loading more...
+                </div>
+              )}
             </div>
           </main>
         </div>

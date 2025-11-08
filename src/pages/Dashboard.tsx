@@ -105,7 +105,7 @@ const Dashboard = () => {
             </Card>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {/*<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
@@ -141,10 +141,10 @@ const Dashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </div>*/}
 
             {/* Orders */}
-            <Tabs defaultValue="all" className="w-full">
+            {/*<Tabs defaultValue="all" className="w-full">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold">My Orders</h2>
                 <TabsList>
@@ -227,7 +227,7 @@ const Dashboard = () => {
                   </Card>
                 ))}
               </TabsContent>
-            </Tabs>
+            </Tabs>*/}
           </div>
         </div>
       </div>

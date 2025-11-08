@@ -3,19 +3,37 @@ import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
 import CategoryCard from "@/components/CategoryCard";
 import ReviewCard from "@/components/ReviewCard";
-import { mockProducts, mockCategories, mockReviews } from "@/data/mockData";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, Shield, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { productService } from "@/services/product.service";
+import { categoryService } from "@/services/category.service";
 
 const Index = () => {
-  const featuredProducts = mockProducts.filter(p => p.featured).slice(0, 4);
+  const { data: categoriesData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const response = await categoryService.getAll({ page: 1, limit: 12, isParent: true })
+      return response.data;
+    },
+  });
+
+  const categories = categoriesData?.categories || [];
+  const { data: featuredProductsData } = useQuery({
+    queryKey: ["featured-products"],
+    queryFn: async () => {
+      const response = await productService.getFeatured({ page: 1, limit: 12 })
+      return response.data;
+    },
+  });
+  const featuredProducts = featuredProductsData?.products || [];
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <Hero />
-      
+
       {/* Features */}
       <section className="py-12 bg-secondary/30">
         <div className="container mx-auto px-4">
@@ -63,8 +81,8 @@ const Index = () => {
             </Button>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {mockCategories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
+            {categories.map((category) => (
+              <CategoryCard key={category._id} category={category} />
             ))}
           </div>
         </div>
@@ -83,14 +101,14 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         </div>
       </section>
 
       {/* Reviews */}
-      <section className="py-16">
+      {/*<section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -99,7 +117,7 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* CTA */}
       <section className="py-20 bg-gradient-hero">

@@ -1,4 +1,3 @@
-"use client"
 import { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { authService } from "@/services/auth.service";
 import { userService } from "@/services/user.service";
@@ -24,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const res = await userService.getMe();
         setUser(res?.data || null);
-      } catch (e:any) {
+      } catch (e) {
         setUser(null);
       } finally {
         setLoading(false);
