@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { brandService } from "@/services/brand.service";
 import { useIntersection } from "@mantine/hooks";
@@ -25,8 +24,8 @@ const Brands = () => {
       return response.data;
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.brands.length === 12 ? allPages.length + 1 : null;
+    getNextPageParam: (lastPage) => {
+      return lastPage?.page === lastPage.totalPages ? null : lastPage.page + 1;
     },
   });
   const brands = data?.pages?.flatMap((page) => page?.brands || []) ?? [];
@@ -44,9 +43,6 @@ const Brands = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">All Brands</h1>
@@ -86,7 +82,6 @@ const Brands = () => {
           )}
         </div>
       </div>
-    </div>
   );
 };
 

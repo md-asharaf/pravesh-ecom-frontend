@@ -2,6 +2,13 @@ import { createContext, useContext, useState, useCallback, useMemo, useEffect, u
 import { authService } from "@/services/auth.service";
 import { userService } from "@/services/user.service";
 import { User } from "@/types";
+import { cartService } from "@/services/cart.service";
+import { wishlistService } from "@/services/wishlist.service";
+import { categoryService } from "@/services/category.service";
+import { useDispatch } from "react-redux";
+import { setCart } from "@/store/slices/cart";
+import { setWishlist } from "@/store/slices/wishlist";
+import { setCategoryTree } from "@/store/slices/category";
 
 interface AuthContextType {
   user: User | null;
@@ -13,6 +20,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const dispatch = useDispatch()
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const fetched = useRef(false);
@@ -30,6 +38,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     })();
   }, []);
+  useEffect(() => {
+  if (!user) return;
+
+  const fetchAll = async () => {
+    try {
+      const cartRes = await cartService.getMyCart();
+      console.log("Fetched cart data:", cartRes.data);
+      dispatch(setCart(cartRes.data));
+
+      const wishRes = await wishlistService.getWishlist();
+      dispatch(setWishlist(wishRes.data));
+
+      const catRes = await categoryService.getTree();
+      dispatch(setCategoryTree(catRes.data));
+
+    } catch (err) {
+      console.error("Error loading initial data:", err);
+    }
+  };
+
+  fetchAll();
+
+}, [user]);
+
 
   const login = useCallback((user: User) => {
     setUser(user);

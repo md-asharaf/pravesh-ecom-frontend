@@ -1,8 +1,6 @@
-import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
 import CategoryCard from "@/components/CategoryCard";
-import ReviewCard from "@/components/ReviewCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, Shield, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -23,15 +21,41 @@ const Index = () => {
   const { data: featuredProductsData } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {
-      const response = await productService.getFeatured({ page: 1, limit: 12 })
+      const response = await productService.getAll({ page: 1, limit: 12, isFeatured: true })
       return response.data;
     },
   });
   const featuredProducts = featuredProductsData?.products || [];
 
+  const { data: bestSellingData } = useQuery({
+    queryKey: ["best-selling-products"],
+    queryFn: async () => {
+      const response = await productService.getAll({ page: 1, limit: 8, sort: 'bestSelling' })
+      return response?.data;
+    },
+  });
+  const bestSelling = bestSellingData?.products || [];
+
+  const { data: newArrivalsData } = useQuery({
+    queryKey: ["new-arrivals"],
+    queryFn: async () => {
+      const response = await productService.getAll({ page: 1, limit: 8, isNewArrival: true })
+      return response?.data;
+    },
+  });
+  const newArrivals = newArrivalsData?.products || [];
+
+  const { data: trendingData } = useQuery({
+    queryKey: ["trending-products"],
+    queryFn: async () => {
+      const response = await productService.getAll({ page: 1, limit: 8, sort: 'trending' })
+      return response?.data;
+    },
+  });
+  const trending = trendingData?.products || [];
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <>
       <Hero />
 
       {/* Features */}
@@ -107,17 +131,62 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Reviews */}
-      {/*<section className="py-16">
+      {/* Best Selling Products */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {mockReviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground">Best Selling</h2>
+            <Button variant="ghost" asChild>
+              <Link to="/products?sort=best_selling">
+                View All <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {bestSelling.map((product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         </div>
-      </section>*/}
+      </section>
+
+      {/* Trending Products */}
+      <section className="py-16 bg-muted/10">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground">Trending Products</h2>
+            <Button variant="ghost" asChild>
+              <Link to="/products?sort=trending">
+                View All <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {trending.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* New Arrivals */}
+      <section className="py-16 bg-muted/20">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground">New Arrivals</h2>
+            <Button variant="ghost" asChild>
+              <Link to="/products?sort=new_arrivals">
+                View All <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {newArrivals.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* CTA */}
       <section className="py-20 bg-gradient-hero">
@@ -178,7 +247,7 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
+    </>
   );
 };
 

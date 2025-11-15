@@ -3,12 +3,12 @@ import { ApiResponse, Cart } from "@/types";
 
 export const cartService = {
   async getMyCart() {
-    const response = await instance.get<ApiResponse<Cart>>("/cart/me");
+    const response = await instance.get<ApiResponse<Cart>>("/cart/me", { params: { populate: true } });
     return response.data;
   },
 
   async addToCart(productId: string) {
-    const response = await instance.post<ApiResponse<Cart>>("/cart/add", { productId });
+    const response = await instance.post<ApiResponse<Cart>>("/cart/add", { productId, quantity: 1 });
     return response.data;
   },
 

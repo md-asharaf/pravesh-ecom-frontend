@@ -31,8 +31,12 @@ export const orderService = {
   },
 
   async getMyOrders(options?: { page?: number, limit?: number }) {
-    const response = await instance.get<PaginatedOrders>("/orders", {
-      params: options,
+    const response = await instance.get<ApiResponse<PaginatedOrders>>("/orders/me", {
+      params: {
+        page: options?.page,
+        limit: options?.limit,
+        populate: true
+      },
     });
     return response.data;
   },

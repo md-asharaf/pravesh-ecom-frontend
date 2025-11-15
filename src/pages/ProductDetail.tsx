@@ -1,12 +1,17 @@
-import Navbar from "@/components/Navbar";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, Heart, Star, Minus, Plus, Truck, Shield, ArrowLeft } from "lucide-react";
+import {
+  ShoppingCart,
+  Heart,
+  Star,
+  Minus,
+  Plus,
+  Truck,
+  Shield,
+  ArrowLeft,
+} from "lucide-react";
 import { useState } from "react";
-// import ProductCard from "@/components/ProductCard";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
 import { reviewService } from "@/services/review.service";
@@ -16,14 +21,14 @@ import { cartService } from "@/services/cart.service";
 const ProductDetail = () => {
   const { slug } = useParams();
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
+
   const { data: product } = useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
       const response = await productService.getBySlug(slug);
       return response.data;
-    }
-  })
+    },
+  });
 
   const { data: reviewsData } = useQuery({
     queryKey: ["reviews", slug],
@@ -31,176 +36,223 @@ const ProductDetail = () => {
       const response = await reviewService.getProductReviews(product._id);
       return response.data;
     },
-    enabled: !!product
-  })
+    enabled: !!product,
+  });
+
   const reviews = reviewsData?.reviews || [];
 
   const addToCartMutation = useMutation({
     mutationFn: async () => {
       const response = await cartService.addToCart(product._id);
       return response.data;
-    }
-  })
+    },
+  });
+
   const addToWishlistMutation = useMutation({
     mutationFn: async () => {
       const response = await wishlistService.addProduct(product._id);
       return response.data;
-    }
-  })
+    },
+  });
+
   if (!product) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
-          <Button asChild>
+        <div className="container mx-auto px-6 py-24 text-center">
+          <h1 className="text-2xl font-semibold text-foreground mb-4">
+            Product not found
+          </h1>
+          <Button asChild className="rounded-full">
             <Link to="/products">Browse Products</Link>
           </Button>
         </div>
-      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
-        <Button variant="ghost" asChild className="mb-4">
+      <div className="container mx-auto px-6 py-10">
+        <Button
+          variant="ghost"
+          asChild
+          className="mb-6 text-muted-foreground hover:text-foreground flex items-center gap-1"
+        >
           <Link to="/products">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Products
+            <ArrowLeft className="h-4 w-4" />
+            Back
           </Link>
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          {/* Image Gallery */}
-          <div className="space-y-4">
-            <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          {/* LEFT — Image */}
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-md aspect-square rounded-2xl overflow-hidden bg-muted">
               <img
-                src={product.images?.[selectedImage]}
+                src={product.thumbnail}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="object-contain w-full h-full"
               />
-              {product.discountValue && (
-                <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
-                  {product.discountType === "percentage" ? `${product.discountValue}% OFF` : `₹${product.discountValue} OFF`}
+            </div>
+            {/* {product.discountValue && (
+              <div className="absolute top-6 left-6">
+                <Badge variant="secondary">
+                  {product.discountType === "percentage"
+                    ? `${product.discountValue}% OFF`
+                    : `₹${product.discountValue} OFF`}
                 </Badge>
-              )}
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {product.images?.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(idx)}
-                  className={`aspect-square rounded-lg overflow-hidden border-2 ${selectedImage === idx ? "border-primary" : "border-border"
-                    }`}
-                >
-                  <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+              </div>
+            )} */}
           </div>
 
-          {/* Product Info */}
-          <div className="space-y-6">
+          {/* RIGHT — Info */}
+          <div className="flex flex-col gap-4">
+            {/* Title + Brand */}
             <div>
-              <h1 className="text-4xl font-bold mb-2">{product.name}</h1>
-              <p className="text-muted-foreground">SKU: {product.sku}</p>
+              <h1 className="text-2xl md:text-3xl font-semibold mb-1 leading-tight">
+                {product.name}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {product.brand?.name && (
+                  <>
+                    by{" "}
+                    <span className="text-foreground font-medium">
+                      {product.brand.name}
+                    </span>{" "}
+                    •{" "}
+                  </>
+                )}
+                SKU: {product.sku}
+              </p>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
+            {/* Rating */}
+            <div className="flex items-center gap-3">
+              <div className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-5 w-5 ${i < Math.floor(product.rating || 0) ? "fill-accent text-accent" : "text-muted-foreground"
-                      }`}
+                    className={`h-4 w-4 ${
+                      i < Math.floor(product.rating || 0)
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-muted-foreground"
+                    }`}
                   />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">
-                {product.rating} ({product.reviewCount} reviews)
+              <span className="text-xs text-muted-foreground">
+                {product.rating} • {product.reviewCount} reviews
               </span>
-              <span className="text-sm text-muted-foreground">
-                {product.totalSold} sold
+              <span className="text-xs text-muted-foreground">
+                | {product.totalSold} sold
               </span>
             </div>
 
-            <div className="flex items-baseline gap-3">
-              <span className="text-4xl font-bold text-primary">₹{product.finalPrice.toLocaleString()}</span>
-              {product.discountValue && (
-                <span className="text-xl text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
-              )}
-              <span className="text-sm text-muted-foreground">per {product.unit}</span>
+            {/* Price */}
+            <div>
+              <span className="text-2xl font-semibold">
+                ₹{product.originalPrice.toLocaleString()}
+              </span>
+              <span className="text-xs text-muted-foreground ml-1">
+                per {product.unit}
+              </span>
             </div>
 
-            <Badge
-              variant={product.stockStatus === "in_stock" ? "secondary" : "destructive"}
-              className="text-base px-4 py-1"
-            >
-              {product.stockStatus === "in_stock" ? `In Stock (${product.stock} ${product.unit}s)` : product.stockStatus === "low_stock" ? "Low Stock" : "Out of Stock"}
-            </Badge>
-
-            <p className="text-foreground leading-relaxed">{product.description}</p>
-
-            {/* Quantity Selector */}
-            <div className="flex items-center gap-4">
-              <span className="font-semibold">Quantity:</span>
-              <div className="flex items-center border border-border rounded-lg">
+            {/* Quantity */}
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">Qty</span>
+              <div className="flex items-center border border-border rounded-full">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
+                  className="rounded-full"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3 text-muted-foreground" />
                 </Button>
-                <span className="px-6 font-semibold">{quantity}</span>
+                <span className="px-4 font-medium text-sm">{quantity}</span>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setQuantity(quantity + 1)}
-                  disabled={quantity >= product.stock}
+                  className="rounded-full"
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-3 w-3 text-muted-foreground" />
                 </Button>
               </div>
             </div>
 
-            {/* Actions */}
-            <div className="flex gap-4">
+            {/* Buttons */}
+            <div className="flex gap-3">
               <Button
-                size="lg"
-                className="flex-1"
+                size="sm"
+                className="flex-1 rounded-full"
                 onClick={() => addToCartMutation.mutate()}
-                disabled={product.stockStatus === "out_of_stock"}
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
+                <ShoppingCart className="mr-1 h-4 w-4" />
                 Add to Cart
               </Button>
-              <Button size="lg" variant="outline" onClick={() => addToWishlistMutation.mutate()}>
-                <Heart className="h-5 w-5" />
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => addToWishlistMutation.mutate()}
+                className="rounded-full"
+              >
+                <Heart className="h-4 w-4" />
               </Button>
             </div>
 
-            {/* Features */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Truck className="h-5 w-5 text-primary" />
+            {/* Specs */}
+            {product.specifications &&
+              Object.keys(product.specifications).length > 0 && (
+                <div className="pt-2 border-t border-border">
+                  <h3 className="text-base font-medium mb-2">
+                    Specifications
+                  </h3>
+                  <dl className="space-y-1 text-sm text-muted-foreground">
+                    {Object.entries(product.specifications).map(([key, value]) => (
+                      <div
+                        key={key}
+                        className="flex justify-between border-b border-border/40 pb-1"
+                      >
+                        <dt className="font-medium text-foreground">{key}</dt>
+                        <dd>{String(value)}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
+              )}
+
+            {/* Tags */}
+            {product.tags?.length > 0 && (
+              <div className="pt-2">
+                <h3 className="text-base font-medium mb-2">Tags</h3>
+                <div className="flex flex-wrap gap-2">
+                  {product.tags.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant="outline"
+                      className="rounded-full text-xs px-3 py-1"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Info Icons */}
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border/60">
+              <div className="flex items-center gap-3">
+                <Truck className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="font-semibold text-sm">Fast Delivery</p>
-                  <p className="text-xs text-muted-foreground">2-3 days</p>
+                  <p className="font-medium text-sm">Fast Delivery</p>
+                  <p className="text-xs text-muted-foreground">2–3 days</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Shield className="h-5 w-5 text-primary" />
-                </div>
+                <Shield className="h-5 w-5 text-primary" />
                 <div>
-                  <p className="font-semibold text-sm">Quality Assured</p>
+                  <p className="font-medium text-sm">Quality Assured</p>
                   <p className="text-xs text-muted-foreground">100% Genuine</p>
                 </div>
               </div>
@@ -208,106 +260,39 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="description" className="mb-16">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="description">Description</TabsTrigger>
-            <TabsTrigger value="specifications">Specifications</TabsTrigger>
-            <TabsTrigger value="reviews">Reviews ({product.reviewCount})</TabsTrigger>
-          </TabsList>
-          <TabsContent value="description" className="mt-8">
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-foreground leading-relaxed">{product.description}</p>
-                {product.tags && (
-                  <div className="mt-6">
-                    <h3 className="font-semibold mb-2">Tags:</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {product.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
+        {/* REVIEWS */}
+        <section className="mt-12">
+          <h2 className="text-lg font-medium mb-4">Customer Reviews</h2>
+          {reviews.length ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              {reviews.map((review) => (
+                <div key={review._id} className="border-b border-border pb-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < review.rating
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-muted-foreground"
+                        }`}
+                      />
+                    ))}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="specifications" className="mt-8">
-            <Card>
-              <CardContent className="pt-6">
-                <dl className="space-y-4">
-                  <div className="flex justify-between border-b border-border pb-2">
-                    <dt className="font-semibold">SKU:</dt>
-                    <dd className="text-muted-foreground">{product.sku}</dd>
-                  </div>
-                  <div className="flex justify-between border-b border-border pb-2">
-                    <dt className="font-semibold">Unit:</dt>
-                    <dd className="text-muted-foreground">{product.unit}</dd>
-                  </div>
-                  <div className="flex justify-between border-b border-border pb-2">
-                    <dt className="font-semibold">Stock Status:</dt>
-                    <dd className="text-muted-foreground capitalize">{product.stockStatus.replace("_", " ")}</dd>
-                  </div>
-                  <div className="flex justify-between border-b border-border pb-2">
-                    <dt className="font-semibold">Available Stock:</dt>
-                    <dd className="text-muted-foreground">{product.stock} {product.unit}s</dd>
-                  </div>
-                  {product.brand && (
-                    <div className="flex justify-between border-b border-border pb-2">
-                      <dt className="font-semibold">Brand:</dt>
-                      <dd className="text-muted-foreground">{product.brand.name}</dd>
-                    </div>
-                  )}
-                </dl>
-              </CardContent>
-            </Card>
-          </TabsContent>
-          <TabsContent value="reviews" className="mt-8">
-            <div className="space-y-4">
-              {reviews.length > 0 ? (
-                reviews.map((review) => (
-                  <Card key={review._id}>
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-4 w-4 ${i < review.rating ? "fill-accent text-accent" : "text-muted-foreground"
-                              }`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-foreground mb-2">{review.comment}</p>
-                      <p className="text-sm font-semibold text-muted-foreground">— {review.user.name}</p>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                <Card>
-                  <CardContent className="pt-6 text-center text-muted-foreground">
-                    No reviews yet. Be the first to review this product!
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
-
-        {/* Related Products */}
-        {/*{relatedProducts.length > 0 && (
-          <div>
-            <h2 className="text-3xl font-bold mb-8">Related Products</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                  <p className="text-sm mb-1">{review.comment}</p>
+                  <p className="text-xs text-muted-foreground">
+                    — {review.user.name}
+                  </p>
+                </div>
               ))}
             </div>
-          </div>
-        )}*/}
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No reviews yet. Be the first to review this product!
+            </p>
+          )}
+        </section>
       </div>
-    </div>
   );
 };
 

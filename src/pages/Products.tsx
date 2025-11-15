@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,8 +73,6 @@ const Products = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -138,16 +135,22 @@ const Products = () => {
               <div>
                 <h3 className="font-semibold mb-4">Filters</h3>
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
+                  {/* <div className="flex items-center space-x-2">
                     <Checkbox id="in-stock" />
                     <Label htmlFor="in-stock" className="text-sm cursor-pointer">
                       In Stock
                     </Label>
-                  </div>
+                  </div> */}
                   <div className="flex items-center space-x-2">
                     <Checkbox id="featured" />
                     <Label htmlFor="featured" className="text-sm cursor-pointer">
                       Featured
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="trending" />
+                    <Label htmlFor="trending" className="text-sm cursor-pointer">
+                      Trending
                     </Label>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -159,7 +162,7 @@ const Products = () => {
                   <div className="flex items-center space-x-2">
                     <Checkbox id="discount" />
                     <Label htmlFor="discount" className="text-sm cursor-pointer">
-                      On Sale
+                      Best Sellers
                     </Label>
                   </div>
                 </div>
@@ -206,7 +209,6 @@ const Products = () => {
           </main>
         </div>
       </div>
-    </div>
   );
 };
 

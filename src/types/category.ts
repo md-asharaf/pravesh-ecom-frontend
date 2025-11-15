@@ -1,18 +1,20 @@
-import { PaginatedData, Product } from ".";
+import { Brand, PaginatedData, Product } from ".";
 
 export type Category = {
   _id: string;
   title: string;
-  image?: string;
+  slug:string;
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
   productCount?: number;
-  childrenCount?: number;
+  childCount?: number;
+  brandCount?: number;
   parentCategory?: Partial<Category>;
   // relations
   children?: Partial<Category>[];
   products?: Partial<Product>[];
+  brands?: Partial<Brand>[]
 };
 
 

@@ -8,6 +8,12 @@ export const categoryService = {
     });
     return response.data;
   },
+
+  async getTree(){
+    const response = await instance.get<ApiResponse<Category[]>>("/categories/tree");
+    return response.data;
+  },
+  
   async getChildCategories(id: string) {
     const response = await instance.get<ApiResponse<Category[]>>(`/categories/children/${id}`);
     return response.data;

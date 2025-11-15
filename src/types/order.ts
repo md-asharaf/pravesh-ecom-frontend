@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Address } from "./address";
 import { Product } from "./product";
-import { PaginatedData, User } from ".";
+import { PaginatedData } from ".";
 
 export const orderStatusSchema = z.enum([
   "processing",

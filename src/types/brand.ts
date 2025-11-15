@@ -1,4 +1,4 @@
-import { PaginatedData, Product } from ".";
+import { Category, PaginatedData, Product } from ".";
 
 export type Brand = {
   _id: string;
@@ -8,6 +8,9 @@ export type Brand = {
   isDeleted: boolean;
   createdAt: string;
   updatedAt: string;
+  // realations
+  category?: Partial<Category>[];
+  products?: Partial<Product>[];
 };
 
 

@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -97,9 +96,6 @@ const Checkout = () => {
   const total = cartSummary?.totalPrice ?? subtotal + shipping;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-bold">Checkout</h1>
@@ -246,7 +242,7 @@ const Checkout = () => {
                           </p>
                           <p className="text-xs text-muted-foreground">Qty: {quantity}</p>
                           <p className="font-semibold text-sm">
-                            ₹{Number(product?.finalPrice || 0).toLocaleString()}
+                            ₹{Number(product?.originalPrice || 0).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -311,7 +307,6 @@ const Checkout = () => {
           </form>
         </Form>
       </div>
-    </div>
   );
 };
 

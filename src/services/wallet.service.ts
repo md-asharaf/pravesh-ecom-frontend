@@ -3,7 +3,7 @@ import { ApiResponse, Transaction } from "@/types";
 
 export const walletService = {
   async getBalance() {
-    const response = await instance.get<ApiResponse<number>>("/wallet/balance");
+    const response = await instance.get<ApiResponse<{balance: number}>>("/wallet/balance");
     return response.data;
   },
   async getTransactions() {

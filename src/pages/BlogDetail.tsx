@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,15 +18,12 @@ const BlogDetail = () => {
   });
   if (!blog) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-2xl font-bold mb-4">Blog Post Not Found</h1>
           <Button asChild>
             <Link to="/blog">Back to Blog</Link>
           </Button>
         </div>
-      </div>
     );
   }
   if (isLoading) {
@@ -35,9 +31,6 @@ const BlogDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
       <div className="container mx-auto px-4 py-8">
         <Button variant="ghost" asChild className="mb-6">
           <Link to="/blog">
@@ -123,7 +116,6 @@ const BlogDetail = () => {
           </div>
         </article>
       </div>
-    </div>
   );
 };
 

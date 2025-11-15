@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
@@ -45,10 +44,7 @@ const Blog = () => {
     return <div>Loading...</div>;
   }
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <div className="container mx-auto px-4 py-8" ref={lastBlogRef}>
+    <div className="container mx-auto px-4 py-8" ref={lastBlogRef}>
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Blog</h1>
           <p className="text-muted-foreground">
@@ -101,7 +97,6 @@ const Blog = () => {
           </div>
         )}
       </div>
-    </div>
   );
 };
 
