@@ -118,7 +118,7 @@ const Index = () => {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">Featured Products</h2>
             <Button variant="ghost" asChild>
-              <Link to="/products">
+              <Link to="/products?sort=featured">
                 View All <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -137,7 +137,7 @@ const Index = () => {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">Best Selling</h2>
             <Button variant="ghost" asChild>
-              <Link to="/products?sort=best_selling">
+              <Link to="/products?sort=bestSelling">
                 View All <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -175,7 +175,7 @@ const Index = () => {
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">New Arrivals</h2>
             <Button variant="ghost" asChild>
-              <Link to="/products?sort=new_arrivals">
+              <Link to="/products?sort=newArrivals">
                 View All <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
