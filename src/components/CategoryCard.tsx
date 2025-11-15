@@ -8,7 +8,7 @@ interface CategoryCardProps {
 
 const CategoryCard = ({ category }: CategoryCardProps) => {
   return (
-    <Link to={`/products?cat=${category._id}`}>
+    <Link to={`/products?c=${category._id}`}>
       <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer bg-gradient-card h-48">
         <div className="relative h-full overflow-hidden">
           {/* <img

@@ -58,6 +58,7 @@ const Navbar = () => {
                 <Input
                   placeholder="Search for products, categories or brands"
                   className="h-12 pl-12 rounded-full bg-gray-100"
+                  onChange={(e) => navigate(`/products?s=${e.target.value}`)}
                 />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               </div>
@@ -177,7 +178,7 @@ const Navbar = () => {
                               {cat.children?.map((sub) => (
                                 <li key={sub._id}>
                                   <SheetClose asChild>
-                                    <Link to={`/categories/${sub.slug}`}>
+                                    <Link to={`/products?c=${sub._id}`}>
                                       {sub.title}
                                     </Link>
                                   </SheetClose>
@@ -220,7 +221,7 @@ const Navbar = () => {
               <li key={cat._id} className="relative group cursor-pointer">
 
                 <Link
-                  to={`/categories/${cat.slug}`}
+                  to={`/products?c=${cat._id}`}
                   className="hover:text-yellow-300 transition flex items-center gap-1"
                 >
                   {cat.title.toUpperCase()}
@@ -242,7 +243,7 @@ const Navbar = () => {
                       {cat.children.map((sub) => (
                         <li key={sub._id}>
                           <Link
-                            to={`/categories/${sub.slug}`}
+                            to={`/products?c=${sub._id}`}
                             className="block hover:text-blue-600"
                           >
                             {sub.title}

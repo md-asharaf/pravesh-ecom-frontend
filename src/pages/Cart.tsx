@@ -14,7 +14,6 @@ const Cart = () => {
   const { user } = useAuth();
 
   const { items: cartItems } = useAppSelector((state) => state.cart);
-  console.log(cartItems)
   const { data: cartSummary } = useQuery({
     queryKey: ["cart-summary", user?._id],
     queryFn: async () => (await cartService.getCartSummary()).data,
@@ -62,7 +61,6 @@ const Cart = () => {
       <div className="lg:col-span-2 space-y-4">
         {cartItems.map((item) => {
           const product = item.product;
-          console.log(product);
           return (
             <Card key={product._id} className="rounded-none shadow-sm">
               <CardContent className="p-4 flex gap-4">

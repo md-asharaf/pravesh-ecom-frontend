@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
-import { ArrowLeft, ArrowRight, LogOut, Camera } from "lucide-react";
+import { ArrowLeft, ArrowRight, LogOut, Camera, ShoppingCart, Heart, MapPin, Package } from "lucide-react";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { EditProfileModal } from "@/components/modals/EditProfile";
@@ -14,6 +14,7 @@ import { ChangePhotoModal } from "@/components/modals/ChnageAvatar";
 import { userService } from "@/services/user.service";
 import { toast } from "sonner";
 import { UpdateUser } from "@/types";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { user, loading, logout, login } = useAuth();
@@ -92,7 +93,43 @@ const Profile = () => {
             <EditProfileModal user={user} onSave={updateProfileMutation.mutate} />
 
             <ChangePasswordModal onChangePassword={changePasswordMutation.mutate} />
+            <div className="flex flex-col space-y-4">
+              <Link to="/orders">
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl"
+                >
+                  Orders
+                </Button>
+              </Link>
 
+              <Link to="/addresses">
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl"
+                >
+                  Addresses
+                </Button>
+              </Link>
+
+              <Link to="/wishlist">
+
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl"
+                >
+                  Wishlist
+                </Button>
+              </Link>
+              <Link to="/cart">
+                <Button
+                  variant="outline"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl"
+                >
+                  Cart
+                </Button>
+              </Link>
+            </div>
             <Button
               variant="outline"
               className="w-full flex items-center justify-center gap-2 rounded-xl"

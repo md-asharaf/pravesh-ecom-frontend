@@ -17,6 +17,7 @@ import Orders from "@/pages/Orders";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import PrivateLayout from "@/layouts/PrivateLayout";
+import Addresses from "@/pages/Addresses";
 
 const AppRoutes = () => {
   return (
@@ -37,6 +38,7 @@ const AppRoutes = () => {
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/orders" element={<Orders />} />
+      <Route path="/addresses" element={<Addresses />} />
       <Route path="/profile" element={<Profile />} />
     </Route>
 

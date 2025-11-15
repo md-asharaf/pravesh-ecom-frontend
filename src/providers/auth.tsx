@@ -44,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const fetchAll = async () => {
     try {
       const cartRes = await cartService.getMyCart();
-      console.log("Fetched cart data:", cartRes.data);
       dispatch(setCart(cartRes.data));
 
       const wishRes = await wishlistService.getWishlist();

@@ -54,7 +54,7 @@ const Brands = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {brands?.map((brand) => {
             return (
-              <Link key={brand._id} to={`/products?brand=${brand._id}`}>
+              <Link key={brand._id} to={`/products?b=${brand._id}`}>
                 <Card className="group hover:shadow-lg transition-all duration-300 bg-gradient-card">
                   <CardContent className="p-6 text-center">
                     <div className="h-24 flex items-center justify-center mb-4">
