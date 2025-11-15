@@ -27,9 +27,6 @@ type FiltersState = {
   maxPrice?: number;
   sort?: string;
   order?: string;
-  isFeatured?: boolean;
-  isNewArrival?: boolean;
-  isDiscount?: boolean;
   rating?: number;
 };
 
@@ -43,12 +40,10 @@ const Products: React.FC = () => {
   // URL params
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // local search input (debounced)
   const [searchInput, setSearchInput] = useState<string>(
-    () => searchParams.get("search") ?? ""
+    () => searchParams.get("s") ?? ""
   );
 
-  // read filters from URL into an object
   const urlFilters = useMemo<FiltersState>(() => {
     const s = searchParams;
     return {
@@ -61,20 +56,15 @@ const Products: React.FC = () => {
         s.get("mxp") !== null ? Number(s.get("mxp")) : undefined,
       sort: s.get("sort") ?? undefined,
       order: s.get("order") ?? undefined,
-      isFeatured: s.get("isFeatured") === "true" ? true : undefined,
-      isNewArrival: s.get("isNewArrival") === "true" ? true : undefined,
-      isDiscount: s.get("isDiscount") === "true" ? true : undefined,
+      isFeatured: s.get("sort") === "featured" ? true : undefined,
+      isNewArrival: s.get("sort") === "newest" ? true : undefined,
       rating: s.get("rating") ? Number(s.get("rating")) : undefined,
     };
   }, [searchParams]);
 
-  // -------------------------
-  //  Filters metadata (brands, categories, price range)
-  // -------------------------
   const {
     data: filtersData,
     isLoading: isFiltersLoading,
-    error: filtersError,
   } = useQuery({
     queryKey: ["product-filters"],
     queryFn: async () => {
@@ -89,10 +79,6 @@ const Products: React.FC = () => {
   const minPriceLimit = filtersData?.priceRange?.minPrice ?? 0;
   const maxPriceLimit = filtersData?.priceRange?.maxPrice ?? 50000;
 
-  // -------------------------
-  //  Persist + Restore filters to/from localStorage
-  // -------------------------
-  // On mount: if URL has no filters but localStorage has, restore them to URL.
   useEffect(() => {
     const hasAnyParam = Array.from(searchParams.keys()).length > 0;
     if (!hasAnyParam) {
@@ -114,10 +100,8 @@ const Products: React.FC = () => {
         // ignore parse errors
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+  }, []);
 
-  // Whenever URL filters change, persist to localStorage
   useEffect(() => {
     const persist: FiltersState = {};
     for (const key of [
@@ -128,19 +112,12 @@ const Products: React.FC = () => {
       "mxp",
       "sort",
       "order",
-      "isFeatured",
-      "isNewArrival",
-      "isDiscount",
       "rating",
     ]) {
       const v = searchParams.get(key);
       if (v == null) continue;
-      if (["minPrice", "maxPrice", "rating"].includes(key)) {
+      if (["mnp", "mxp", "rating"].includes(key)) {
         (persist as any)[key] = Number(v);
-      } else if (
-        ["isFeatured", "isNewArrival", "isDiscount"].includes(key)
-      ) {
-        (persist as any)[key] = v === "true";
       } else {
         (persist as any)[key] = v;
       }
@@ -148,27 +125,16 @@ const Products: React.FC = () => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(persist));
     } catch (err) {
-      // ignore quota errors
     }
   }, [searchParams]);
-
-  // -------------------------
-  //  Debounced search effect (updates URL after debounce)
-  // -------------------------
   useEffect(() => {
     const t = setTimeout(() => {
-      // update URL `search` param
       updateParam("s", searchInput === "" ? undefined : searchInput);
     }, DEBOUNCE_MS);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchInput]);
 
-  // -------------------------
-  //  Helper to update a single param and preserve others
-  // -------------------------
   const updateParam = (key: string, value: string | number | boolean | undefined) => {
-    // build plain object from current params
     const next: Record<string, string> = {};
     for (const [k, v] of searchParams.entries()) {
       next[k] = v;
@@ -182,10 +148,6 @@ const Products: React.FC = () => {
 
     setSearchParams(next);
   };
-
-  // -------------------------
-  //  Infinite query using URL filters (server-side)
-  // -------------------------
   const {
     data,
     isLoading,
@@ -193,17 +155,14 @@ const Products: React.FC = () => {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-    refetch,
   } = useInfiniteQuery({
     queryKey: ["products", urlFilters],
     queryFn: async ({ pageParam = 1 }) => {
-      // send only keys understood by your backend
       const payload: any = {
         page: pageParam,
         limit: PAGE_LIMIT,
       };
 
-      // copy filters that are present
       if (urlFilters.search) payload.search = urlFilters.search;
       if (urlFilters.categoryId) payload.categoryId = urlFilters.categoryId;
       if (urlFilters.brandId) payload.brandId = urlFilters.brandId;
@@ -213,12 +172,6 @@ const Products: React.FC = () => {
         payload.maxPrice = urlFilters.maxPrice;
       if (urlFilters.sort) payload.sort = urlFilters.sort;
       if (urlFilters.order) payload.order = urlFilters.order;
-      if (typeof urlFilters.isFeatured === "boolean")
-        payload.isFeatured = urlFilters.isFeatured;
-      if (typeof urlFilters.isNewArrival === "boolean")
-        payload.isNewArrival = urlFilters.isNewArrival;
-      if (typeof urlFilters.isDiscount === "boolean")
-        payload.isDiscount = urlFilters.isDiscount;
       if (typeof urlFilters.rating === "number") payload.rating = urlFilters.rating;
 
       const res = await productService.getAll(payload);
@@ -234,9 +187,6 @@ const Products: React.FC = () => {
   const products = data?.pages.flatMap((p) => p.products) ?? [];
   const totalProducts = data?.pages?.[0]?.total ?? 0;
 
-  // -------------------------
-  //  Infinite scroll intersection
-  // -------------------------
   const { ref, entry } = useIntersection({
     root: lastItemRef.current,
     threshold: 1,
@@ -246,35 +196,8 @@ const Products: React.FC = () => {
     if (entry?.isIntersecting && hasNextPage && !isFetching) {
       fetchNextPage();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entry, hasNextPage, isFetching]);
 
-  // -------------------------
-  //  Breadcrumbs: compute from categoryId using parentId chain
-  //  Assumes categories have fields: _id, title, parentId?
-  // -------------------------
-  const getCategoryAncestors = (catId?: string) => {
-    if (!catId) return [];
-    const map = new Map<string, any>();
-    for (const c of categories) map.set(c._id, c);
-
-    const chain: any[] = [];
-    let cur = map.get(catId);
-    const seen = new Set<string>();
-    while (cur && !seen.has(cur._id)) {
-      chain.unshift(cur); // put root at start
-      seen.add(cur._id);
-      if (!cur.parentId) break;
-      cur = map.get(cur.parentId);
-    }
-    return chain;
-  };
-
-  const breadcrumbs = getCategoryAncestors(urlFilters.categoryId);
-
-  // -------------------------
-  //  UI Rendering helpers: skeleton card
-  // -------------------------
   const SkeletonCard = () => (
     <div className="animate-pulse bg-card border border-border rounded-lg p-4">
       <div className="bg-surface h-48 w-full mb-4 rounded" />
@@ -284,20 +207,14 @@ const Products: React.FC = () => {
     </div>
   );
 
-  // -------------------------
-  //  Event handlers
-  // -------------------------
   const handleResetFilters = () => {
     setSearchParams({});
     setSearchInput("");
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
-    } catch {}
+    } catch { }
   };
 
-  // -------------------------
-  //  Render
-  // -------------------------
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
@@ -320,11 +237,10 @@ const Products: React.FC = () => {
               Products
             </Link>
           </li>
-          {breadcrumbs.map((b: any) => (
+          {/* {breadcrumbs.map((b: any) => (
             <React.Fragment key={b._id}>
               <li>/</li>
               <li>
-                {/* clicking a breadcrumb applies that category */}
                 <button
                   onClick={() => updateParam("c", b._id)}
                   className="hover:underline"
@@ -333,7 +249,7 @@ const Products: React.FC = () => {
                 </button>
               </li>
             </React.Fragment>
-          ))}
+          ))} */}
         </ol>
       </nav>
 
@@ -411,7 +327,7 @@ const Products: React.FC = () => {
               <Slider
                 min={minPriceLimit}
                 max={maxPriceLimit}
-                step={50}
+                step={100}
                 value={[
                   urlFilters.minPrice ?? minPriceLimit,
                   urlFilters.maxPrice ?? maxPriceLimit,
@@ -433,29 +349,29 @@ const Products: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    checked={!!urlFilters.isFeatured}
-                    onCheckedChange={(c) => updateParam("isFeatured", c ? true : undefined)}
+                    checked={urlFilters.sort === "featured"}
+                    onCheckedChange={(c) => updateParam("sort", c ? "featured" : undefined)}
                   />
                   <Label className="text-sm cursor-pointer">Featured</Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    checked={!!urlFilters.isNewArrival}
+                    checked={urlFilters.sort === "newArrivals"}
                     onCheckedChange={(c) =>
-                      updateParam("isNewArrival", c ? true : undefined)
+                      updateParam("sort", c ? "newArrivals" : undefined)
                     }
                   />
                   <Label className="text-sm cursor-pointer">New Arrival</Label>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <Checkbox
                     checked={!!urlFilters.isDiscount}
                     onCheckedChange={(c) => updateParam("isDiscount", c ? true : undefined)}
                   />
                   <Label className="text-sm cursor-pointer">Best Sellers</Label>
-                </div>
+                </div> */}
               </div>
             </div>
 
@@ -488,11 +404,12 @@ const Products: React.FC = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="featured">Featured</SelectItem>
+                <SelectItem value="trending">Trending</SelectItem>
+                <SelectItem value="bestSelling">Best Selling</SelectItem>
+                <SelectItem value="rating">Top Rated</SelectItem>
+                <SelectItem value="createdAt">Newest</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
                 <SelectItem value="price_high">Price: High to Low</SelectItem>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="rating">Top Rated</SelectItem>
               </SelectContent>
             </Select>
           </div>
