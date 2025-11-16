@@ -1,255 +1,211 @@
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
-// import CategoryCard from "@/components/CategoryCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, Shield, Truck } from "lucide-react";
+import { ArrowRight, Wrench, Truck, ShieldCheck, Flame, Boxes } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
-// import { categoryService } from "@/services/category.service";
+import { bannerService } from "@/services/banner.service"; // if you have banners API
+import BrandShowcase from "@/components/BrandShowcase";
+import Footer from "@/components/Footer";
+import { categoryService } from "@/services/category.service";
 
 const Index = () => {
-  // const { data: categoriesData } = useQuery({
-  //   queryKey: ["categories"],
-  //   queryFn: async () => {
-  //     const response = await categoryService.getAll({ page: 1, limit: 12, isParent: true })
-  //     return response.data;
-  //   },
-  // });
+  // BANNERS
+  const { data: banners = [] } = useQuery({
+    queryKey: ["banners"],
+    queryFn: async () => {
+      const res = await bannerService.getAllBanners();
+      return res?.data?.banners || [];
+    },
+  });
 
-  // const categories = categoriesData?.categories || [];
-  const { data: featuredProductsData } = useQuery({
+  const { data:categoryResp } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => categoryService.getAll({ limit: 6 }).then((r) => r.data),
+  });
+
+  const categories = categoryResp?.categories || []
+  // FEATURED PRODUCTS
+  const { data: featuredRes } = useQuery({
     queryKey: ["featured-products"],
-    queryFn: async () => {
-      const response = await productService.getAll({ page: 1, limit: 12, isFeatured: true })
-      return response.data;
-    },
+    queryFn: () => productService.getAll({ isFeatured: true, limit: 12 }).then((r) => r.data),
   });
-  const featuredProducts = featuredProductsData?.products || [];
+  const featuredProducts = featuredRes?.products || [];
 
-  const { data: bestSellingData } = useQuery({
-    queryKey: ["best-selling-products"],
-    queryFn: async () => {
-      const response = await productService.getAll({ page: 1, limit: 8, sort: 'bestSelling' })
-      return response?.data;
-    },
+  // BEST SELLING
+  const { data: bestSellingRes } = useQuery({
+    queryKey: ["best-selling"],
+    queryFn: () => productService.getAll({ sort: "bestSelling", limit: 8 }).then((r) => r.data),
   });
-  const bestSelling = bestSellingData?.products || [];
+  const bestSelling = bestSellingRes?.products || [];
 
-  const { data: newArrivalsData } = useQuery({
+  // NEW ARRIVALS
+  const { data: newArrivalsRes } = useQuery({
     queryKey: ["new-arrivals"],
-    queryFn: async () => {
-      const response = await productService.getAll({ page: 1, limit: 8, isNewArrival: true })
-      return response?.data;
-    },
+    queryFn: () => productService.getAll({ isNewArrival: true, limit: 8 }).then((r) => r.data),
   });
-  const newArrivals = newArrivalsData?.products || [];
+  const newArrivals = newArrivalsRes?.products || [];
 
-  const { data: trendingData } = useQuery({
+  // TRENDING
+  const { data: trendingRes } = useQuery({
     queryKey: ["trending-products"],
-    queryFn: async () => {
-      const response = await productService.getAll({ page: 1, limit: 8, sort: 'trending' })
-      return response?.data;
-    },
+    queryFn: () => productService.getAll({ sort: "trending", limit: 8 }).then((r) => r.data),
   });
-  const trending = trendingData?.products || [];
+  const trending = trendingRes?.products || [];
 
   return (
     <>
-      <Hero />
+      {/* 🔥 MODERN HERO BANNER / SLIDER */}
+      <Hero banners={banners} />
 
-      {/* Features */}
-      <section className="py-12 bg-secondary/30">
+      <BrandShowcase />
+
+      {/* 🌟 VALUE PROPS */}
+      <section className="py-10 bg-white border-b">
+        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            {
+              icon: <Wrench className="h-7 w-7 text-primary" />,
+              title: "Industrial Grade Quality",
+              sub: "Trusted material from certified manufacturers",
+            },
+            {
+              icon: <Truck className="h-7 w-7 text-primary" />,
+              title: "Pan-India Delivery",
+              sub: "Fast & reliable shipping for all orders",
+            },
+            {
+              icon: <ShieldCheck className="h-7 w-7 text-primary" />,
+              title: "100% Genuine Products",
+              sub: "Guaranteed authentic & verified items",
+            },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-4 bg-muted/10 p-5 rounded-xl hover:shadow-sm transition"
+            >
+              <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
+                {item.icon}
+              </div>
+              <div>
+                <h3 className="font-semibold text-lg">{item.title}</h3>
+                <p className="text-sm text-muted-foreground">{item.sub}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 🧱 CATEGORY SPOTLIGHT (CURRENTLY STATIC — CAN BE FED FROM API LATER) */}
+      <section className="py-14 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Best Prices</h3>
-                <p className="text-sm text-muted-foreground">Competitive rates guaranteed</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Shield className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Quality Assured</h3>
-                <p className="text-sm text-muted-foreground">Premium construction materials</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Truck className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">Fast Delivery</h3>
-                <p className="text-sm text-muted-foreground">On-time delivery to your site</p>
-              </div>
-            </div>
+          <h2 className="text-3xl font-bold mb-8">Shop by Categories</h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
+            {categories?.map((cat, i) => (
+              <Link
+                to={`/products?cat=${cat.title}`}
+                key={i}
+                className="group p-4 shadow flex flex-col items-center text-center border rounded-xl hover:shadow-sm transition cursor-pointer"
+              >
+                <img
+                  src={""}
+                  className="h-20 w-20 object-contain mb-3 group-hover:scale-105 transition"
+                />
+                <span className="font-medium">{cat.title}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Categories */}
-      {/* <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Shop by Category</h2>
-            <Button variant="ghost" asChild>
-              <Link to="/categories">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-            {categories.map((category) => (
-              <CategoryCard key={category._id} category={category} />
-            ))}
-          </div>
-        </div>
-      </section> */}
+      {/* 🔥 FEATURED PRODUCTS */}
+      {featuredProducts.length > 0 && (
+        <LandingSection
+          title="Featured Products"
+          link="/products?sort=featured"
+          products={featuredProducts}
+          bg="bg-white"
+        />
+      )}
 
-      {/* Featured Products */}
-      {featuredProducts.length > 0 && <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Featured Products</h2>
-            <Button variant="ghost" asChild>
-              <Link to="/products?sort=featured">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>}
+      {/* ⭐ BEST SELLING */}
+      {bestSelling.length > 0 && (
+        <LandingSection
+          title="Best Selling"
+          link="/products?sort=bestSelling"
+          products={bestSelling}
+          bg="bg-muted/10"
+        />
+      )}
 
-      {/* Best Selling Products */}
-      {bestSelling.length > 0 && <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Best Selling</h2>
-            <Button variant="ghost" asChild>
-              <Link to="/products?sort=bestSelling">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {bestSelling.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>}
+      {/* 🔥 TRENDING NOW */}
+      {trending.length > 0 && (
+        <LandingSection
+          title="Trending Now"
+          link="/products?sort=trending"
+          products={trending}
+          bg="bg-white"
+        />
+      )}
 
-      {/* Trending Products */}
-      {trending.length > 0 && <section className="py-16 bg-muted/10">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Trending Products</h2>
-            <Button variant="ghost" asChild>
-              <Link to="/products?sort=trending">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {trending.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-      }
+      {/* 🆕 NEW ARRIVALS */}
+      {newArrivals.length > 0 && (
+        <LandingSection
+          title="New Arrivals"
+          link="/products?sort=newArrivals"
+          products={newArrivals}
+          bg="bg-muted/10"
+        />
+      )}
 
-      {/* New Arrivals */}
-      {newArrivals.length > 0 && <section className="py-16 bg-muted/20">
+      {/* 🎯 CTA SECTION */}
+      <section className="py-20 bg-gradient-hero text-center">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-foreground">New Arrivals</h2>
-            <Button variant="ghost" asChild>
-              <Link to="/products?sort=newArrivals">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {newArrivals.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>}
-
-      {/* CTA */}
-      <section className="py-20 bg-gradient-hero">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold text-primary-foreground mb-4">
-            Ready to Start Your Project?
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Build Better. Build Stronger.
           </h2>
-          <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-            Get the best construction materials delivered to your site. Quality guaranteed.
+          <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8">
+            Explore India's most trusted construction materials marketplace.
           </p>
-          <Button size="lg" variant="secondary" asChild className="font-semibold">
+          <Button
+            asChild
+            size="lg"
+            className="rounded-full bg-white text-primary hover:bg-gray-200"
+          >
             <Link to="/products">
-              Browse Products <ArrowRight className="ml-2 h-5 w-5" />
+              Start Shopping <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-industrial text-primary-foreground py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">SteelMart</h3>
-              <p className="text-sm text-primary-foreground/80">
-                Your trusted partner for quality construction materials.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="/products" className="hover:text-accent transition-colors">Products</Link></li>
-                <li><Link to="/categories" className="hover:text-accent transition-colors">Categories</Link></li>
-                <li><Link to="/brands" className="hover:text-accent transition-colors">Brands</Link></li>
-                <li><Link to="/blog" className="hover:text-accent transition-colors">Blog</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Customer Service</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to="/contact" className="hover:text-accent transition-colors">Contact Us</Link></li>
-                <li><Link to="/shipping" className="hover:text-accent transition-colors">Shipping Info</Link></li>
-                <li><Link to="/returns" className="hover:text-accent transition-colors">Returns</Link></li>
-                <li><Link to="/faq" className="hover:text-accent transition-colors">FAQ</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>Email: info@steelmart.com</li>
-                <li>Phone: +91 98765 43210</li>
-                <li>Address: Mumbai, India</li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/80">
-            <p>&copy; 2024 SteelMart. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </>
   );
 };
+
+// REUSABLE SECTION BLOCK
+const LandingSection = ({ title, link, products, bg }) => (
+  <section className={`py-16 ${bg}`}>
+    <div className="container mx-auto px-4">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+        <Button variant="ghost" asChild>
+          <Link to={link}>
+            View All <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {products.map((p) => (
+          <ProductCard key={p._id} product={p} />
+        ))}
+      </div>
+    </div>
+  </section>
+);
 
 export default Index;

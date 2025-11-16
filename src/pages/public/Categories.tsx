@@ -16,7 +16,7 @@ const Categories = () => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["categories"],
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam = 1 }) => {
       const response = await categoryService.getAll({
         limit: 12,
         page: pageParam,
@@ -25,11 +25,11 @@ const Categories = () => {
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      if (!lastPage) return undefined;
-      return lastPage.page >= lastPage.totalPages ? null : lastPage.page + 1;
+      if (!lastPage || !lastPage.page || !lastPage.totalPages) return null;
+      return lastPage.page < lastPage.totalPages ? lastPage.page + 1 : null;
     },
   });
-  const categories = data?.pages?.flatMap((page) => page?.categories ?? []) ?? [];
+  const categories = (data?.pages ?? []).flatMap((page: any) => page?.categories ?? []);
 
   const { ref, entry } = useIntersection({
 

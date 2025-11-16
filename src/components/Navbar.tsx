@@ -1,5 +1,14 @@
+// --- Debounced version of your Navbar.tsx ---
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ShoppingCart, User, Heart, Search, Menu, ChevronDown } from "lucide-react";
+import {
+  ShoppingCart,
+  User,
+  Heart,
+  Search,
+  Menu,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/providers/auth";
@@ -20,193 +29,243 @@ import {
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { Loader } from "./Loader";
 import { setCategoryTree } from "@/store/slices/category";
-import { useEffect, useState } from "react";
+import { productService } from "@/services/product.service";
 
-const Navbar = () => {
+type ProductSuggestion = any;
+type CategoryNode = any;
+
+const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const [search, setSearch] = useState("");
   const { user, logout, loading } = useAuth();
-  const dispatch = useAppDispatch()
-  const wishlistCount = useAppSelector(state => state.wishlist.totalItems);
-  const cartCount = useAppSelector(state => state.cart.totalItems);
-  const { tree } = useAppSelector(state => state.categoryTree);
+  const dispatch = useAppDispatch();
+
+  const wishlistCount = useAppSelector((s) => s.wishlist.totalItems);
+  const cartCount = useAppSelector((s) => s.cart.totalItems);
+  const { tree } = useAppSelector((s) => s.categoryTree);
+
+  // ------------------------------
+  // Local UI State
+  // ------------------------------
+  const [search, setSearch] = useState("");
+  const [suggestions, setSuggestions] = useState<ProductSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["category-tree"],
     queryFn: async () => {
-      const response = await categoryService.getTree()
-      return response.data;
+      const res = await categoryService.getTree();
+      return res.data;
     },
     enabled: tree.length === 0,
   });
 
   useEffect(() => {
-    if (data) {
-      dispatch(setCategoryTree(data));
-    }
+    if (data) dispatch(setCategoryTree(data));
   }, [data, dispatch]);
 
-  if (loading || isLoading)
-    return (
-      <Loader />
-    );
+  useEffect(() => {
+    if (search.trim().length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timeout = setTimeout(async () => {
+      try {
+        const res = await productService.getAll({
+          page: 1,
+          limit: 6,
+          search: search.trim(),
+        });
+        setSuggestions(res.data.products || []);
+      } catch {
+        setSuggestions([]);
+      }
+    }, 350);
+
+    return () => clearTimeout(timeout);
+  }, [search]);
+
+  const handleSearchSubmit = () => {
+    if (!search.trim()) return;
+    navigate(`/products?s=${encodeURIComponent(search.trim())}`);
+    setShowSuggestions(false);
+    setMobileSearchOpen(false);
+  };
+
+  const handleSuggestionClick = (item: ProductSuggestion) => {
+    navigate(`/product/${item.slug}`);
+    setShowSuggestions(false);
+    setMobileSearchOpen(false);
+  };
+
+  if (loading || isLoading) return <Loader />;
 
   return (
-    <>
-      <nav className="w-full shadow-sm border-b">
+    <header>
+      <nav className="w-full shadow-sm border-b bg-white">
         <div className="container mx-auto px-4">
-          <div className="flex h-20 items-center justify-between gap-6">
+          <div className="flex h-20 items-center justify-between gap-4">
 
-            {/* LOGO */}
             <Link to="/" className="flex items-center gap-3">
-              <img src="https://img.freepik.com/premium-vector/white-logo-construction-project-called-construction_856308-794.jpg?semt=ais_hybrid&w=740&q=80" className="h-14 w-auto" />
-              <span className="text-xl font-bold">Pravesh</span>
+              <img
+                src="https://img.freepik.com/premium-vector/white-logo-construction-project-called-construction_856308-794.jpg?semt=ais_hybrid&w=740&q=80"
+                className="h-12 w-auto rounded-md"
+              />
+              <span className="text-lg font-bold">Pravesh</span>
             </Link>
 
-            {/* SEARCH BAR — DESKTOP */}
-            <div className="hidden md:flex flex-1 max-w-xl">
-              <div className="relative w-full">
-                <Input
-                  placeholder="Search for products, categories or brands"
-                  className="h-12 pl-12 pr-12 rounded-full bg-gray-100"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && (location.pathname.startsWith("/products") || search.trim())) navigate(`/products?s=${encodeURIComponent(search)}`);
-                  }}
-                />
+            <ul className="hidden lg:flex items-center gap-6 font-medium text-[15px] text-gray-700">
+              <li><Link to="/categories" className="hover:text-blue-600">Categories</Link></li>
+              <li><Link to="/brands" className="hover:text-blue-600">Brands</Link></li>
+              <li><Link to="/blog" className="hover:text-blue-600">Blog</Link></li>
+              <li><Link to="/about" className="hover:text-blue-600">About</Link></li>
+              <li><Link to="/contact" className="hover:text-blue-600">Contact</Link></li>
+            </ul>
 
-                {/* Left Icon */}
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <div className="hidden md:flex flex-1 max-w-2xl relative">
+              <Input
+                placeholder="Search for products…"
+                className="h-12 pl-12 pr-12 rounded-full bg-gray-100"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+              />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
 
-                {/* Right Search Button */}
-                <Button
-                  disabled={!search.trim()}
-                  size="lg"
-                  onClick={() => navigate(`/products?s=${encodeURIComponent(search)}`)}
-                  className="absolute right-0 top-1/2 bg-blue-700 -translate-y-1/2 rounded-full transition"
-                >
-                  <Search className="h-5 w-5" />
-                </Button>
-              </div>
+              <button
+                onClick={handleSearchSubmit}
+                disabled={!search.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-blue-600 hover:bg-blue-700"
+              >
+                <Search className="h-5 w-5 text-white" />
+              </button>
+
+              {showSuggestions && search.trim().length >= 2 && (
+                <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-xl border z-50 max-h-80 overflow-y-auto">
+                  {suggestions.length === 0 ? (
+                    <div className="p-4 text-sm text-gray-500">No products found</div>
+                  ) : (
+                    suggestions.map((item) => (
+                      <div
+                        key={item._id}
+                        onMouseDown={() => handleSuggestionClick(item)}
+                        className="px-4 py-3 cursor-pointer hover:bg-gray-100 flex items-center gap-3"
+                      >
+                        <img src={item.thumbnail} className="h-10 w-10 rounded-md object-cover" />
+                        <div>
+                          <span className="font-medium text-sm block">{item.name}</span>
+                          <span className="text-xs text-gray-500">{item.brand?.name}</span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
-
-            {/* RIGHT SIDE — DESKTOP */}
-            <div className="hidden md:flex items-center gap-4">
-
-              {/* ACCOUNT */}
+            <div className="hidden md:flex items-center gap-3">
               {user ? (
-                <Button
-                  variant="outline"
-                  className="h-12 px-5 rounded-xl flex items-center gap-2"
-                  onClick={() => navigate("/profile")}
-                >
-                  <User className="h-5 w-5" />
-                  Account
+                <Button variant="outline" onClick={() => navigate("/profile")} className="rounded-xl">
+                  <User className="h-4 w-4" /> <span className="ml-2">Account</span>
                 </Button>
               ) : (
-                <Button variant="outline" asChild className="h-12 px-5 rounded-xl">
+                <Button variant="outline" asChild className="rounded-xl">
                   <Link to="/login">Login</Link>
                 </Button>
               )}
 
-              {/* WISHLIST */}
-              <Button
-                variant="outline"
-                asChild
-                className="h-12 px-5 rounded-xl flex items-center gap-2 relative"
+              <button
+                onClick={() => navigate("/wishlist")}
+                className="relative inline-flex items-center gap-2 px-4 py-2 rounded-xl border"
               >
-                <Link to="/wishlist">
-                  <Heart className="h-5 w-5" />
-                  Wishlist
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-1 py-0.5 rounded-full">
-                    {wishlistCount}
-                  </span>
-                </Link>
-              </Button>
+                <Heart className="h-4 w-4" />
+                <span className="hidden sm:inline">Wishlist</span>
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-1 rounded-full">
+                  {wishlistCount}
+                </span>
+              </button>
 
-              {/* CART */}
-              <Button
-                variant="outline"
-                asChild
-                className="h-12 px-5 rounded-xl flex items-center gap-2 relative"
+              <button
+                onClick={() => navigate("/cart")}
+                className="relative inline-flex items-center gap-2 px-4 py-2 rounded-xl border"
               >
-                <Link to="/cart">
-                  <ShoppingCart className="h-5 w-5" />
-                  Cart
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-1 py-0.5 rounded-full">
-                    {cartCount}
-                  </span>
-                </Link>
-              </Button>
+                <ShoppingCart className="h-4 w-4" />
+                <span className="hidden sm:inline">Cart</span>
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-1 rounded-full">
+                  {cartCount}
+                </span>
+              </button>
             </div>
 
-            {/* ================= MOBILE NAVIGATION ================= */}
-            <div className="flex md:hidden items-center gap-3">
+            <button
+              onClick={() => setMobileSearchOpen(true)}
+              className="p-2 bg-gray-100 rounded-md md:hidden"
+            >
+              <Search className="h-5 w-5" />
+            </button>
 
-              {/* Mobile Search Button */}
-              <Button variant="ghost" size="icon">
-                <Search className="h-6 w-6" />
-              </Button>
+            <Link to="/cart" className="p-2 bg-gray-100 rounded-md md:hidden">
+              <ShoppingCart className="h-5 w-5" />
+            </Link>
 
-              {/* Mobile Cart */}
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/cart">
-                  <ShoppingCart className="h-6 w-6" />
-                </Link>
-              </Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="p-2 bg-gray-100 rounded-md md:hidden">
+                  <Menu className="h-5 w-5" />
+                </button>
+              </SheetTrigger>
 
-              {/* Drawer */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <Menu className="h-6 w-6" />
-                  </Button>
-                </SheetTrigger>
+              <SheetContent side="right" className="w-80 p-0">
+                <div className="bg-[#0D3B66] text-white px-6 py-6 rounded-bl-3xl shadow flex items-center justify-between">
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => navigate(user ? "/profile" : "/login")}
+                  >
+                    <p className="text-lg font-semibold">{user ? user.name : "Welcome"}</p>
+                    <p className="text-sm opacity-80">
+                      {user ? user.email : "Sign in for better experience"}
+                    </p>
+                  </div>
 
-                <SheetContent side="left" className="p-4 w-72">
+                  <SheetClose asChild>
+                    <button>
+                      <X className="h-5 w-5" />
+                    </button>
+                  </SheetClose>
+                </div>
 
-                  <div className="space-y-6 mt-10">
+                <div className="p-6 flex flex-col gap-6">
+                  <div className="flex flex-col gap-3">
+                    <SheetClose asChild><Link to="/products">Products</Link></SheetClose>
+                    <SheetClose asChild><Link to="/brands">Brands</Link></SheetClose>
+                    <SheetClose asChild><Link to="/blog">Blog</Link></SheetClose>
+                    <SheetClose asChild><Link to="/about">About</Link></SheetClose>
+                    <SheetClose asChild><Link to="/contact">Contact</Link></SheetClose>
+                  </div>
 
-                    {/* User */}
-                    {user ? (
-                      <SheetClose asChild>
-                        <div
-                          onClick={() => navigate("/profile")}
-                          className="cursor-pointer"
-                        >
-                          <p className="text-lg font-semibold">{user.name}</p>
-                          <p className="text-sm text-muted-foreground">{user.email}</p>
-                        </div>
-                      </SheetClose>
-                    ) : (
-                      <SheetClose asChild>
-                        <Button asChild className="w-full">
-                          <Link to="/login">Login</Link>
-                        </Button>
-                      </SheetClose>
-                    )}
+                  <hr />
 
-                    {/* Quick links */}
-                    <SheetClose asChild><Link to="/orders">My Orders</Link></SheetClose>
-                    <SheetClose asChild><Link to="/wishlist">Wishlist</Link></SheetClose>
-
-                    <hr />
-
-                    {/* Category Accordion */}
-                    <Accordion type="single" collapsible>
-                      {tree.map((cat) => (
-                        <AccordionItem key={cat._id} value={cat.slug}>
-                          <AccordionTrigger className="font-medium">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 mb-2">CATEGORIES</p>
+                    <Accordion type="single" collapsible className="space-y-2">
+                      {tree.map((cat: CategoryNode) => (
+                        <AccordionItem key={cat._id} value={cat.slug} className="rounded-xl border">
+                          <AccordionTrigger className="px-4 py-3 text-sm font-semibold">
                             {cat.title}
                           </AccordionTrigger>
-                          <AccordionContent>
-                            <ul className="pl-4 space-y-2">
-                              {cat.children?.map((sub) => (
+                          <AccordionContent className="px-4 pb-3">
+                            <ul className="space-y-2">
+                              {cat.children?.map((sub: CategoryNode) => (
                                 <li key={sub._id}>
                                   <SheetClose asChild>
-                                    <Link to={`/products?c=${sub._id}`}>
+                                    <Link to={`/products?c=${sub._id}`} className="text-sm">
                                       {sub.title}
                                     </Link>
                                   </SheetClose>
@@ -217,78 +276,77 @@ const Navbar = () => {
                         </AccordionItem>
                       ))}
                     </Accordion>
-
-                    <hr />
-
-                    {user && (
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        onClick={() => {
-                          logout?.();
-                          navigate("/");
-                        }}
-                      >
-                        Logout
-                      </Button>
-                    )}
                   </div>
-                </SheetContent>
-              </Sheet>
-            </div>
 
+                  {user && (
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => {
+                        logout?.();
+                        navigate("/");
+                      }}
+                    >
+                      Logout
+                    </Button>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </nav>
 
-      <div className="sticky top-0 z-40 bg-[#0D3B66] text-white shadow">
-        <div className="container mx-auto px-4">
-          <ul className="flex h-12 items-center gap-8 font-semibold text-sm">
+      {mobileSearchOpen && (
+        <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm p-4">
+          <div className="container mx-auto px-4">
 
-            {tree.map((cat) => (
-              <li key={cat._id} className="relative group cursor-pointer">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 relative">
+                <Input
+                  autoFocus
+                  placeholder="Search products..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+                  className="h-12 pl-10 rounded-full bg-gray-100"
+                />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
+              </div>
 
-                <Link
-                  to={`/products?c=${cat._id}`}
-                  className="hover:text-yellow-300 transition flex items-center gap-1"
-                >
-                  {cat.title.toUpperCase()}
-                  {cat.children?.length > 0 && <ChevronDown className="h-4 w-4" />}
-                </Link>
+              <button
+                onClick={() => setMobileSearchOpen(false)}
+                className="p-2 rounded-md bg-gray-100"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-                {/* Hover Dropdown */}
-                {cat.children?.length > 0 && (
+            <div className="mt-4 bg-white rounded-xl shadow border max-h-[60vh] overflow-y-auto">
+              {search.trim().length < 2 ? (
+                <div className="p-4 text-sm text-gray-500">Type 2+ characters to search…</div>
+              ) : suggestions.length === 0 ? (
+                <div className="p-4 text-sm text-gray-500">No results found</div>
+              ) : (
+                suggestions.map((item) => (
                   <div
-                    className="
-                      absolute left-0 top-full mt-2 
-                      bg-white text-black shadow-lg rounded-md p-4 
-                      w-64 z-50 opacity-0 invisible 
-                      group-hover:opacity-100 group-hover:visible 
-                      transition-all duration-200
-                    "
+                    key={item._id}
+                    onClick={() => handleSuggestionClick(item)}
+                    className="px-4 py-3 flex gap-3 cursor-pointer hover:bg-gray-100"
                   >
-                    <ul className="space-y-2">
-                      {cat.children.map((sub) => (
-                        <li key={sub._id}>
-                          <Link
-                            to={`/products?c=${sub._id}`}
-                            className="block hover:text-blue-600"
-                          >
-                            {sub.title}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                    <img src={item.thumbnail} className="h-12 w-12 rounded-md object-cover" />
+                    <div>
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-xs text-gray-500">{item.brand?.name}</p>
+                    </div>
                   </div>
-                )}
-
-              </li>
-            ))}
-
-          </ul>
+                ))
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </>
+      )}
+    </header>
   );
 };
 

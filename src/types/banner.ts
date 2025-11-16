@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PaginatedData } from ".";
 
-export const bannerTypeSchema = z.enum(["product", "category", "offer", "external"]);
+export const bannerTypeSchema = z.enum(["product", "category", "brand", "offer", "external"]);
 export type BannerType = z.infer<typeof bannerTypeSchema>;
 
 export type Banner = {

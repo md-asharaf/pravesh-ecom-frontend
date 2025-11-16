@@ -8,7 +8,13 @@ export const userService = {
   },
 
   async update(data: UpdateUser) {
-    const response = await axiosInstance.patch<ApiResponse<User>>(`/users`, data);
+    const formdata = new FormData();
+    if (data.img) {
+      formdata.append("image", data.img);
+    }
+    if (data.name) formdata.append("name", data.name);
+    if (data.email) formdata.append("email", data.email);
+    const response = await axiosInstance.patch<ApiResponse<User>>(`/users`, formdata);
     return response.data;
   },
 

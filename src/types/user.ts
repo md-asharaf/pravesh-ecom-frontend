@@ -17,7 +17,7 @@ export type User = {
 export const updateUserSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
-  img: z.string().url().optional(),
+  img: z.instanceof(File).optional(),
 });
 
 export type UpdateUser = z.infer<typeof updateUserSchema>;

@@ -387,7 +387,7 @@ const Products: React.FC = () => {
             <p className="text-muted-foreground">Showing {totalProducts} products</p>
 
             <Select
-              defaultValue={urlFilters.sort ?? "featured"}
+              defaultValue={urlFilters.sort ?? "newest"}
               onValueChange={(value) => {
                 if (value === "price_low") {
                   updateParam("sort", "price");
@@ -395,19 +395,22 @@ const Products: React.FC = () => {
                 } else if (value === "price_high") {
                   updateParam("sort", "price");
                   updateParam("order", "desc");
+                } else if (value === "newest") {
+                  updateParam("sort", "createdAt");
+                  updateParam("order", "desc");
                 } else {
                   updateParam("sort", value);
                 }
               }}
             >
               <SelectTrigger className="w-48">
-                <SelectValue />
+                <SelectValue defaultValue="newest" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="trending">Trending</SelectItem>
                 <SelectItem value="bestSelling">Best Selling</SelectItem>
                 <SelectItem value="rating">Top Rated</SelectItem>
-                <SelectItem value="createdAt">Newest</SelectItem>
+                <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
                 <SelectItem value="price_high">Price: High to Low</SelectItem>
               </SelectContent>
