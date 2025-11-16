@@ -30,6 +30,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     (async () => {
       try {
         const res = await userService.getMe();
+        if (res?.data.role === 'admin') {
+          logout();
+        }
         setUser(res?.data || null);
       } catch (e) {
         setUser(null);
@@ -39,27 +42,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })();
   }, []);
   useEffect(() => {
-  if (!user) return;
+    if (!user) return;
 
-  const fetchAll = async () => {
-    try {
-      const cartRes = await cartService.getMyCart();
-      dispatch(setCart(cartRes.data));
+    const fetchAll = async () => {
+      try {
+        const cartRes = await cartService.getMyCart();
+        dispatch(setCart(cartRes.data));
 
-      const wishRes = await wishlistService.getWishlist();
-      dispatch(setWishlist(wishRes.data));
+        const wishRes = await wishlistService.getWishlist();
+        dispatch(setWishlist(wishRes.data));
 
-      const catRes = await categoryService.getTree();
-      dispatch(setCategoryTree(catRes.data));
+        const catRes = await categoryService.getTree();
+        dispatch(setCategoryTree(catRes.data));
 
-    } catch (err) {
-      console.error("Error loading initial data:", err);
-    }
-  };
+      } catch (err) {
+        console.error("Error loading initial data:", err);
+      }
+    };
 
-  fetchAll();
+    fetchAll();
 
-}, [user]);
+  }, [user]);
 
 
   const login = useCallback((user: User) => {

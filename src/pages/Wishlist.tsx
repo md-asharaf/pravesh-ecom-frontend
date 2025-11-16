@@ -38,11 +38,11 @@ const Wishlist = () => {
 
       <div className="space-y-4">
         {items.map((it: Product) => {
-          const discountedPercent = it.originalPrice
-            ? Math.round(
-              ((it.originalPrice - it.originalPrice) / it.originalPrice) * 100
-            )
-            : null;
+          // const discountedPercent = it.originalPrice
+          //   ? Math.round(
+          //     ((it.originalPrice - it.originalPrice) / it.originalPrice) * 100
+          //   )
+          //   : null;
 
           return (
             <Card key={it._id} className="border rounded-none shadow-sm">
@@ -83,7 +83,7 @@ const Wishlist = () => {
                   </p> */}
 
                   {/* Price Section */}
-                  <div className="text-lg font-semibold mt-1">
+                  {/* <div className="text-lg font-semibold mt-1">
                     ₹{it.originalPrice?.toLocaleString()}
                   </div>
 
@@ -98,7 +98,7 @@ const Wishlist = () => {
                         </span>
                       )}
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Delete Icon */}

@@ -94,13 +94,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <span className="text-sm font-medium">{product.rating}</span>
           <span className="text-sm text-muted-foreground">({product.reviewCount})</span>
         </div>
-        <div className="flex items-baseline gap-2 mb-2">
-          <span className="text-2xl font-bold text-primary">₹{product.originalPrice.toLocaleString()}</span>
+        {/* <div className="flex items-baseline gap-2 mb-2"> */}
+          {/* <span className="text-2xl font-bold text-primary">₹{product.originalPrice.toLocaleString()}</span> */}
           {/* {product.discountValue && (
             <span className="text-sm text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
           )} */}
-        </div>
-        <p className="text-xs text-muted-foreground">Per {product.unit}</p>
+        {/* </div> */}
+        {/* <p className="text-xs text-muted-foreground">Per {product.unit}</p> */}
         {/* <Badge
           variant={product.stockStatus === "in_stock" ? "secondary" : "destructive"}
           className="mt-2"

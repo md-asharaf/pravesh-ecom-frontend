@@ -5,12 +5,12 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
-import { ArrowLeft, ArrowRight, LogOut, Camera, ShoppingCart, Heart, MapPin, Package } from "lucide-react";
+import { ArrowLeft, ArrowRight, LogOut } from "lucide-react";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { EditProfileModal } from "@/components/modals/EditProfile";
-import { ChangePasswordModal } from "@/components/modals/ChangePassword";
-import { ChangePhotoModal } from "@/components/modals/ChnageAvatar";
+// import { ChangePasswordModal } from "@/components/modals/ChangePassword";
+import { ChangePhotoModal } from "@/components/modals/ChangeAvatar";
 import { userService } from "@/services/user.service";
 import { toast } from "sonner";
 import { UpdateUser } from "@/types";
@@ -92,7 +92,8 @@ const Profile = () => {
 
             <EditProfileModal user={user} onSave={updateProfileMutation.mutate} />
 
-            <ChangePasswordModal onChangePassword={changePasswordMutation.mutate} />
+            {/* <ChangePasswordModal onChangePassword={changePasswordMutation.mutate} /> */}
+            
             <div className="flex flex-col space-y-4">
               <Link to="/orders">
                 <Button

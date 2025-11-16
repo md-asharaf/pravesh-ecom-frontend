@@ -94,7 +94,7 @@ const Index = () => {
       </section>
 
       {/* Categories */}
-      <section className="py-16">
+      {/* <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">Shop by Category</h2>
@@ -110,10 +110,10 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Featured Products */}
-      <section className="py-16 bg-muted/30">
+      {featuredProducts.length > 0 && <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">Featured Products</h2>
@@ -129,10 +129,10 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Best Selling Products */}
-      <section className="py-16">
+      {bestSelling.length > 0 && <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">Best Selling</h2>
@@ -148,10 +148,10 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Trending Products */}
-      <section className="py-16 bg-muted/10">
+      {trending.length > 0 && <section className="py-16 bg-muted/10">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">Trending Products</h2>
@@ -168,9 +168,10 @@ const Index = () => {
           </div>
         </div>
       </section>
+      }
 
       {/* New Arrivals */}
-      <section className="py-16 bg-muted/20">
+      {newArrivals.length > 0 && <section className="py-16 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-foreground">New Arrivals</h2>
@@ -186,7 +187,7 @@ const Index = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* CTA */}
       <section className="py-20 bg-gradient-hero">

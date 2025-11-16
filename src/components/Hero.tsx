@@ -21,11 +21,11 @@ const Hero = () => {
                 Shop Now <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="bg-background/10 border-primary-foreground text-primary-foreground hover:bg-background/20">
+            {/* <Button size="lg" variant="outline" asChild className="bg-background/10 border-primary-foreground text-primary-foreground hover:bg-background/20">
               <Link to="/categories">
                 Browse Categories
               </Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>

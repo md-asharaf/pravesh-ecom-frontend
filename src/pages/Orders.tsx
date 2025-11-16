@@ -113,9 +113,9 @@ const Orders = () => {
                           </p> */}
 
 
-                      <div className="text-lg font-semibold mt-1">
+                      {/* <div className="text-lg font-semibold mt-1">
                         ₹{product.originalPrice.toLocaleString()}
-                      </div>
+                      </div> */}
                     </div>
 
                     {/* Right side: Delivery Status */}

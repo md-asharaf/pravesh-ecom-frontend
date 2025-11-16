@@ -3,14 +3,14 @@ import { ApiResponse, CreateReview, PaginatedReviews, Review, UpdateReview } fro
 
 export const reviewService = {
   async getMyReviews(options?: { page?: number, limit?: number }) {
-    const response = await instance.get<ApiResponse<PaginatedReviews>>("/reviews", {
+    const response = await instance.get<ApiResponse<PaginatedReviews>>("/reviews/me", {
       params: options
     });
     return response.data;
   },
 
   async getProductReviews(productId: string, options?: { page?: number, limit?: number }) {
-    const response = await instance.get<ApiResponse<PaginatedReviews>>(`/reviews/${productId}`, {
+    const response = await instance.get<ApiResponse<PaginatedReviews>>(`/reviews/product/${productId}`, {
       params: options
     });
     return response.data;

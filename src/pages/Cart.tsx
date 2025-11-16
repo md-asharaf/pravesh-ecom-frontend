@@ -1,18 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { cartService } from "@/services/cart.service";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { removeItem, updateQuantity } from "@/store/slices/cart";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Minus, ShoppingBag } from "lucide-react";
+import { Minus, Plus, ShoppingBag } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const Cart = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-
+  const dispatch = useAppDispatch()
   const { items: cartItems } = useAppSelector((state) => state.cart);
   const { data: cartSummary } = useQuery({
     queryKey: ["cart-summary", user?._id],
@@ -20,20 +21,22 @@ const Cart = () => {
   });
 
   const updateCartMutation = useMutation({
-    mutationFn: async ({ productId, quantity }: { productId: string, quantity: number }) => (await cartService.updateCart(productId, quantity)).data,
-    onSuccess: () => {
+    mutationFn: async ({ productId, quantity }: { productId: string, quantity: number }) => await cartService.updateCart(productId, quantity),
+    onSuccess: ({ message }, { productId, quantity }) => {
+      dispatch(updateQuantity({ productId, quantity }));
       queryClient.invalidateQueries({ queryKey: ["cart", user?._id] });
       queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
-      toast.success("Cart updated");
+      toast.success(message ?? "Cart updated");
     },
   });
 
   const removeFromCartMutation = useMutation({
-    mutationFn: async (id: string) => (await cartService.removeFromCart(id)).data,
-    onSuccess: () => {
+    mutationFn: async (id: string) => await cartService.removeFromCart(id),
+    onSuccess: ({ message }, productId) => {
       queryClient.invalidateQueries({ queryKey: ["cart", user?._id] });
       queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
-      toast.success("Removed from cart");
+      dispatch(removeItem(productId));
+      toast.success(message ?? "Removed from cart");
     },
   });
 
@@ -56,7 +59,7 @@ const Cart = () => {
     );
 
   return (
-    <div className="max-w-6xl mx-auto px-2 sm:px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="max-w-4xl mx-auto px-2 sm:px-4 py-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* LEFT: ITEMS */}
       <div className="lg:col-span-2 space-y-4">
         {cartItems.map((item) => {
@@ -78,10 +81,10 @@ const Cart = () => {
                   <p className="text-xs text-green-700 font-semibold">In stock</p>
                   <p className="text-xs text-muted-foreground">SKU: {product.sku}</p>
 
-                  <div className="flex items-center gap-2 mt-1">
+                  {/* <div className="flex items-center gap-2 mt-1">
                     <p className="text-2xl font-semibold">₹{(product.originalPrice * item.quantity).toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">₹{product.originalPrice.toLocaleString()} each</p>
-                  </div>
+                  </div> */}
 
                   <div className="flex gap-4 mt-3 items-center">
                     <div className="flex items-center border rounded">
@@ -94,14 +97,14 @@ const Cart = () => {
                         <Minus className="w-4 h-4" />
                       </Button>
                       <span className="px-4 font-semibold">{item.quantity}</span>
-                      {/* <Button
+                      <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity + 1 })}
-                          disabled={item.quantity >= product.stock}
+                          // disabled={item.quantity >= product.stock}
                         >
                           <Plus className="w-4 h-4" />
-                        </Button> */}
+                        </Button>
                     </div>
                     <Button variant="link" className="text-sm">SAVE FOR LATER</Button>
                     <Button
@@ -117,11 +120,14 @@ const Cart = () => {
             </Card>
           );
         })}
+        <Button asChild className="w-full py-4 text-lg rounded-none bg-orange-500 hover:bg-orange-600">
+          <Link to="/checkout">PLACE ORDER</Link>
+        </Button>
       </div>
 
       {/* RIGHT: PRICE SUMMARY */}
       <div className="space-y-4">
-        <Card className="rounded-none shadow-sm sticky top-24">
+        {/* <Card className="rounded-none shadow-sm sticky top-24">
           <CardContent className="p-4 space-y-4">
             <p className="text-lg font-semibold text-muted-foreground">PRICE DETAILS</p>
             <Separator />
@@ -146,11 +152,8 @@ const Cart = () => {
               <span>₹{cartSummary?.totalPrice.toLocaleString()}</span>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
 
-        <Button asChild className="w-full py-4 text-lg rounded-none bg-orange-500 hover:bg-orange-600">
-          <Link to="/checkout">PLACE ORDER</Link>
-        </Button>
       </div>
     </div>
   );

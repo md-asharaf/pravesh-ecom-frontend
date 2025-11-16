@@ -248,9 +248,9 @@ const Checkout = () => {
                           {product?.name || "Unnamed Product"}
                         </p>
                         <p className="text-xs text-muted-foreground">Qty: {quantity}</p>
-                        <p className="font-semibold text-sm">
+                        {/* <p className="font-semibold text-sm">
                           ₹{Number(product?.originalPrice || 0).toLocaleString()}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                   ))}

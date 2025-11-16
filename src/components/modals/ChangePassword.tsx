@@ -7,7 +7,6 @@ export const ChangePasswordModal = ({ onChangePassword }: any) => {
   const [oldPass, setOld] = React.useState("");
   const [newPass, setNew] = React.useState("");
   const [confirmPass, setConfirm] = React.useState("");
-
   return (
     <Dialog>
       <DialogTrigger asChild>

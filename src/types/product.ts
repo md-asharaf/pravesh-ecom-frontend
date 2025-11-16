@@ -53,7 +53,7 @@ export type Product = {
   category: Partial<Category>,
   thumbnail: string,
   // images: string[],
-  originalPrice: number,
+  // originalPrice: number,
   // discountValue: number,
   // discountType: discountType,
   // finalPrice: number,
