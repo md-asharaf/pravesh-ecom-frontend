@@ -3,6 +3,7 @@ import { categoryService } from "@/services/category.service";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useIntersection } from "@mantine/hooks";
+import { Loader } from "@/components/Loader";
 
 const Categories = () => {
   const lastCategoryRef = useRef<HTMLDivElement>(null);
@@ -44,7 +45,7 @@ const Categories = () => {
   }, [entry, hasNextPage, isFetching, fetchNextPage]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader />
   }
   return (
     <div className="container mx-auto px-4 py-8">

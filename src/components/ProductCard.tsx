@@ -68,7 +68,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <img
             src={product.thumbnail}
             alt={product.name}
-            className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-48 group-hover:scale-105 transition-transform duration-300"
           />
           {/* {product.discountValue && (
             <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground">

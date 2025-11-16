@@ -1,54 +1,54 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "@/layouts/MainLayout";
-import Index from "@/pages/Index";
-import Auth from "@/pages/Auth";
-import Login from "@/pages/Login";
-import Register from "@/pages/Register";
-import Products from "@/pages/Products";
-import ProductDetail from "@/pages/ProductDetail";
-import Wishlist from "@/pages/Wishlist";
-import Cart from "@/pages/Cart";
-import Checkout from "@/pages/Checkout";
-import Categories from "@/pages/Categories";
-import Brands from "@/pages/Brands";
-import Blog from "@/pages/Blog";
-import BlogDetail from "@/pages/BlogDetail";
-import Orders from "@/pages/Orders";
-import Profile from "@/pages/Profile";
+import Index from "@/pages/public/Index";
+import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
+import Products from "@/pages/public/Products";
+import ProductDetail from "@/pages/public/ProductDetail";
+import Wishlist from "@/pages/private/Wishlist";
+import Cart from "@/pages/private/Cart";
+import Checkout from "@/pages/private/Checkout";
+import Categories from "@/pages/public/Categories";
+import Brands from "@/pages/public/Brands";
+import Blog from "@/pages/public/Blog";
+import BlogDetail from "@/pages/public/BlogDetail";
+import Orders from "@/pages/private/Orders";
+import Profile from "@/pages/private/Profile";
 import NotFound from "@/pages/NotFound";
 import PrivateLayout from "@/layouts/PrivateLayout";
-import Addresses from "@/pages/Addresses";
+import Addresses from "@/pages/private/Addresses";
+import AuthLayout from "@/layouts/AuthLayout";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
-  <Routes>
-    <Route element={<MainLayout />}>
-      <Route path="/" element={<Index />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/product/:slug" element={<ProductDetail />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/blog/:slug" element={<BlogDetail />} />
-      <Route path="/categories" element={<Categories />} />
-      <Route path="/brands" element={<Brands />} />
-    </Route>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Index />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/product/:slug" element={<ProductDetail />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogDetail />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/brands" element={<Brands />} />
+        </Route>
 
-    <Route element={<PrivateLayout />}>
-      <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/orders" element={<Orders />} />
-      <Route path="/addresses" element={<Addresses />} />
-      <Route path="/profile" element={<Profile />} />
-    </Route>
+        <Route element={<PrivateLayout />}>
+          <Route path="/wishlist" element={<Wishlist />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/orders" element={<Orders />} />
+          <Route path="/addresses" element={<Addresses />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
 
-    <Route path="/auth" element={<Auth />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
-
-    <Route path="*" element={<NotFound />} />
-  </Routes>
-</BrowserRouter>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
 
   );
 };

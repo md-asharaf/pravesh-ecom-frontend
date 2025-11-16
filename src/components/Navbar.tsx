@@ -3,8 +3,6 @@ import { ShoppingCart, User, Heart, Search, Menu, ChevronDown } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/providers/auth";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
 import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services/category.service";
 import {
@@ -19,30 +17,43 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { Loader } from "./Loader";
+import { setCategoryTree } from "@/store/slices/category";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const { user, logout, loading } = useAuth();
+  const dispatch = useAppDispatch()
+  const wishlistCount = useAppSelector(state => state.wishlist.totalItems);
+  const cartCount = useAppSelector(state => state.cart.totalItems);
+  const { tree } = useAppSelector(state => state.categoryTree);
 
-  const wishlistCount = useSelector((state: RootState) => state.wishlist.totalItems);
-  const cartCount = useSelector((state: RootState) => state.cart.totalItems);
-
-  // Fetch category tree
-  const { data: categories = [] } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["category-tree"],
-    queryFn: async () => (await categoryService.getTree()).data,
+    queryFn: async () => {
+      const response = await categoryService.getTree()
+      return response.data;
+    },
+    enabled: tree.length === 0,
   });
 
-  if (loading)
+  useEffect(() => {
+    if (data) {
+      dispatch(setCategoryTree(data));
+    }
+  }, [data, dispatch]);
+
+  if (loading || isLoading)
     return (
-      <div className="h-16 w-full border-b flex items-center justify-center">
-        <div className="animate-spin h-6 w-6 border-t-2 border-primary rounded-full"></div>
-      </div>
+      <Loader />
     );
 
   return (
     <>
-      <nav className="w-full bg-white shadow-sm border-b">
+      <nav className="w-full shadow-sm border-b">
         <div className="container mx-auto px-4">
           <div className="flex h-20 items-center justify-between gap-6">
 
@@ -57,12 +68,29 @@ const Navbar = () => {
               <div className="relative w-full">
                 <Input
                   placeholder="Search for products, categories or brands"
-                  className="h-12 pl-12 rounded-full bg-gray-100"
-                  onChange={(e) => navigate(`/products?s=${e.target.value}`)}
+                  className="h-12 pl-12 pr-12 rounded-full bg-gray-100"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && (location.pathname.startsWith("/products") || search.trim())) navigate(`/products?s=${encodeURIComponent(search)}`);
+                  }}
                 />
+
+                {/* Left Icon */}
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+
+                {/* Right Search Button */}
+                <Button
+                  disabled={!search.trim()}
+                  size="lg"
+                  onClick={() => navigate(`/products?s=${encodeURIComponent(search)}`)}
+                  className="absolute right-0 top-1/2 bg-blue-700 -translate-y-1/2 rounded-full transition"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
               </div>
             </div>
+
 
             {/* RIGHT SIDE — DESKTOP */}
             <div className="hidden md:flex items-center gap-4">
@@ -168,7 +196,7 @@ const Navbar = () => {
 
                     {/* Category Accordion */}
                     <Accordion type="single" collapsible>
-                      {categories.map((cat) => (
+                      {tree.map((cat) => (
                         <AccordionItem key={cat._id} value={cat.slug}>
                           <AccordionTrigger className="font-medium">
                             {cat.title}
@@ -217,7 +245,7 @@ const Navbar = () => {
         <div className="container mx-auto px-4">
           <ul className="flex h-12 items-center gap-8 font-semibold text-sm">
 
-            {categories.map((cat) => (
+            {tree.map((cat) => (
               <li key={cat._id} className="relative group cursor-pointer">
 
                 <Link

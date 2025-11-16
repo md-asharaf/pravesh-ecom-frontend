@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/store/hooks";
 import { addItem } from "@/store/slices/cart";
+import { addToWishlist } from "@/store/slices/wishlist";
 
 // Helpers
 const formatDate = (iso?: string) =>
@@ -125,7 +126,7 @@ const ProductDetail: React.FC = () => {
       const response = await cartService.addToCart(productId);
       return response;
     },
-    onSuccess: ({message}) => {
+    onSuccess: ({ message }) => {
       toast.success(message || "Added to cart");
       dispatch(addItem(product));
       queryClient.invalidateQueries({ queryKey: ["cart"] });
@@ -140,8 +141,9 @@ const ProductDetail: React.FC = () => {
       const response = await wishlistService.addProduct(productId);
       return response;
     },
-    onSuccess: ({message}) => {
+    onSuccess: ({ message }) => {
       toast.success(message || "Added to wishlist");
+      dispatch(addToWishlist(product));
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
     },
     onError: (error: any) => {
@@ -341,9 +343,6 @@ const ProductDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* -----------------------------
-          REVIEWS SECTION
-      ------------------------------ */}
       <section className="mt-12">
         <div className="flex justify-between items-start mb-6">
           <div>
@@ -352,7 +351,7 @@ const ProductDetail: React.FC = () => {
               Verified buyer experiences
             </p>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => setReviewModalOpen(true)}>
+          <Button variant="outline" size="sm" onClick={() => setReviewModalOpen(true)}>
             Write a Review
           </Button>
         </div>
@@ -400,7 +399,6 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Review List */}
         <div className="grid gap-4 md:grid-cols-2">
           {isReviewsLoading ? (
             Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
@@ -410,53 +408,91 @@ const ProductDetail: React.FC = () => {
             </p>
           ) : (
             reviews.map((review: any) => (
-              <div key={review._id} className="border rounded-lg p-4 bg-card">
-                <div className="flex justify-between mb-2">
+              <div
+                key={review._id}
+                className="border rounded-xl p-5 bg-white dark:bg-card shadow-sm hover:shadow-md transition-all duration-200 space-y-3"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between">
                   <div className="flex gap-3">
-                    <div className="flex">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-4 w-4 ${i < review.rating
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-gray-300"
-                            }`}
+                    {/* Avatar */}
+                    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden text-sm font-medium">
+                      {review.user?.image ? (
+                        <img
+                          src={review.user.image}
+                          alt={review.user.name}
+                          className="h-full w-full object-cover"
                         />
-                      ))}
+                      ) : (
+                        (review.user?.name || "?")
+                          .charAt(0)
+                          .toUpperCase()
+                      )}
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">
-                        {review.user?.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(review.createdAt)}
-                      </span>
+
+                    <div>
+                      {/* Name */}
+                      <p className="font-medium text-sm">
+                        {review.user?.name || "Anonymous"}
+                      </p>
+
+                      {/* Rating + Date */}
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-4 w-4 ${i < review.rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                                }`}
+                            />
+                          ))}
+                        </div>
+
+                        <span className="text-xs text-muted-foreground">
+                          {review.createdAt}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  <span className="text-xs text-green-600 flex items-center gap-1">
-                    ✔ Verified Purchase
+                  {/* Verified */}
+                  <span className="flex items-center text-xs text-green-600 font-medium gap-1">
+                    <svg
+                      className="h-4 w-4"
+                      viewBox="0 0 16 16"
+                      fill="currentColor"
+                    >
+                      <path d="M16 8A8 8 0 11.002 8 8 8 0 0116 8zm-4.146-2.854l-4.95 4.95-2.122-2.122-.708.708L6.904 11.5l5.657-5.657-.707-.707z" />
+                    </svg>
+                    Verified Purchase
                   </span>
                 </div>
 
-                <p className="text-sm">{review.comment}</p>
+                {/* Comment */}
+                <p className="text-sm leading-relaxed text-foreground">
+                  {review.comment}
+                </p>
 
+                {/* Images (optional) */}
                 {review.images?.length > 0 && (
-                  <div className="flex gap-2 mt-2">
+                  <div className="grid grid-cols-3 gap-2 mt-2">
                     {review.images.map((img: string, idx: number) => (
                       <img
                         key={idx}
                         src={img}
-                        className="w-20 h-20 object-cover rounded-md border"
+                        alt="Review"
+                        className="h-20 w-full object-cover rounded-md border"
                       />
                     ))}
                   </div>
                 )}
               </div>
+
             ))
           )}
 
-          {/* Intersection Observer Trigger */}
           <div ref={intersectionRef} className="h-10 col-span-full" />
 
           {isFetchingNextPage && (
@@ -467,9 +503,6 @@ const ProductDetail: React.FC = () => {
         </div>
       </section>
 
-      {/* -----------------------------
-          REVIEW MODAL
-      ------------------------------ */}
       {isReviewModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div
@@ -531,12 +564,6 @@ const ProductDetail: React.FC = () => {
                 </Button>
               </div>
             </form>
-
-            {createReviewMutation.isError && (
-              <p className="text-sm text-red-500 mt-2">
-                Failed to submit review
-              </p>
-            )}
           </div>
         </div>
       )}

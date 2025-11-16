@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Product } from "@/types";
 import { Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Loader } from "@/components/Loader";
 
 const Orders = () => {
   const { data: ordersData, isLoading } = useQuery({
@@ -21,7 +22,7 @@ const Orders = () => {
 
   const orders = ordersData?.orders || [];
 
-  if (isLoading) return <div className="p-10">Loading...</div>;
+  if (isLoading) return <Loader />;
 
   return (
     <div className="container mx-auto px-4 py-8 flex gap-6 max-w-7xl">
@@ -167,7 +168,7 @@ const Orders = () => {
                             Waiting for your confirmation.
                           </p>
                           <Button
-                          size="sm"
+                            size="sm"
                             variant="default"
                             className="flex items-center gap-1 text-sm font-medium hover:underline rounded-full"
                           >

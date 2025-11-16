@@ -1,3 +1,4 @@
+import { Loader } from "@/components/Loader";
 import { Card, CardContent } from "@/components/ui/card";
 import { brandService } from "@/services/brand.service";
 import { useIntersection } from "@mantine/hooks";
@@ -40,8 +41,8 @@ const Brands = () => {
   }, [entry, hasNextPage, isFetching, fetchNextPage]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
-  }
+      return <Loader/>
+    }
   return (
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">

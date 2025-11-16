@@ -1,23 +1,23 @@
 import Hero from "@/components/Hero";
 import ProductCard from "@/components/ProductCard";
-import CategoryCard from "@/components/CategoryCard";
+// import CategoryCard from "@/components/CategoryCard";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, Shield, Truck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
-import { categoryService } from "@/services/category.service";
+// import { categoryService } from "@/services/category.service";
 
 const Index = () => {
-  const { data: categoriesData } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => {
-      const response = await categoryService.getAll({ page: 1, limit: 12, isParent: true })
-      return response.data;
-    },
-  });
+  // const { data: categoriesData } = useQuery({
+  //   queryKey: ["categories"],
+  //   queryFn: async () => {
+  //     const response = await categoryService.getAll({ page: 1, limit: 12, isParent: true })
+  //     return response.data;
+  //   },
+  // });
 
-  const categories = categoriesData?.categories || [];
+  // const categories = categoriesData?.categories || [];
   const { data: featuredProductsData } = useQuery({
     queryKey: ["featured-products"],
     queryFn: async () => {

@@ -4,11 +4,9 @@ import { userService } from "@/services/user.service";
 import { User } from "@/types";
 import { cartService } from "@/services/cart.service";
 import { wishlistService } from "@/services/wishlist.service";
-import { categoryService } from "@/services/category.service";
 import { useDispatch } from "react-redux";
 import { setCart } from "@/store/slices/cart";
 import { setWishlist } from "@/store/slices/wishlist";
-import { setCategoryTree } from "@/store/slices/category";
 
 interface AuthContextType {
   user: User | null;
@@ -51,9 +49,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const wishRes = await wishlistService.getWishlist();
         dispatch(setWishlist(wishRes.data));
-
-        const catRes = await categoryService.getTree();
-        dispatch(setCategoryTree(catRes.data));
 
       } catch (err) {
         console.error("Error loading initial data:", err);

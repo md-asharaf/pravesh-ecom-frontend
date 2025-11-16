@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { blogService } from "@/services/blog.service";
+import { Loader } from "@/components/Loader";
 
 const BlogDetail = () => {
   const { slug } = useParams();
@@ -27,7 +28,7 @@ const BlogDetail = () => {
     );
   }
   if (isLoading) {
-    return <div>Loading...</div>
+    return <Loader/>
   }
 
   return (

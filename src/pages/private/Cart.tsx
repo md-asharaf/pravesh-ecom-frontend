@@ -1,12 +1,14 @@
+import { Loader } from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 // import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { cartService } from "@/services/cart.service";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { removeItem, updateQuantity } from "@/store/slices/cart";
+import { removeItem, setCart, updateQuantity } from "@/store/slices/cart";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Minus, Plus, ShoppingBag } from "lucide-react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -15,10 +17,20 @@ const Cart = () => {
   const { user } = useAuth();
   const dispatch = useAppDispatch()
   const { items: cartItems } = useAppSelector((state) => state.cart);
-  const { data: cartSummary } = useQuery({
-    queryKey: ["cart-summary", user?._id],
-    queryFn: async () => (await cartService.getCartSummary()).data,
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["cart"],
+    queryFn: async () => {
+      const res = await cartService.getMyCart();
+      return res.data;
+    },
+    enabled: cartItems.length === 0,
   });
+
+  // const { data: cartSummary } = useQuery({
+  //   queryKey: ["cart-summary", user?._id],
+  //   queryFn: async () => (await cartService.getCartSummary()).data,
+  // });
 
   const updateCartMutation = useMutation({
     mutationFn: async ({ productId, quantity }: { productId: string, quantity: number }) => await cartService.updateCart(productId, quantity),
@@ -40,7 +52,17 @@ const Cart = () => {
     },
   });
 
-  const shipping = cartSummary?.totalPrice <= 10000 ? 50 : 0;
+  useEffect(() => {
+    if (data) {
+      dispatch(setCart(data));
+    }
+  }, [data, dispatch]);
+
+  // const shipping = cartSummary?.totalPrice <= 10000 ? 50 : 0;
+
+  if (isLoading) {
+    return <Loader />
+  }
 
   if (cartItems.length === 0)
     return (
@@ -98,13 +120,13 @@ const Cart = () => {
                       </Button>
                       <span className="px-4 font-semibold">{item.quantity}</span>
                       <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity + 1 })}
-                          // disabled={item.quantity >= product.stock}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity + 1 })}
+                      // disabled={item.quantity >= product.stock}
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
                     </div>
                     <Button variant="link" className="text-sm">SAVE FOR LATER</Button>
                     <Button

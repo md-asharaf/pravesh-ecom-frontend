@@ -19,12 +19,12 @@ export const authService = {
   },
 
   async requestForOtp(phoneOrEmail: string) {
-    const response = await instance.post("/auth/request-otp", { phoneOrEmail });
+    const response = await instance.post("/auth/otp/request", { phoneOrEmail });
     return response.data;
   },
 
   async loginViaOtp(phoneOrEmail: string, otp: string) {
-    const response = await instance.post("/auth/otp-login", { phoneOrEmail, otp });
+    const response = await instance.post<ApiResponse<{ user: User }>>("/auth/otp-login", { phoneOrEmail, otp });
     return response.data;
   },
 
