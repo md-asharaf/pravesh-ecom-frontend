@@ -25,6 +25,9 @@ import { reviewService } from "@/services/review.service";
 import { wishlistService } from "@/services/wishlist.service";
 import { cartService } from "@/services/cart.service";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
+import { useAppDispatch } from "@/store/hooks";
+import { addItem } from "@/store/slices/cart";
 
 // Helpers
 const formatDate = (iso?: string) =>
@@ -44,6 +47,7 @@ const SkeletonCard = () => (
 );
 
 const ProductDetail: React.FC = () => {
+  const dispatch = useAppDispatch()
   const { slug } = useParams<{ slug: string }>();
 
   const [quantity, setQuantity] = useState(1);
@@ -119,21 +123,30 @@ const ProductDetail: React.FC = () => {
   const addToCartMutation = useMutation({
     mutationFn: async () => {
       const response = await cartService.addToCart(productId);
-      return response.data;
+      return response;
     },
-    onSuccess: () => {
+    onSuccess: ({message}) => {
+      toast.success(message || "Added to cart");
+      dispatch(addItem(product));
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    }
   });
 
   const addToWishlistMutation = useMutation({
     mutationFn: async () => {
       const response = await wishlistService.addProduct(productId);
-      return response.data;
+      return response;
     },
-    onSuccess: () => {
+    onSuccess: ({message}) => {
+      toast.success(message || "Added to wishlist");
       queryClient.invalidateQueries({ queryKey: ["wishlist"] });
     },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    }
   });
 
   const createReviewMutation = useMutation({
