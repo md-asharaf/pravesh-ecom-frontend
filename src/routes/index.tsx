@@ -18,6 +18,7 @@ import NotFound from "@/pages/NotFound";
 import PrivateLayout from "@/layouts/PrivateLayout";
 import Addresses from "@/pages/private/Addresses";
 import AuthLayout from "@/layouts/AuthLayout";
+import About from "@/components/About";
 
 const AppRoutes = () => {
   return (
@@ -28,6 +29,7 @@ const AppRoutes = () => {
           <Route path="/products" element={<Products />} />
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/about" element={<About />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/brands" element={<Brands />} />
