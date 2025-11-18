@@ -2,105 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Saffron–White–Black theme (all HSL) */
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 210 20% 12%;
+    /* --- Core Theme Colors --- */
+    --saffron: 33 100% 60%;       /* #FF9933 (approx) */
+    --white: 0 0% 100%;
+    --black: 0 0% 0%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 210 20% 12%;
+    /* --- Base --- */
+    --background: var(--white);
+    --foreground: var(--black);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 210 20% 12%;
+    --card: var(--white);
+    --card-foreground: var(--black);
 
-    --primary: 210 80% 35%;
-    --primary-foreground: 0 0% 100%;
+    --popover: var(--white);
+    --popover-foreground: var(--black);
 
-    --secondary: 210 15% 92%;
-    --secondary-foreground: 210 20% 12%;
+    --primary: var(--saffron);
+    --primary-foreground: var(--black);
 
-    --muted: 210 15% 95%;
-    --muted-foreground: 210 15% 45%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: var(--black);
 
-    --accent: 30 95% 55%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: var(--saffron);
+    --accent-foreground: var(--black);
 
     --destructive: 0 75% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive-foreground: var(--white);
 
-    --border: 210 20% 88%;
-    --input: 210 20% 88%;
-    --ring: 210 80% 35%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: var(--saffron);
 
     --radius: 0.5rem;
 
-    --industrial: 210 25% 25%;
-    --industrial-light: 210 20% 45%;
-    --construction-orange: 30 95% 55%;
-    --steel-gray: 210 15% 65%;
+    /* --- Extended Colors (Updated to fit theme) --- */
+    --industrial: 0 0% 15%;          /* deep black-gray */
+    --industrial-light: 0 0% 35%;    /* lighter gray */
+    --construction-orange: var(--saffron);
+    --steel-gray: 0 0% 65%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(210 80% 35%) 0%, hsl(210 60% 45%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 15% 98%) 100%);
+    /* --- Gradients (Now Saffron-based) --- */
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(33 100% 60%) 0%,
+      hsl(33 90% 50%) 100%
+    );
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(0 0% 100%) 0%,
+      hsl(0 0% 98%) 100%
+    );
+
+    /* --- Sidebar --- */
+    --sidebar-background: var(--white);
+    --sidebar-foreground: var(--black);
+    --sidebar-primary: var(--saffron);
+    --sidebar-primary-foreground: var(--black);
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: var(--black);
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: var(--saffron);
   }
 
+  /* ---------------- DARK MODE ---------------- */
+
   .dark {
-    --background: 210 30% 8%;
-    --foreground: 0 0% 98%;
+    --background: var(--black);
+    --foreground: var(--white);
 
-    --card: 210 25% 12%;
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: var(--white);
 
-    --popover: 210 25% 12%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: var(--white);
 
-    --primary: 210 80% 55%;
-    --primary-foreground: 0 0% 100%;
+    --primary: var(--saffron);
+    --primary-foreground: var(--black);
 
-    --secondary: 210 20% 18%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: var(--white);
 
-    --muted: 210 20% 18%;
-    --muted-foreground: 210 15% 65%;
+    --muted: 0 0% 25%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 30 95% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: var(--saffron);
+    --accent-foreground: var(--black);
 
-    --destructive: 0 75% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 75% 45%;
+    --destructive-foreground: var(--white);
 
-    --border: 210 20% 20%;
-    --input: 210 20% 20%;
-    --ring: 210 80% 55%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: var(--saffron);
 
-    --industrial: 210 25% 75%;
-    --industrial-light: 210 20% 65%;
-    --construction-orange: 30 95% 55%;
-    --steel-gray: 210 15% 55%;
+    /* Extended */
+    --industrial: 0 0% 80%;
+    --industrial-light: 0 0% 60%;
+    --construction-orange: var(--saffron);
+    --steel-gray: 0 0% 45%;
 
-    --gradient-hero: linear-gradient(135deg, hsl(210 80% 25%) 0%, hsl(210 60% 35%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(210 25% 12%) 0%, hsl(210 20% 15%) 100%);
+    /* Gradients */
+    --gradient-hero: linear-gradient(
+      135deg,
+      hsl(33 100% 55%) 0%,
+      hsl(33 90% 45%) 100%
+    );
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(0 0% 12%) 0%,
+      hsl(0 0% 15%) 100%
+    );
+
+    /* Sidebar (Dark Mode) */
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: var(--white);
+    --sidebar-primary: var(--saffron);
+    --sidebar-primary-foreground: var(--black);
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: var(--white);
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: var(--saffron);
   }
 }
 
