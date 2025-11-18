@@ -61,7 +61,7 @@ We ensure every accessory and minor component is readily available to support th
                     <div className="space-y-4 md:flex md:items-end md:justify-between md:space-y-0">
                         <div className="max-w-3xl space-y-3">
                             <p className="text-sm text-slate-400">Mission Statement</p>
-                            <h1 className="text-[32px] font-semibold leading-tight">About Us: Building Your Vision</h1>
+                            <h1 className="text-4xl font-semibold leading-tight">About Us: Building Your Vision</h1>
                             <p className="text-sm text-slate-500 leading-relaxed">
                                 We are your trusted partner in construction. We've made it our mission to provide high-quality, reliable,
                                 and essential building supplies directly to your job site, hassle-free.
@@ -74,7 +74,7 @@ We ensure every accessory and minor component is readily available to support th
                                 className="h-16 w-16 rounded-full object-cover border border-slate-200 shadow-sm"
                                 loading="lazy"
                             />
-                            <span className="text-xl py-6 uppercase tracking-[0.3em] text-blue-600 font-semibold">
+                            <span className="text-xl py-6 uppercase tracking-[0.3em] text-primary font-semibold">
                                 {companyName}
                             </span>
                         </div>
@@ -162,7 +162,7 @@ We ensure every accessory and minor component is readily available to support th
                         </div>
                         <Link
                             to="/products"
-                            className="self-start text-sm font-medium text-blue-600 transition hover:text-blue-800 md:self-end"
+                            className="self-start text-sm font-medium text-primary underline transition hover:text-primary/80 md:self-end"
                         >
                             Shop Materials Now →
                         </Link>

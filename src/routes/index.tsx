@@ -19,6 +19,7 @@ import PrivateLayout from "@/layouts/PrivateLayout";
 import Addresses from "@/pages/private/Addresses";
 import AuthLayout from "@/layouts/AuthLayout";
 import About from "@/components/About";
+import Contact from "@/components/Contact";
 
 const AppRoutes = () => {
   return (
@@ -30,6 +31,7 @@ const AppRoutes = () => {
           <Route path="/product/:slug" element={<ProductDetail />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/brands" element={<Brands />} />
