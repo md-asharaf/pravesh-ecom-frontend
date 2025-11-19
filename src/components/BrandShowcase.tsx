@@ -17,7 +17,7 @@ const BrandShowcase = () => {
   return (
     <section className="py-10 bg-white border-b">
       <div className="container mx-auto px-4">
-        <h2 className="text-xl font-semibold mb-6">Popular Brands</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-6">Popular Brands</h2>
 
         {/* Loading skeleton */}
         {isLoading ? (

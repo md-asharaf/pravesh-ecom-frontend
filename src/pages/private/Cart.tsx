@@ -128,10 +128,10 @@ const Cart = () => {
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
-                    <Button variant="link" className="text-sm">SAVE FOR LATER</Button>
+                    {/* <Button variant="link" className="text-sm">SAVE FOR LATER</Button> */}
                     <Button
                       variant="link"
-                      className="text-sm text-red-600"
+                      className="text-sm text-red-500"
                       onClick={() => removeFromCartMutation.mutate(product._id)}
                     >
                       REMOVE
@@ -142,8 +142,8 @@ const Cart = () => {
             </Card>
           );
         })}
-        <Button asChild className="w-full py-4 text-lg rounded-none bg-orange-500 hover:bg-orange-600">
-          <Link to="/checkout">PLACE ORDER</Link>
+        <Button asChild className="w-full py-4 text-lg rounded-none">
+          <Link to="/checkout">CHECKOUT</Link>
         </Button>
       </div>
 

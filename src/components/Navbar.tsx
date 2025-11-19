@@ -105,7 +105,7 @@ const Navbar: React.FC = () => {
   return (
     <header>
       <nav className="w-full shadow-sm border-b bg-white">
-        <div className="container mx-auto px-4">
+        <div className="lg:px-8 xl:px-4 2xl:px-24 mx-auto px-4">
           <div className="flex h-20 items-center justify-between gap-4">
 
             <Link to="/" className="flex items-center gap-3">
@@ -116,12 +116,12 @@ const Navbar: React.FC = () => {
               <span className="text-lg font-bold">Pravesh</span>
             </Link>
 
-            <ul className="hidden lg:flex items-center gap-6 font-medium text-[15px] text-gray-700">
-              <li><Link to="/categories" className="hover:text-blue-600">Categories</Link></li>
-              <li><Link to="/brands" className="hover:text-blue-600">Brands</Link></li>
-              <li><Link to="/blog" className="hover:text-blue-600">Blog</Link></li>
-              <li><Link to="/about" className="hover:text-blue-600">About</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-600">Contact</Link></li>
+            <ul className="hidden lg:flex items-center gap-3 xl:gap-4 2xl:gap-6 font-medium text-[15px] text-gray-700">
+              <li><Link to="/categories" className="hover:text-accent">Categories</Link></li>
+              <li><Link to="/brands" className="hover:text-accent">Brands</Link></li>
+              <li><Link to="/blog" className="hover:text-accent">Blog</Link></li>
+              <li><Link to="/about" className="hover:text-accent">About</Link></li>
+              <li><Link to="/contact" className="hover:text-accent">Contact</Link></li>
             </ul>
 
             <div className="hidden md:flex flex-1 max-w-2xl relative">
@@ -142,7 +142,7 @@ const Navbar: React.FC = () => {
               <button
                 onClick={handleSearchSubmit}
                 disabled={!search.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-blue-600 hover:bg-blue-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-accent hover:bg-accent/80"
               >
                 <Search className="h-5 w-5 text-white" />
               </button>
@@ -172,7 +172,7 @@ const Navbar: React.FC = () => {
 
             <div className="hidden md:flex items-center gap-3">
               {user ? (
-                <Button variant="outline" onClick={() => navigate("/profile")} className="rounded-xl">
+                <Button variant="outline" onClick={() => navigate("/profile")} className="rounded-xl px-2 lg:px-4">
                   <User className="h-4 w-4" /> <span className="ml-2">Account</span>
                 </Button>
               ) : (
@@ -181,35 +181,38 @@ const Navbar: React.FC = () => {
                 </Button>
               )}
 
-              <button
+              <Button
+                variant="outline"
                 onClick={() => navigate("/wishlist")}
-                className="relative inline-flex items-center gap-2 px-4 py-2 rounded-xl border"
+                className="relative inline-flex items-center gap-2 px-2 lg:px-4 py-2 rounded-xl border"
               >
                 <Heart className="h-4 w-4" />
                 <span className="hidden sm:inline">Wishlist</span>
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-1 rounded-full">
+                <span className="absolute -top-1 -right-1 bg-accent text-white text-xs px-1 rounded-full">
                   {wishlistCount}
                 </span>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 onClick={() => navigate("/cart")}
-                className="relative inline-flex items-center gap-2 px-4 py-2 rounded-xl border"
+                variant="outline"
+                className="relative inline-flex items-center gap-2 px-2 lg:px-4 py-2 rounded-xl border"
               >
                 <ShoppingCart className="h-4 w-4" />
                 <span className="hidden sm:inline">Cart</span>
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-1 rounded-full">
+                <span className="absolute -top-1 -right-1 bg-accent text-white text-xs px-1 rounded-full">
                   {cartCount}
                 </span>
-              </button>
+              </Button>
             </div>
 
-            <button
+            <Button
+              variant="outline"
               onClick={() => setMobileSearchOpen(true)}
               className="p-2 bg-gray-100 rounded-md md:hidden"
             >
               <Search className="h-5 w-5" />
-            </button>
+            </Button>
 
             <Link to="/cart" className="p-2 bg-gray-100 rounded-md md:hidden">
               <ShoppingCart className="h-5 w-5" />
@@ -217,13 +220,13 @@ const Navbar: React.FC = () => {
 
             <Sheet>
               <SheetTrigger asChild>
-                <button className="p-2 bg-gray-100 rounded-md md:hidden">
+                <button className="p-2 bg-gray-100 rounded-md lg:hidden">
                   <Menu className="h-5 w-5" />
                 </button>
               </SheetTrigger>
 
               <SheetContent side="right" className="w-80 p-0">
-                <div className="bg-[#0D3B66] text-white px-6 py-6 rounded-bl-3xl shadow flex items-center justify-between">
+                <div className="bg-accent/70 text-white px-6 py-6 rounded-bl-3xl shadow flex items-center justify-between">
                   <div
                     className="cursor-pointer"
                     onClick={() => navigate(user ? "/profile" : "/login")}

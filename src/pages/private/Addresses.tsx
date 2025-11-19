@@ -159,7 +159,7 @@ export default function Addresses() {
       {(openForm && !editing) ? (
         <Card className="shadow-sm border border-gray-200 mb-6">
           <CardHeader className="bg-[#F5F8FF] border-b border-gray-200 p-4">
-            <CardTitle className="text-sm font-semibold text-blue-600 uppercase">
+            <CardTitle className="text-sm font-semibold text-accent uppercase">
               ADD A NEW ADDRESS
             </CardTitle>
           </CardHeader>
@@ -324,7 +324,7 @@ export default function Addresses() {
           </CardContent>
         </Card>) :
         <div
-          className="flex items-center gap-2 text-blue-600 font-medium text-sm cursor-pointer mb-4 select-none"
+          className="flex items-center gap-2 text-accent font-medium text-sm cursor-pointer mb-4 select-none"
           onClick={(e) => {
             e.preventDefault();
             // clear any lingering values when opening create form
@@ -359,7 +359,7 @@ export default function Addresses() {
             {(openForm && editing?._id === addr._id) ? (
               <Card className="shadow-sm border border-gray-200 mb-6">
                 <CardHeader className="bg-[#F5F8FF] border-b border-gray-200 p-4">
-                  <CardTitle className="text-sm font-semibold text-blue-600 uppercase">
+                  <CardTitle className="text-sm font-semibold text-accent uppercase">
                     EDIT ADDRESS
                   </CardTitle>
                 </CardHeader>

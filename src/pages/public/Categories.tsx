@@ -32,9 +32,7 @@ const Categories = () => {
   const categories = (data?.pages ?? []).flatMap((page: any) => page?.categories ?? []);
 
   const { ref, entry } = useIntersection({
-
     root: lastCategoryRef.current,
-
     threshold: 1,
 
   });

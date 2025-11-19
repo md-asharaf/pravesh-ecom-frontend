@@ -26,31 +26,14 @@ import { wishlistService } from "@/services/wishlist.service";
 import { cartService } from "@/services/cart.service";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { useAppDispatch } from "@/store/hooks";
-import { addItem } from "@/store/slices/cart";
-import { addToWishlist } from "@/store/slices/wishlist";
-
-// Helpers
-const formatDate = (iso?: string) =>
-  iso ? new Date(iso).toLocaleDateString() : "";
-
-const Star = ({ className = "" }: { className?: string }) => (
-  <StarIcon className={className} />
-);
-
-const SkeletonCard = () => (
-  <div className="animate-pulse bg-card border border-border rounded-lg p-4">
-    <div className="bg-surface h-48 w-full mb-4 rounded" />
-    <div className="h-4 bg-surface rounded w-3/4 mb-2" />
-    <div className="h-3 bg-surface rounded w-1/2" />
-    <div className="mt-3 h-8 bg-surface rounded w-1/3" />
-  </div>
-);
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { addToWishlist, removeFromWishlist } from "@/store/slices/wishlist";
 
 const ProductDetail: React.FC = () => {
   const dispatch = useAppDispatch()
   const { slug } = useParams<{ slug: string }>();
-
+  const wishlistItems = useAppSelector((state) => state.wishlist.items)
+  const isWishlisted = wishlistItems.some(item => item.slug === slug);
   const [quantity, setQuantity] = useState(1);
   const [isReviewModalOpen, setReviewModalOpen] = useState(false);
   const [ratingInput, setRatingInput] = useState<number>(5);
@@ -58,7 +41,6 @@ const ProductDetail: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  // Fetch product
   const { data: productRes, isLoading: isProductLoading } = useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
@@ -119,37 +101,7 @@ const ProductDetail: React.FC = () => {
     );
 
     return { total, avg, counts };
-  }, [reviews, product]);
-
-  const addToCartMutation = useMutation({
-    mutationFn: async () => {
-      const response = await cartService.addToCart(productId);
-      return response;
-    },
-    onSuccess: ({ message }) => {
-      toast.success(message || "Added to cart");
-      dispatch(addItem(product));
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    }
-  });
-
-  const addToWishlistMutation = useMutation({
-    mutationFn: async () => {
-      const response = await wishlistService.addProduct(productId);
-      return response;
-    },
-    onSuccess: ({ message }) => {
-      toast.success(message || "Added to wishlist");
-      dispatch(addToWishlist(product));
-      queryClient.invalidateQueries({ queryKey: ["wishlist"] });
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to add to cart");
-    }
-  });
+  }, [reviews, product])
 
   const createReviewMutation = useMutation({
     mutationFn: async (payload: { rating: number; comment: string }) => {
@@ -166,6 +118,56 @@ const ProductDetail: React.FC = () => {
     },
   });
 
+
+  const addToWishlistMutation = useMutation({
+    mutationFn: wishlistService.addProduct,
+    onSuccess: (data) => {
+      toast.success(data.message);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to add to wishlist");
+    }
+  })
+
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: wishlistService.removeProduct,
+    onSuccess: (data) => {
+      toast.success(data.message);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to remove from wishlist");
+    }
+  })
+
+  const addToCartMutation = useMutation({
+    mutationFn: cartService.addToCart,
+    onSuccess: (data) => {
+      toast.success(data.message);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    }
+  })
+
+  const handleWishlistClick = () => {
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate(product._id!);
+      dispatch(removeFromWishlist(product._id!));
+    } else {
+      addToWishlistMutation.mutate(product._id!);
+      dispatch(addToWishlist(product));
+    }
+  };
+
+  const handleSubmitReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentInput.trim()) return alert("Comment required");
+
+    createReviewMutation.mutate({
+      rating: ratingInput,
+      comment: commentInput,
+    });
+  };
   if (isProductLoading) {
     return (
       <div className="container mx-auto px-6 py-24 text-center">
@@ -186,23 +188,14 @@ const ProductDetail: React.FC = () => {
     );
   }
 
-  const handleSubmitReview = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!commentInput.trim()) return alert("Comment required");
-
-    createReviewMutation.mutate({
-      rating: ratingInput,
-      comment: commentInput,
-    });
-  };
 
   return (
     <div className="container mx-auto px-6 py-10">
       {/* Back Button */}
       <Button
-        variant="ghost"
+        variant="outline"
         asChild
-        className="mb-6 flex items-center gap-1 text-muted-foreground hover:text-foreground"
+        className="mb-6 text-muted-foreground hover:text-foreground"
       >
         <Link to="/products">
           <ArrowLeft className="h-4 w-4" />
@@ -272,19 +265,19 @@ const ProductDetail: React.FC = () => {
           <div className="flex gap-3">
             <Button
               className="flex-1 rounded-full"
-              onClick={() => addToCartMutation.mutate()}
-              disabled={addToCartMutation.isPending}
+              onClick={handleWishlistClick}
+              disabled={addToCartMutation.isPending || removeFromWishlistMutation.isPending}
             >
               <ShoppingCart className="h-4 w-4 mr-1" />
               Add to Cart
             </Button>
             <Button
-              variant="outline"
-              onClick={() => addToWishlistMutation.mutate()}
               disabled={addToWishlistMutation.isPending}
-              className="rounded-full"
+              variant="outline"
+              onClick={() => handleWishlistClick()}
+              className={`rounded-full ${isWishlisted ? "text-pink-700 border-pink-700" : ""}`}
             >
-              <Heart className="h-4 w-4" />
+              <Heart className="h-4 w-4" fill={isWishlisted ? "pink" : "white"} />
             </Button>
           </div>
           {product.specifications &&
@@ -443,8 +436,8 @@ const ProductDetail: React.FC = () => {
                             <Star
                               key={i}
                               className={`h-4 w-4 ${i < review.rating
-                                  ? "fill-yellow-400 text-yellow-400"
-                                  : "text-gray-300"
+                                ? "fill-yellow-400 text-yellow-400"
+                                : "text-gray-300"
                                 }`}
                             />
                           ))}
@@ -572,3 +565,17 @@ const ProductDetail: React.FC = () => {
 };
 
 export default ProductDetail;
+
+
+const Star = ({ className = "" }: { className?: string }) => (
+  <StarIcon className={className} />
+);
+
+const SkeletonCard = () => (
+  <div className="animate-pulse bg-card border border-border rounded-lg p-4">
+    <div className="bg-surface h-48 w-full mb-4 rounded" />
+    <div className="h-4 bg-surface rounded w-3/4 mb-2" />
+    <div className="h-3 bg-surface rounded w-1/2" />
+    <div className="mt-3 h-8 bg-surface rounded w-1/3" />
+  </div>
+);

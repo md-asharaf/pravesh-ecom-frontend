@@ -56,13 +56,9 @@ const Index = () => {
 
   return (
     <>
-      {/* 🔥 MODERN HERO BANNER / SLIDER */}
       <Hero banners={banners} />
 
-      <BrandShowcase />
-
-      {/* 🌟 VALUE PROPS */}
-      <section className="py-10 bg-white border-b">
+      <section className="py-10 bg-muted/10 border-b">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
@@ -97,8 +93,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* 🧱 CATEGORY SPOTLIGHT (CURRENTLY STATIC — CAN BE FED FROM API LATER) */}
-      <section className="py-14 bg-muted/30">
+      <BrandShowcase />
+
+      <section className="py-14 bg-muted/10">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-8">Shop by Categories</h2>
 
@@ -120,7 +117,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* 🔥 FEATURED PRODUCTS */}
       {featuredProducts.length > 0 && (
         <LandingSection
           title="Featured Products"
@@ -130,7 +126,6 @@ const Index = () => {
         />
       )}
 
-      {/* ⭐ BEST SELLING */}
       {bestSelling.length > 0 && (
         <LandingSection
           title="Best Selling"
@@ -140,7 +135,6 @@ const Index = () => {
         />
       )}
 
-      {/* 🔥 TRENDING NOW */}
       {trending.length > 0 && (
         <LandingSection
           title="Trending Now"
@@ -150,7 +144,6 @@ const Index = () => {
         />
       )}
 
-      {/* 🆕 NEW ARRIVALS */}
       {newArrivals.length > 0 && (
         <LandingSection
           title="New Arrivals"
@@ -160,8 +153,7 @@ const Index = () => {
         />
       )}
 
-      {/* 🎯 CTA SECTION */}
-      <section className="py-20 bg-gradient-hero text-center">
+      {/* <section className="py-20 bg-gradient-hero text-center">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-white mb-4">
             Build Better. Build Stronger.
@@ -179,20 +171,17 @@ const Index = () => {
             </Link>
           </Button>
         </div>
-      </section>
-
-      <Footer />
+      </section> */}
     </>
   );
 };
 
-// REUSABLE SECTION BLOCK
 const LandingSection = ({ title, link, products, bg }) => (
   <section className={`py-16 ${bg}`}>
     <div className="container mx-auto px-4">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-        <Button variant="ghost" asChild>
+        <Button variant="outline" asChild>
           <Link to={link}>
             View All <ArrowRight className="ml-2 h-4 w-4" />
           </Link>

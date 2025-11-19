@@ -17,6 +17,10 @@ const BlogDetail = () => {
     },
     enabled: !!slug,
   });
+  if (isLoading) {
+    return <Loader/>
+  }
+  
   if (!blog) {
     return (
         <div className="container mx-auto px-4 py-16 text-center">
@@ -27,10 +31,6 @@ const BlogDetail = () => {
         </div>
     );
   }
-  if (isLoading) {
-    return <Loader/>
-  }
-
   return (
       <div className="container mx-auto px-4 py-8">
         <Button variant="ghost" asChild className="mb-6">

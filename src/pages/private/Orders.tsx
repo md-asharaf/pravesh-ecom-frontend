@@ -67,7 +67,7 @@ const Orders = () => {
             placeholder="Search your orders here"
             className="h-12 rounded-md"
           />
-          <Button className="h-12 px-6 bg-blue-600 hover:bg-blue-700">
+          <Button className="h-12 px-6 text-accent hover:bg-accent/20">
             Search Orders
           </Button>
         </div>
@@ -103,7 +103,7 @@ const Orders = () => {
                     <div className="flex-1 space-y-1">
                       <Link
                         to={`/product/${product.slug}`}
-                        className="font-semibold text-lg hover:text-blue-600"
+                        className="font-semibold text-lg hover:text-accent"
                       >
                         {product.name}
                       </Link>
@@ -181,7 +181,7 @@ const Orders = () => {
                       {/* Shipped */}
                       {order.status === "shipped" && (
                         <>
-                          <Badge className="bg-blue-100 text-blue-700">Shipped</Badge>
+                          <Badge className="bg-accent/20 text-accent/80">Shipped</Badge>
                           <p className="text-xs text-gray-500">
                             Estimated delivery by {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}
                           </p>

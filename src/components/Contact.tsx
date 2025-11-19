@@ -11,7 +11,6 @@ export default function Contact() {
     return (
         <section className="max-w-6xl mx-auto px-6 py-12">
             <header className="mb-10">
-                <div className="text-xl uppercase tracking-[0.3em] text-black mb-4">Contact</div>
                 <h1 className="text-3xl md:text-4xl font-semibold">Get In Touch: How Can We Help You Build?</h1>
                 <p className="mt-3 text-md text-muted-foreground max-w-2xl">
                     We are committed to making your material sourcing experience as seamless as possible. Whether you have a question about a product, need a large-volume quote, or require support for an existing order, we're here to help.
