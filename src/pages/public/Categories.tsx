@@ -15,13 +15,14 @@ const Categories = () => {
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories-parent"],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await categoryService.getAll({
         limit: 12,
         page: pageParam,
+        parentCategoryId: "null"
       });
-      return response.data;
+      return response.data
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {

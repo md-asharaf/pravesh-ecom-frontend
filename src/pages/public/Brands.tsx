@@ -16,7 +16,7 @@ const Brands = () => {
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["brands"],
+    queryKey: ["brands-infinite"],
     queryFn: async ({ pageParam }) => {
       const response = await brandService.getAll({
         limit: 12,
