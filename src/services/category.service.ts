@@ -22,6 +22,11 @@ export const categoryService = {
   async getById(id: string, populate?: boolean) {
     const response = await instance.get<ApiResponse<Category>>(`/categories/${id}`, { params: { populate } });
     return response.data;
+  },
+
+  async getBySlug(slug: string, populate?: boolean) {
+    const response = await instance.get<ApiResponse<Category>>(`/categories/slug/${slug}`, { params: { populate } });
+    return response.data;
   }
 }
 

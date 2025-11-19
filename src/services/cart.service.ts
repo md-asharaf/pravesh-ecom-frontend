@@ -7,11 +7,10 @@ export const cartService = {
     return response.data;
   },
 
-  async addToCart(productId: string) {
-    const response = await instance.post<ApiResponse<Cart>>("/cart/add", { productId, quantity: 1 });
+  async addToCart({ productId, quantity = 1 }: { productId: string, quantity?: number }) {
+    const response = await instance.post<ApiResponse<Cart>>("/cart/add", { productId, quantity });
     return response.data;
   },
-
   async removeFromCart(productId: string) {
     const response = await instance.delete<ApiResponse<Cart>>(`/cart/item/${productId}`);
     return response.data;

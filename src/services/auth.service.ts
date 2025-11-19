@@ -4,7 +4,7 @@ import { ApiResponse, Login, Register, User } from "@/types";
 
 export const authService = {
   async login(data: Login) {
-    const response = await instance.post<ApiResponse<User>>("/auth/login", data);
+    const response = await instance.post<ApiResponse<{ user: User }>>("/auth/login", data);
     return response.data;
   },
 

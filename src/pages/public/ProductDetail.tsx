@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addToWishlist, removeFromWishlist } from "@/store/slices/wishlist";
+import { addItem } from "@/store/slices/cart";
 
 const ProductDetail: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -143,6 +144,8 @@ const ProductDetail: React.FC = () => {
     mutationFn: cartService.addToCart,
     onSuccess: (data) => {
       toast.success(data.message);
+      dispatch(addItem({ product, quantity }));
+      setQuantity(1);
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to add to cart");
@@ -265,7 +268,7 @@ const ProductDetail: React.FC = () => {
           <div className="flex gap-3">
             <Button
               className="flex-1 rounded-full"
-              onClick={handleWishlistClick}
+              onClick={() => addToCartMutation.mutate({ productId: product._id, quantity })}
               disabled={addToCartMutation.isPending || removeFromWishlistMutation.isPending}
             >
               <ShoppingCart className="h-4 w-4 mr-1" />

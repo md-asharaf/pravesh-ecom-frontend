@@ -7,11 +7,9 @@ import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
 import { bannerService } from "@/services/banner.service"; // if you have banners API
 import BrandShowcase from "@/components/BrandShowcase";
-import Footer from "@/components/Footer";
 import { categoryService } from "@/services/category.service";
 
 const Index = () => {
-  // BANNERS
   const { data: banners = [] } = useQuery({
     queryKey: ["banners"],
     queryFn: async () => {
@@ -26,28 +24,24 @@ const Index = () => {
   });
 
   const categories = categoryResp?.categories || []
-  // FEATURED PRODUCTS
   const { data: featuredRes } = useQuery({
     queryKey: ["featured-products"],
     queryFn: () => productService.getAll({ isFeatured: true, limit: 12 }).then((r) => r.data),
   });
   const featuredProducts = featuredRes?.products || [];
 
-  // BEST SELLING
   const { data: bestSellingRes } = useQuery({
     queryKey: ["best-selling"],
     queryFn: () => productService.getAll({ sort: "bestSelling", limit: 8 }).then((r) => r.data),
   });
   const bestSelling = bestSellingRes?.products || [];
 
-  // NEW ARRIVALS
   const { data: newArrivalsRes } = useQuery({
     queryKey: ["new-arrivals"],
     queryFn: () => productService.getAll({ isNewArrival: true, limit: 8 }).then((r) => r.data),
   });
   const newArrivals = newArrivalsRes?.products || [];
 
-  // TRENDING
   const { data: trendingRes } = useQuery({
     queryKey: ["trending-products"],
     queryFn: () => productService.getAll({ sort: "trending", limit: 8 }).then((r) => r.data),
@@ -102,7 +96,7 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
             {categories?.map((cat, i) => (
               <Link
-                to={`/products?cat=${cat.title}`}
+                to={`/category/${cat.slug}`}
                 key={i}
                 className="group p-4 shadow flex flex-col items-center text-center border rounded-xl hover:shadow-sm transition cursor-pointer"
               >
@@ -188,7 +182,7 @@ const LandingSection = ({ title, link, products, bg }) => (
         </Button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((p) => (
           <ProductCard key={p._id} product={p} />
         ))}

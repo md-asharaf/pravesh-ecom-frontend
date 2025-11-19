@@ -2,7 +2,7 @@ import instance from "@/lib/axios";
 import { ApiResponse, PaginatedBrands } from "@/types";
 
 export const brandService = {
-  async getAll(options?: { page?: number, limit?: number }) {
+  async getAll(options?: { page?: number, limit?: number,categoryId?: string }) {
     const response = await instance.get<ApiResponse<PaginatedBrands>>("/brands", {
       params: options
     });

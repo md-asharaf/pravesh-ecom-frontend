@@ -67,7 +67,7 @@ const Orders = () => {
             placeholder="Search your orders here"
             className="h-12 rounded-md"
           />
-          <Button className="h-12 px-6 text-accent hover:bg-accent/20">
+          <Button className="h-12 px-6 text-white">
             Search Orders
           </Button>
         </div>
@@ -140,6 +140,24 @@ const Orders = () => {
                         </div>
                       )}
 
+                      {/* Delivered */}
+                      {order.status === "out_for_delivery" && (
+                        <div className="flex flex-col gap-2 items-end">
+                          <Badge className="bg-emerald-100 text-blue-700">Out for Delivery</Badge>
+                          <p className="text-xs text-gray-500">
+                            Your item is out for delivery
+                          </p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex items-center gap-1 text-sm rounded-full"
+                          >
+                            <Star className="w-4 h-4" />
+                            Rate & Review Product
+                          </Button>
+                        </div>
+                      )}
+
                       {order.status === "cancelled" && (
                         <>
                           <Badge className="bg-red-100 text-red-700">Cancelled</Badge>
@@ -150,9 +168,9 @@ const Orders = () => {
                       )}
 
                       {/* Processing */}
-                      {order.status === "awaiting_confirmation" && (
+                      {order.status === "received" && (
                         <>
-                          <Badge className="bg-yellow-100 text-yellow-700">Pending</Badge>
+                          <Badge className="bg-yellow-100 text-yellow-700">Received</Badge>
                           <p className="text-xs text-gray-500">
                             Waiting for confirmation from seller.
                           </p>
@@ -161,19 +179,18 @@ const Orders = () => {
                       }
 
                       {/* Processing */}
-                      {order.status === "awaiting_payment" && (
+                      {order.status === "approved" && (
                         <div className="flex flex-col gap-2 items-end">
-                          <Badge className="bg-orange-100 text-orange-700">Pending</Badge>
+                          <Badge className="bg-orange-100 text-orange-700">Approved</Badge>
                           <p className="text-xs text-gray-500">
                             Waiting for your confirmation.
                           </p>
                           <Button
                             size="sm"
                             variant="default"
-                            className="flex items-center gap-1 text-sm font-medium hover:underline rounded-full"
+                            className="flex items-center gap-1 text-muted-foreground text-sm font-medium hover:underline rounded-full"
                           >
-                            <Star className="w-4 h-4" />
-                            Confirm Order
+                            Confirm
                           </Button>
                         </div>
                       )}
@@ -190,9 +207,9 @@ const Orders = () => {
                       }
 
                       {/* Processing */}
-                      {order.status === "processing" && (
+                      {order.status === "confirmed" && (
                         <>
-                          <Badge className="bg-indigo-100 text-indigo-700">Processing</Badge>
+                          <Badge className="bg-indigo-100 text-indigo-700">Confirmed</Badge>
                           <p className="text-xs text-gray-500">
                             Items will be shipped shortly.
                           </p>

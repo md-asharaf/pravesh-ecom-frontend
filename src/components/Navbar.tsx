@@ -1,4 +1,3 @@
-// --- Debounced version of your Navbar.tsx ---
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -8,6 +7,7 @@ import {
   Search,
   Menu,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,9 +43,6 @@ const Navbar: React.FC = () => {
   const cartCount = useAppSelector((s) => s.cart.totalItems);
   const { tree } = useAppSelector((s) => s.categoryTree);
 
-  // ------------------------------
-  // Local UI State
-  // ------------------------------
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState<ProductSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -206,105 +203,114 @@ const Navbar: React.FC = () => {
               </Button>
             </div>
 
-            <Button
-              variant="outline"
-              onClick={() => setMobileSearchOpen(true)}
-              className="p-2 bg-gray-100 rounded-md md:hidden"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
+            <div className="md:hidden flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => setMobileSearchOpen(true)}
+                className="p-2 bg-gray-100 rounded-md"
+              >
+                <Search className="h-5 w-5" />
+              </Button>
 
-            <Link to="/cart" className="p-2 bg-gray-100 rounded-md md:hidden">
-              <ShoppingCart className="h-5 w-5" />
-            </Link>
+              <Link to="/cart" className="p-2 bg-gray-100 rounded-md">
+                <ShoppingCart className="h-5 w-5" />
+              </Link>
 
-            <Sheet>
-              <SheetTrigger asChild>
-                <button className="p-2 bg-gray-100 rounded-md lg:hidden">
-                  <Menu className="h-5 w-5" />
-                </button>
-              </SheetTrigger>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="p-2 rounded-md lg:hidden">
+                    <Menu className="h-5 w-5" />
+                  </button>
+                </SheetTrigger>
 
-              <SheetContent side="right" className="w-80 p-0">
-                <div className="bg-accent/70 text-white px-6 py-6 rounded-bl-3xl shadow flex items-center justify-between">
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => navigate(user ? "/profile" : "/login")}
-                  >
-                    <p className="text-lg font-semibold">{user ? user.name : "Welcome"}</p>
-                    <p className="text-sm opacity-80">
-                      {user ? user.email : "Sign in for better experience"}
-                    </p>
-                  </div>
-
-                  <SheetClose asChild>
-                    <button>
-                      <X className="h-5 w-5" />
-                    </button>
-                  </SheetClose>
-                </div>
-
-                <div className="p-6 flex flex-col gap-6">
-                  <div className="flex flex-col gap-3">
-                    <SheetClose asChild><Link to="/products">Products</Link></SheetClose>
-                    <SheetClose asChild><Link to="/brands">Brands</Link></SheetClose>
-                    <SheetClose asChild><Link to="/blog">Blog</Link></SheetClose>
-                    <SheetClose asChild><Link to="/about">About</Link></SheetClose>
-                    <SheetClose asChild><Link to="/contact">Contact</Link></SheetClose>
-                  </div>
-
-                  <hr />
-
-                  <div>
-                    <p className="text-xs font-semibold text-gray-500 mb-2">CATEGORIES</p>
-                    <Accordion type="single" collapsible className="space-y-2">
-                      {tree.map((cat: CategoryNode) => (
-                        <AccordionItem key={cat._id} value={cat.slug} className="rounded-xl border">
-                          <AccordionTrigger className="px-4 py-3 text-sm font-semibold">
-                            {cat.title}
-                          </AccordionTrigger>
-                          <AccordionContent className="px-4 pb-3">
-                            <ul className="space-y-2">
-                              {cat.children?.map((sub: CategoryNode) => (
-                                <li key={sub._id}>
-                                  <SheetClose asChild>
-                                    <Link to={`/products?c=${sub._id}`} className="text-sm">
-                                      {sub.title}
-                                    </Link>
-                                  </SheetClose>
-                                </li>
-                              ))}
-                            </ul>
-                          </AccordionContent>
-                        </AccordionItem>
-                      ))}
-                    </Accordion>
-                  </div>
-
-                  {user && (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => {
-                        logout?.();
-                        navigate("/");
-                      }}
+                <SheetContent side="right" className="w-80 p-0">
+                  <div className="bg-accent/30 text-accent/70 px-6 py-6 rounded-bl-3xl flex items-center justify-between">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => navigate(user ? "/profile" : "/login")}
                     >
-                      Logout
-                    </Button>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+                      <p className="text-lg font-semibold">{user ? user.name : "Welcome"}</p>
+                      <p className={`text-sm text-gray-800 opacity-80 ${user ? "" : "hover:underline"}`}>
+                        {user ? user.email : "Sign in"}
+                      </p>
+                    </div>
+
+                    {/* <SheetClose asChild>
+                      <button>
+                        <X className="h-5 w-5" />
+                      </button>
+                    </SheetClose> */}
+                  </div>
+
+                  <div className="p-6 flex flex-col gap-6">
+                    <div className="flex flex-col gap-3">
+                      <SheetClose asChild><Link to="/categories">Categories</Link></SheetClose>
+                      <SheetClose asChild><Link to="/brands">Brands</Link></SheetClose>
+                      <SheetClose asChild><Link to="/blog">Blog</Link></SheetClose>
+                      <SheetClose asChild><Link to="/about">About</Link></SheetClose>
+                      <SheetClose asChild><Link to="/contact">Contact</Link></SheetClose>
+                    </div>
+
+                    <hr />
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 mb-2">CATEGORIES</p>
+                      <Accordion type="single" collapsible className="space-y-2">
+                        {tree.map((cat: CategoryNode) => (
+                          <AccordionItem key={cat._id} value={cat.slug} className="rounded-xl border">
+                            <AccordionTrigger className="px-4 py-3 text-sm font-semibold">
+                              {cat.title}
+                            </AccordionTrigger>
+                            <AccordionContent className="px-4 pb-3">
+                              <ul className="space-y-2">
+                                {cat.children?.map((sub: CategoryNode) => (
+                                  <li key={sub._id}>
+                                    <SheetClose asChild>
+                                      <Link to={`/products?c=${sub._id}`} className="text-sm">
+                                        {sub.title}
+                                      </Link>
+                                    </SheetClose>
+                                  </li>
+                                ))}
+                              </ul>
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </div>
+
+                    {user && (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => {
+                          logout?.();
+                          navigate("/");
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </nav>
 
       {mobileSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm p-4">
-          <div className="container mx-auto px-4">
+        <div className="fixed inset-0 z-50 bg-white/95 backdrop-blur-sm py-4 px-2">
+          <div className="container mx-auto px-2">
 
             <div className="flex items-center gap-3">
+              <Button
+                onClick={() => setMobileSearchOpen(false)}
+                className="p-2 bg-gray-100 rounded-full"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
               <div className="flex-1 relative">
                 <Input
                   autoFocus
@@ -312,23 +318,15 @@ const Navbar: React.FC = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
-                  className="h-12 pl-10 rounded-full bg-gray-100"
+                  className="h-9 pl-10 rounded-full bg-gray-100"
                 />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
               </div>
 
-              <button
-                onClick={() => setMobileSearchOpen(false)}
-                className="p-2 rounded-md bg-gray-100"
-              >
-                <X className="h-5 w-5" />
-              </button>
             </div>
 
-            <div className="mt-4 bg-white rounded-xl shadow border max-h-[60vh] overflow-y-auto">
-              {search.trim().length < 2 ? (
-                <div className="p-4 text-sm text-gray-500">Type 2+ characters to search…</div>
-              ) : suggestions.length === 0 ? (
+            <div className="mt-4 rounded-xl text-center border max-h-[60vh] overflow-y-auto">
+              {suggestions.length === 0 ? (
                 <div className="p-4 text-sm text-gray-500">No results found</div>
               ) : (
                 suggestions.map((item) => (

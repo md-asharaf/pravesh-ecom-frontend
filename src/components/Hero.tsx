@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { Banner } from "@/types/banner"; // adjust path
+import { useNavigate } from "react-router-dom";
+import { Banner } from "@/types/banner";
 
 type HeroProps = {
   banners: Banner[];
@@ -13,7 +13,6 @@ const Hero = ({ banners }: HeroProps) => {
   const timeoutRef = useRef<any>(null);
   const navigate = useNavigate();
 
-  // Auto-slide
   useEffect(() => {
     if (!banners || banners.length === 0) return;
 
@@ -28,7 +27,6 @@ const Hero = ({ banners }: HeroProps) => {
   const prev = () =>
     setCurrent((prev) => (prev - 1 + banners.length) % banners.length);
 
-  // Navigation handler
   const handleBannerClick = (banner: Banner) => {
     const { type, targetId, targetUrl } = banner;
 
@@ -74,7 +72,7 @@ const Hero = ({ banners }: HeroProps) => {
         className="flex transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
-        {banners.length > 0 ? (
+        {
           banners.map((banner) => (
             <div
               key={banner._id}
@@ -108,14 +106,7 @@ const Hero = ({ banners }: HeroProps) => {
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="min-w-full h-[450px] md:h-[520px] bg-gradient-hero flex items-center px-10">
-            <h1 className="text-white text-4xl font-bold">
-              Loading banners...
-            </h1>
-          </div>
-        )}
+          ))}
       </div>
 
       {/* Arrows */}
@@ -143,9 +134,8 @@ const Hero = ({ banners }: HeroProps) => {
           <div
             key={i}
             onClick={() => setCurrent(i)}
-            className={`h-2.5 w-2.5 rounded-full cursor-pointer transition ${
-              i === current ? "bg-white" : "bg-white/40"
-            }`}
+            className={`h-2.5 w-2.5 rounded-full cursor-pointer transition ${i === current ? "bg-white" : "bg-white/40"
+              }`}
           ></div>
         ))}
       </div>

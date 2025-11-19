@@ -24,18 +24,18 @@ const calculateSummary = (state: CartState) => {
 export const cartSlice = createSlice({
   name: "cart",
   initialState,
-  reducers: {
+    reducers: {
     setCart: (state, action: PayloadAction<Cart>) => {
       state.items = action.payload.items || [];
       calculateSummary(state);
     },
 
-    addItem: (state, action: PayloadAction<Partial<Product>>) => {
-      const product = action.payload;
+    addItem: (state, action: PayloadAction<{product: Partial<Product>; quantity: number}>) => {
+      const { product, quantity } = action.payload;
       const existing = state.items.find((i) => i.product._id === product._id);
 
       if (existing) {
-        existing.quantity += 1;
+        existing.quantity += quantity
       } else {
         state.items.push({ product, quantity: 1 });
       }

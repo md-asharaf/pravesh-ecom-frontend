@@ -45,7 +45,7 @@ const Login = () => {
     },
     onSuccess: ({ data, message }) => {
       toast.success(message ?? "Logged in");
-      login(data);
+      login(data.user);
       navigate("/");
     },
     onError: (error: any) => toast.error(error.response?.data?.message ?? "Invalid credentials"),

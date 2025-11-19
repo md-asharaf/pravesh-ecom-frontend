@@ -3,6 +3,7 @@ import { Brand, PaginatedData, Product } from ".";
 export type Category = {
   _id: string;
   title: string;
+  path:string[];
   slug:string;
   isDeleted: boolean;
   createdAt: string;

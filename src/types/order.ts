@@ -4,12 +4,14 @@ import { Product } from "./product";
 import { PaginatedData } from ".";
 
 export const orderStatusSchema = z.enum([
-  "processing",
-  "shipped",
-  "delivered",
+  "received",
+  "approved",
+  "confirmed",
   "cancelled",
-  "awaiting_confirmation",
-  "awaiting_payment",
+  "shipped",
+  "out_for_delivery",
+  "delivered",
+  "refunded"
 ]);
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
 

@@ -62,7 +62,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   const isWishlistMutationPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
   return (
-    <Card className="group hover:shadow-lg transition-shadow duration-300 bg-gradient-card">
+    <Card className="group hover:shadow-lg transition-shadow duration-300 bg-gradient-card min-w-[300px] max-w-sm">
       <Link to={`/product/${product.slug}`}>
         <div className="relative overflow-hidden rounded-t-lg">
           <img
@@ -95,8 +95,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <span className="text-sm text-muted-foreground">({product.reviewCount})</span>
         </div>
         {/* <div className="flex items-baseline gap-2 mb-2"> */}
-          {/* <span className="text-2xl font-bold text-primary">₹{product.originalPrice.toLocaleString()}</span> */}
-          {/* {product.discountValue && (
+        {/* <span className="text-2xl font-bold text-primary">₹{product.originalPrice.toLocaleString()}</span> */}
+        {/* {product.discountValue && (
             <span className="text-sm text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
           )} */}
         {/* </div> */}
@@ -110,8 +110,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
       </CardContent>
       <CardFooter className="p-4 pt-0 flex gap-2">
         <Button className="flex-1" onClick={() => {
-          addToCartMutation.mutate(product._id!);
-          dispatch(addItem(product));
+          addToCartMutation.mutate({ productId: product._id, quantity: 1 });
+          dispatch(addItem({ product, quantity: 1 }));
         }}>
           {addToCartMutation.isPending ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <><ShoppingCart className="mr-2 h-4 w-4" />
             Add to Cart</>}
