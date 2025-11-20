@@ -58,16 +58,33 @@ const Brands = () => {
         {brands?.map((brand) => {
           return (
             <Link key={brand._id} to={`/products?b=${brand._id}`}>
-              <Card className="group hover:shadow-lg transition-all duration-300 bg-gradient-card">
-                <CardContent className="p-6 text-center">
-                  <div className="h-24 flex items-center justify-center mb-4">
-                    <img
-                      src={brand.image}
-                      alt={brand.name}
-                      className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">{brand.name}</h3>
+              <Card
+                className="
+          group relative h-48 overflow-hidden cursor-pointer
+          bg-gradient-card rounded-xl
+          transition-all duration-300
+          hover:shadow-lg hover:scale-[1.02]
+        "
+              >
+                <CardContent className="p-6 text-center relative h-full w-full">
+                  <img
+                    src={brand.image || "/placeholder.svg"}
+                    alt={brand.name}
+                    className="absolute inset-0 w-full h-full object-cover
+                       transition-transform duration-500
+                       group-hover:scale-110"
+                  />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+
+                  <h3
+                    className="
+              absolute bottom-4 left-4 right-4 
+              text-lg font-semibold text-white
+              leading-tight line-clamp-2
+            "
+                  >
+                    {brand.name}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
                     {brand.productCount} products
                   </p>

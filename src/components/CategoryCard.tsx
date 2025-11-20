@@ -19,17 +19,15 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
       >
         <div className="relative h-full w-full">
           {/* Enable when using images */}
-          {/* 
           <img
-            src={category.image}
+            src={"/placeholder.svg"}
             alt={category.title}
             className="absolute inset-0 w-full h-full object-cover
                        transition-transform duration-500
                        group-hover:scale-110"
           />
-          */}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 
           <h3
             className="

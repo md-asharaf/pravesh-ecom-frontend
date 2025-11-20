@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { cartService } from "@/services/cart.service";
 
 interface ProductCardProps {
-  product: Partial<Product>;
+  product: Product;
 }
 
 const ProductCard = ({ product }: ProductCardProps) => {
@@ -62,93 +62,88 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   const isWishlistMutationPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
   return (
-    <Card className="group hover:shadow-lg transition-shadow duration-300 bg-gradient-card min-w-[300px] max-w-sm">
+    <Card className="group hover:shadow-md transition-shadow duration-300 bg-gradient-card h-full flex flex-col w-full">
       <Link to={`/product/${product.slug}`}>
         <div className="relative overflow-hidden rounded-t-lg">
           <img
-            src={product.thumbnail}
+            src={product.thumbnail || "/placeholder.svg"}
             alt={product.name}
-            className="w-full h-48 group-hover:scale-105 transition-transform duration-300"
+            className="w-full h-48 sm:h-56 md:h-64 group-hover:scale-105 transition-transform duration-300 object-cover"
           />
-          {/* {product.discountValue && (
-            <Badge className="absolute top-2 left-2 bg-accent text-accent-foreground">
-              {product.discountType === "percentage" ? `${product.discountValue}% OFF` : `₹${product.discountValue} OFF`}
-            </Badge>
-          )}
-          {product.isNewArrival && (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
-              NEW
-            </Badge>
-          )} */}
         </div>
       </Link>
-      <CardContent className="p-4 flex-1 flex flex-col justify-between">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
         <Link to={`/product/${product.slug}`}>
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-primary transition-colors min-h-[3.5rem]">
+          <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-2 line-clamp-2 hover:text-primary transition-colors min-h-[3.5rem]">
             {product.name}
           </h3>
         </Link>
-        {/* <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{product.shortDescription}</p> */}
         <div className="flex items-center gap-1 mb-3">
-          <Star className="h-4 w-4 fill-accent text-accent" />
-          <span className="text-sm font-medium">{product.rating}</span>
-          <span className="text-sm text-muted-foreground">({product.reviewCount})</span>
+          <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-accent text-accent" />
+          <span className="text-xs sm:text-sm font-medium">{product.rating}</span>
+          <span className="text-xs sm:text-sm text-muted-foreground">({product.reviewCount})</span>
         </div>
-        {/* <div className="flex items-baseline gap-2 mb-2"> */}
-        {/* <span className="text-2xl font-bold text-primary">₹{product.originalPrice.toLocaleString()}</span> */}
-        {/* {product.discountValue && (
-            <span className="text-sm text-muted-foreground line-through">₹{product.originalPrice.toLocaleString()}</span>
-          )} */}
-        {/* </div> */}
-        {/* <p className="text-xs text-muted-foreground">Per {product.unit}</p> */}
-        {/* <Badge
-          variant={product.stockStatus === "in_stock" ? "secondary" : "destructive"}
-          className="mt-2"
-        >
-          {product.stockStatus === "in_stock" ? "In Stock" : product.stockStatus === "low_stock" ? "Low Stock" : "Out of Stock"}
-        </Badge> */}
+        {/* Price Section */}
+        {/* <div className="flex items-baseline gap-2 mb-4">
+          <span className="text-lg sm:text-xl font-bold text-foreground">₹{product.price.toLocaleString()}</span>
+        </div> */}
       </CardContent>
-      <CardFooter className="p-4 pt-0 flex gap-2">
-        <Button className="flex-1" onClick={() => {
-          addToCartMutation.mutate({ productId: product._id, quantity: 1 });
-          dispatch(addItem({ product, quantity: 1 }));
-        }}>
-          {addToCartMutation.isPending ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <><ShoppingCart className="mr-2 h-4 w-4" />
-            Add to Cart</>}
+      <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
+        <Button
+          className="flex-1 h-9 sm:h-10 text-xs sm:text-sm"
+          onClick={() => {
+            addToCartMutation.mutate({ productId: product._id, quantity: 1 })
+            dispatch(addItem({ product, quantity: 1 }))
+          }}
+        >
+          {addToCartMutation.isPending ? (
+            <Loader2 className="animate-spin mr-2 h-4 w-4" />
+          ) : (
+            <>
+              <ShoppingCart className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <span >Add to Cart</span>
+            </>
+          )}
         </Button>
-        <Button variant="outline" size="icon" onClick={handleWishlistClick} className={`${isWishlisted ? "text-red-500 border-red-500" : ""}`}>
-          {isWishlistMutationPending ? <Loader2 className="animate-spin" /> : <Heart className="h-4 w-4" />}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={handleWishlistClick}
+          className={`h-9 sm:h-10 w-9 sm:w-10 ${isWishlisted ? "text-pink-500 border-pink-500" : ""}`}
+        >
+          {isWishlistMutationPending ? <Loader2 className="animate-spin h-4 w-4" /> : <Heart className="h-4 w-4" />}
         </Button>
       </CardFooter>
     </Card>
-  );
-};
-
-export default ProductCard;
-
+  )
+}
 
 export const ProductCardSkeleton = () => {
-  return <Card className="group bg-gradient-card min-w-[300px] max-w-sm animate-pulse">
-    <div className="relative overflow-hidden rounded-t-lg">
-      <div className="w-full h-48 bg-muted" />
-    </div>
-
-    <CardContent className="p-4 flex-1 flex flex-col justify-between">
-      <div className="space-y-2">
-        <div className="h-5 bg-muted rounded w-3/4" />
-        <div className="h-5 bg-muted rounded w-1/2" />
+  return (
+    <Card className="group bg-gradient-card h-full flex flex-col w-full animate-pulse">
+      <div className="relative overflow-hidden rounded-t-lg">
+        <div className="w-full h-48 sm:h-56 md:h-64 bg-muted" />
       </div>
 
-      <div className="flex items-center gap-2 mt-4">
-        <div className="h-4 w-4 bg-muted rounded" />
-        <div className="h-4 w-10 bg-muted rounded" />
-        <div className="h-4 w-12 bg-muted rounded" />
-      </div>
-    </CardContent>
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+        <div className="space-y-2">
+          <div className="h-4 sm:h-5 bg-muted rounded w-3/4" />
+          <div className="h-4 sm:h-5 bg-muted rounded w-1/2" />
+        </div>
 
-    <CardFooter className="p-4 pt-0 flex gap-2">
-      <div className="flex-1 h-10 bg-muted rounded" />
-      <div className="h-10 w-10 bg-muted rounded" />
-    </CardFooter>
-  </Card>
+        <div className="flex items-center gap-2 mt-4">
+          <div className="h-3 sm:h-4 w-3 sm:w-4 bg-muted rounded" />
+          <div className="h-3 sm:h-4 w-8 sm:w-10 bg-muted rounded" />
+          <div className="h-3 sm:h-4 w-10 sm:w-12 bg-muted rounded" />
+        </div>
+      </CardContent>
+
+      <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
+        <div className="flex-1 h-9 sm:h-10 bg-muted rounded" />
+        <div className="h-9 sm:h-10 w-9 sm:w-10 bg-muted rounded" />
+      </CardFooter>
+    </Card>
+  )
 }
+
+export default ProductCard

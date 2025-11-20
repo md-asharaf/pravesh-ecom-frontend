@@ -219,7 +219,7 @@ const ProductDetail: React.FC = () => {
         {/* LEFT: IMAGE */}
         <div className="flex justify-center">
           <div className="relative w-full max-w-md aspect-square rounded-2xl bg-muted overflow-hidden">
-            <img src={product.thumbnail} className="object-contain w-full h-full" />
+            <img src={product.thumbnail || "/placeholder.svg"} className="object-contain w-full h-full" />
           </div>
         </div>
 

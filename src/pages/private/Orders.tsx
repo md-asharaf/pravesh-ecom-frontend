@@ -1,243 +1,244 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { orderService } from "@/services/order.service";
-import { Link } from "react-router-dom";
-import { Product } from "@/types";
-import { Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Loader } from "@/components/Loader";
+import { Filter } from "lucide-react";
+import React, { useEffect } from "react";
+import { OrderCard, OrderCardSkeleton } from "@/components/OrderCard";
 
 const Orders = () => {
-  const { data: ordersData, isLoading } = useQuery({
-    queryKey: ["orders"],
+  const [search, setSearch] = React.useState("");
+  const [statusFilters, setStatusFilters] = React.useState<string[]>([]);
+  const [timeFilters, setTimeFilters] = React.useState<string[]>([]);
+  const [page, setPage] = React.useState(1);
+
+  const [debouncedSearch, setDebouncedSearch] = React.useState("");
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(search), 500);
+    return () => clearTimeout(id);
+  }, [search]);
+
+  const { data, isLoading, refetch } = useQuery({
+    queryKey: ["orders", debouncedSearch, statusFilters, timeFilters, page],
     queryFn: async () => {
-      const res = await orderService.getMyOrders();
-      return res?.data;
+      return orderService
+        .getMyOrders({
+          search: debouncedSearch,
+          status: statusFilters.join(","),
+          time: timeFilters.join(","),
+          page,
+          limit: 5,
+        })
+        .then((res) => res.data);
     },
   });
 
-  const orders = ordersData?.orders || [];
+  const orders = data?.orders || [];
+  const totalPages = data?.totalPages || 1;
 
-  if (isLoading) return <Loader />;
+  const toggleFilter = (filter: string, setter: any, list: string[]) => {
+    if (list.includes(filter)) setter(list.filter((i) => i !== filter));
+    else setter([...list, filter]);
+    setPage(1);
+  };
+
+  const statusOptions = [
+    "received",
+    "approved",
+    "confirmed",
+    "shipped",
+    "out_for_delivery",
+    "delivered",
+    "cancelled",
+    "refunded",
+  ];
+
+  const currentYear = new Date().getFullYear();
+
+  const timeOptions = [
+    "Last 30 days",
+    currentYear.toString(),
+    (currentYear - 1).toString(),
+    "Older",
+  ];
 
   return (
-    <div className="container mx-auto px-4 py-8 flex gap-6 max-w-7xl">
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="sm:hidden mb-4">
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button className="w-full flex items-center gap-2 rounded-lg">
+              <Filter size={16} /> Filters
+            </Button>
+          </DrawerTrigger>
 
-      <Card className="w-64 p-4 h-auto">
-        <h2 className="text-lg font-semibold mb-4">Filters</h2>
+          <DrawerContent className="min-h-[75vh] max-h-[75vh]">
+  <DrawerHeader>
+    <DrawerTitle>Filters</DrawerTitle>
+  </DrawerHeader>
 
-        <div className="space-y-6">
-
-          {/* Order Status */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">ORDER STATUS</h3>
-
-            {["On the way", "Delivered", "Cancelled", "Returned"].map((s) => (
-              <label key={s} className="flex items-center gap-2 py-1">
-                <Checkbox />
-                <span className="text-sm">{s}</span>
-              </label>
-            ))}
-          </div>
-
-          {/* Order Time */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">ORDER TIME</h3>
-
-            {["Last 30 days", "2024", "2023", "Older"].map((t) => (
-              <label key={t} className="flex items-center gap-2 py-1">
-                <Checkbox />
-                <span className="text-sm">{t}</span>
-              </label>
-            ))}
-          </div>
-
-        </div>
-      </Card>
-
-      <div className="flex-1">
-
-        {/* Search Bar */}
-        <div className="flex gap-3 mb-4">
-          <Input
-            placeholder="Search your orders here"
-            className="h-12 rounded-md"
+  <div className="px-4 pb-6 space-y-6">
+    {/* Order Time */}
+    <div>
+      <h3 className="text-sm font-semibold mb-2">Order Time</h3>
+      {timeOptions.map((t) => (
+        <label key={t} className="flex items-center gap-2 py-1">
+          <Checkbox
+            checked={timeFilters.includes(t)}
+            onCheckedChange={() =>
+              toggleFilter(t, setTimeFilters, timeFilters)
+            }
           />
-          <Button className="h-12 px-6 text-white">
-            Search Orders
-          </Button>
-        </div>
+          <span>{t}</span>
+        </label>
+      ))}
+    </div>
 
-        {/* NO ORDERS */}
-        {orders.length === 0 && (
-          <Card className="p-6 text-center text-muted-foreground">
-            No orders found.
-          </Card>
-        )}
+    {/* Order Status */}
+    <div>
+      <h3 className="text-sm font-semibold mb-2">Order Status</h3>
+      {statusOptions.map((s) => (
+        <label key={s} className="flex items-center gap-2 py-1">
+          <Checkbox
+            checked={statusFilters.includes(s)}
+            onCheckedChange={() =>
+              toggleFilter(s, setStatusFilters, statusFilters)
+            }
+          />
+          <span>{s.replace(/_/g, " ")}</span>
+        </label>
+      ))}
+    </div>
 
-        {/* ORDER LIST */}
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <Card key={order._id} className="rounded-md border shadow-sm">
-
-              {/* Each product inside the order */}
-              {order.items.map((item: any, index: number) => {
-                const product: Product = item.product;
-
-                return (
-                  <div
-                    key={product._id}
-                    className={`flex gap-4 p-4 ${index !== order.items.length - 1 ? "border-b" : ""}`}
-                  >
-                    {/* Product Image */}
-                    <img
-                      src={product.thumbnail}
-                      className="w-24 h-24 object-contain"
-                    />
-
-                    {/* Center: Product Info */}
-                    <div className="flex-1 space-y-1">
-                      <Link
-                        to={`/product/${product.slug}`}
-                        className="font-semibold text-lg hover:text-accent"
-                      >
-                        {product.name}
-                      </Link>
-
-                      {/* <p className="text-sm text-gray-500">
-                          Color: {product.color || "N/A"}  
-                          {product.size && <> • Size: {product.size}</>}
-                          </p> */}
+    <Button className="w-full" onClick={() => refetch()}>
+      Apply Filters
+    </Button>
+  </div>
+</DrawerContent>
 
 
-                      {/* <div className="text-lg font-semibold mt-1">
-                        ₹{product.originalPrice.toLocaleString()}
-                      </div> */}
-                    </div>
+        </Drawer>
+      </div>
 
-                    {/* Right side: Delivery Status */}
-                    <div className="text-right space-y-2">
+      <div className="flex gap-6">
+        <Card className="hidden sm:block w-64 p-4 h-fit">
+          <h2 className="text-lg font-semibold mb-4">Filters</h2>
 
-                      {/* Delivered */}
-                      {order.status === "delivered" && (
-                        <div className="flex flex-col gap-2 items-end">
-                          <Badge className="bg-emerald-100 text-emerald-700">Delivered</Badge>
-                          <p className="text-xs text-gray-500">
-                            Your item has been delivered
-                          </p>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex items-center gap-1 text-sm rounded-full"
-                          >
-                            <Star className="w-4 h-4" />
-                            Rate & Review Product
-                          </Button>
-                        </div>
-                      )}
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Order Status</h3>
+              {statusOptions.map((s) => (
+                <label key={s} className="flex items-center gap-2 py-1">
+                  <Checkbox
+                    checked={statusFilters.includes(s)}
+                    onCheckedChange={() =>
+                      toggleFilter(s, setStatusFilters, statusFilters)
+                    }
+                  />
+                  <span className="text-sm">{s.replace(/_/g, " ")}</span>
+                </label>
+              ))}
+            </div>
 
-                      {/* Delivered */}
-                      {order.status === "out_for_delivery" && (
-                        <div className="flex flex-col gap-2 items-end">
-                          <Badge className="bg-emerald-100 text-blue-700">Out for Delivery</Badge>
-                          <p className="text-xs text-gray-500">
-                            Your item is out for delivery
-                          </p>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="flex items-center gap-1 text-sm rounded-full"
-                          >
-                            <Star className="w-4 h-4" />
-                            Rate & Review Product
-                          </Button>
-                        </div>
-                      )}
+            <div>
+              <h3 className="text-sm font-semibold mb-2">Order Time</h3>
+              {timeOptions.map((t) => (
+                <label key={t} className="flex items-center gap-2 py-1">
+                  <Checkbox
+                    checked={timeFilters.includes(t)}
+                    onCheckedChange={() =>
+                      toggleFilter(t, setTimeFilters, timeFilters)
+                    }
+                  />
+                  <span className="text-sm">{t}</span>
+                </label>
+              ))}
+            </div>
 
-                      {order.status === "cancelled" && (
-                        <>
-                          <Badge className="bg-red-100 text-red-700">Cancelled</Badge>
-                          <p className="text-xs text-gray-500">
-                            order has been cancelled
-                          </p>
-                        </>
-                      )}
+            <Button className="w-full" onClick={() => refetch()}>
+              Apply Filters
+            </Button>
+          </div>
+        </Card>
 
-                      {/* Processing */}
-                      {order.status === "received" && (
-                        <>
-                          <Badge className="bg-yellow-100 text-yellow-700">Received</Badge>
-                          <p className="text-xs text-gray-500">
-                            Waiting for confirmation from seller.
-                          </p>
-                        </>
-                      )
-                      }
+        <div className="flex-1">
+          <div className="flex gap-3 mb-4">
+            <Input
+              placeholder="Search your orders here"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="h-12 rounded-md"
+            />
+            <Button className="h-12 px-6" onClick={() => refetch()}>
+              Search
+            </Button>
+          </div>
 
-                      {/* Processing */}
-                      {order.status === "approved" && (
-                        <div className="flex flex-col gap-2 items-end">
-                          <Badge className="bg-orange-100 text-orange-700">Approved</Badge>
-                          <p className="text-xs text-gray-500">
-                            Waiting for your confirmation.
-                          </p>
-                          <Button
-                            size="sm"
-                            variant="default"
-                            className="flex items-center gap-1 text-muted-foreground text-sm font-medium hover:underline rounded-full"
-                          >
-                            Confirm
-                          </Button>
-                        </div>
-                      )}
-
-                      {/* Shipped */}
-                      {order.status === "shipped" && (
-                        <>
-                          <Badge className="bg-accent/20 text-accent/80">Shipped</Badge>
-                          <p className="text-xs text-gray-500">
-                            Estimated delivery by {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-                          </p>
-                        </>
-                      )
-                      }
-
-                      {/* Processing */}
-                      {order.status === "confirmed" && (
-                        <>
-                          <Badge className="bg-indigo-100 text-indigo-700">Confirmed</Badge>
-                          <p className="text-xs text-gray-500">
-                            Items will be shipped shortly.
-                          </p>
-                        </>
-                      )
-                      }
-                    </div>
-                  </div>
-                );
-              })}
-
-              {/* REFUND INFORMATION BOX (like Flipkart) */}
-              {/* {order.status === "refunded" && (
-                <div className="bg-gray-50 p-4 text-sm text-gray-700 border-t">
-                  <p className="text-green-600 font-semibold mb-1">
-                    Refund Completed (Refund ID: {order.refundId})
-                  </p>
-                  <p>
-                    Refund was added to your bank account on{" "}
-                    <strong>{order.refundDate}</strong>. If you don't see it,
-                    contact your bank and share refund reference number{" "}
-                    <strong>{order.refundReference}</strong>.
-                  </p>
-                </div>
-              )} */}
-
+          {!isLoading && orders.length === 0 && (
+            <Card className="p-6 text-center text-muted-foreground">
+              No orders found.
             </Card>
-          ))}
+          )}
+
+          <div className="space-y-4">
+            {isLoading
+              ? Array.from({ length: 3 }).map((_, i) => <OrderCardSkeleton key={i} />)
+              : orders.map((order) => (
+                <OrderCard
+                  key={order._id}
+                  order={order}
+                  statusColors={statusColors}
+                />
+              ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div className="mt-6">
+              <Pagination>
+                <PaginationContent className="flex gap-3">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      aria-disabled={page === 1}
+                    />
+                  </PaginationItem>
+
+                  <PaginationItem className="px-4 py-2 border rounded-md">
+                    Page {page} of {totalPages}
+                  </PaginationItem>
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      aria-disabled={page === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -245,3 +246,15 @@ const Orders = () => {
 };
 
 export default Orders;
+
+const statusColors: Record<string, string> = {
+  delivered: "bg-emerald-100 text-emerald-700",
+  shipped: "bg-blue-100 text-blue-700",
+  out_for_delivery: "bg-indigo-100 text-indigo-700",
+  approved: "bg-orange-100 text-orange-700",
+  confirmed: "bg-purple-100 text-purple-700",
+  received: "bg-yellow-100 text-yellow-700",
+  cancelled: "bg-red-100 text-red-700",
+  refunded: "bg-pink-100 text-pink-700",
+};
+
