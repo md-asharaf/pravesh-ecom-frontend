@@ -21,7 +21,7 @@ const Index = () => {
 
   const { data: categoryResp, isLoading: isCategoryLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => categoryService.getAll({ limit: 6 }).then((r) => r.data),
+    queryFn: () => categoryService.getAll({ limit: 6,parentCategoryId:"null" }).then((r) => r.data),
   });
 
   const categories = categoryResp?.categories || []
@@ -92,7 +92,7 @@ const Index = () => {
       <BrandShowcase />
 
       {!isCategoryLoading && categories.length == 0 ? null :
-        <section className="py-14 bg-muted/10">
+        <section className="py-12 bg-white border-b">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold mb-8">Shop by Categories</h2>
 

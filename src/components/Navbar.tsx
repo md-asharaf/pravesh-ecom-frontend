@@ -47,7 +47,7 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
       setSuggestions([]);
       return;
     }
-    
+
     const timeout = setTimeout(async () => {
       try {
         const res = await productService.getAll({
@@ -180,18 +180,22 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
               </Button>
             </div>
 
-            <div className="md:hidden flex items-center gap-2">
+            <div className="md:hidden flex items-center">
               <Button
                 variant="ghost"
-                size="lg"
+                size="icon"
                 onClick={() => setMobileSearchOpen(true)}
-                className="p-2 bg-gray-100 rounded-md"
               >
                 <Search className="h-5 w-5" />
               </Button>
 
-              <Link to="/cart" className="p-2 bg-gray-100 rounded-md">
-                <ShoppingCart className="h-5 w-5" />
+              <Link to="/cart" className="p-2 rounded-md">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                </Button>
               </Link>
 
               <Sheet>

@@ -9,15 +9,35 @@ interface CategoryCardProps {
 const CategoryCard = ({ category }: CategoryCardProps) => {
   return (
     <Link to={`/products?c=${category._id}`}>
-      <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer bg-gradient-card h-48">
-        <div className="relative h-full overflow-hidden">
-          {/* <img
+      <Card
+        className="
+          group relative h-48 overflow-hidden cursor-pointer
+          bg-gradient-card rounded-xl
+          transition-all duration-300
+          hover:shadow-lg hover:scale-[1.02]
+        "
+      >
+        <div className="relative h-full w-full">
+          {/* Enable when using images */}
+          {/* 
+          <img
             src={category.image}
             alt={category.title}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          /> */}
-          <div className="absolute inset-0 bg-gradient-to-t from-industrial/80 to-transparent" />
-          <h3 className="absolute bottom-4 left-4 right-4 text-xl font-bold text-primary-foreground truncate">
+            className="absolute inset-0 w-full h-full object-cover
+                       transition-transform duration-500
+                       group-hover:scale-110"
+          />
+          */}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+
+          <h3
+            className="
+              absolute bottom-4 left-4 right-4 
+              text-lg font-semibold text-white
+              leading-tight line-clamp-2
+            "
+          >
             {category.title}
           </h3>
         </div>
@@ -26,17 +46,21 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
   );
 };
 
+export default CategoryCard;
+
 export function CategoryCardSkeleton() {
   return (
-    <div className="group h-48 bg-gradient-card overflow-hidden animate-pulse">
-      <div className="relative h-full">
-        <div className="absolute inset-0 bg-muted" />
-        <div className="absolute bottom-4 left-4 right-4 h-6 bg-muted rounded" />
+    <div
+      className="
+        relative h-48 rounded-xl bg-muted animate-pulse overflow-hidden
+      "
+    >
+      <div className="absolute inset-0 bg-muted" />
+
+      <div className="absolute bottom-4 left-4 right-4 space-y-2">
+        <div className="h-4 bg-muted-foreground/20 rounded w-3/4" />
+        {/* <div className="h-4 bg-muted-foreground/20 rounded w-1/2" /> */}
       </div>
     </div>
   );
 }
-
-
-
-export default CategoryCard;

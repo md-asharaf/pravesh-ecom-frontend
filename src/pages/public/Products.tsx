@@ -3,7 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useIntersection } from "@mantine/hooks";
 
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -196,16 +196,7 @@ const Products: React.FC = () => {
     if (entry?.isIntersecting && hasNextPage && !isFetching) {
       fetchNextPage();
     }
-  }, [entry, hasNextPage, isFetching]);
-
-  const SkeletonCard = () => (
-    <div className="animate-pulse bg-card border border-border rounded-lg p-4">
-      <div className="bg-surface h-48 w-full mb-4 rounded" />
-      <div className="h-4 bg-surface rounded w-3/4 mb-2" />
-      <div className="h-3 bg-surface rounded w-1/2" />
-      <div className="mt-3 h-8 bg-surface rounded w-1/3" />
-    </div>
-  );
+  }, [entry, hasNextPage, isFetching])
 
   const handleResetFilters = () => {
     setSearchParams({});
@@ -429,7 +420,7 @@ const Products: React.FC = () => {
             // initial skeleton grid
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
-                <SkeletonCard key={i} />
+                <ProductCardSkeleton key={i} />
               ))}
             </div>
           ) : (
