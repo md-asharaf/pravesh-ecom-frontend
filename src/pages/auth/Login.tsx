@@ -24,8 +24,9 @@ import { Loader } from "@/components/Loader";
 type LoginForm = { phoneOrEmail: string; password?: string };
 
 const Login = () => {
+  console.log("Login component rendered");
   const navigate = useNavigate();
-  const { login, loading } = useAuth();
+  const { login } = useAuth();
 
   const [step, setStep] = useState<"enter" | "password" | "otp">("enter");
   const [otp, setOtp] = useState("");
@@ -78,10 +79,6 @@ const Login = () => {
 
   const phoneOrEmailValue = form.watch("phoneOrEmail");
   const isLoading = pwdLogin.isPending || sendOtp.isPending || verifyOtp.isPending;
-
-  if (loading) {
-    return <Loader/>
-  }
   return (
     <div className="min-h-screen bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">

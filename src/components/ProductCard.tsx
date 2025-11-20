@@ -125,3 +125,30 @@ const ProductCard = ({ product }: ProductCardProps) => {
 };
 
 export default ProductCard;
+
+
+export const ProductCardSkeleton = () => {
+  return <Card className="group bg-gradient-card min-w-[300px] max-w-sm animate-pulse">
+    <div className="relative overflow-hidden rounded-t-lg">
+      <div className="w-full h-48 bg-muted" />
+    </div>
+
+    <CardContent className="p-4 flex-1 flex flex-col justify-between">
+      <div className="space-y-2">
+        <div className="h-5 bg-muted rounded w-3/4" />
+        <div className="h-5 bg-muted rounded w-1/2" />
+      </div>
+
+      <div className="flex items-center gap-2 mt-4">
+        <div className="h-4 w-4 bg-muted rounded" />
+        <div className="h-4 w-10 bg-muted rounded" />
+        <div className="h-4 w-12 bg-muted rounded" />
+      </div>
+    </CardContent>
+
+    <CardFooter className="p-4 pt-0 flex gap-2">
+      <div className="flex-1 h-10 bg-muted rounded" />
+      <div className="h-10 w-10 bg-muted rounded" />
+    </CardFooter>
+  </Card>
+}

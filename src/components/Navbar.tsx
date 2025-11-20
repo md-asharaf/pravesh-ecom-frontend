@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ShoppingCart,
@@ -6,14 +6,11 @@ import {
   Heart,
   Search,
   Menu,
-  X,
   ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/providers/auth";
-import { useQuery } from "@tanstack/react-query";
-import { categoryService } from "@/services/category.service";
 import {
   Sheet,
   SheetTrigger,
@@ -26,48 +23,31 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Loader } from "./Loader";
-import { setCategoryTree } from "@/store/slices/category";
 import { productService } from "@/services/product.service";
 
 type ProductSuggestion = any;
 type CategoryNode = any;
 
-const Navbar: React.FC = () => {
+type NavbarProps = {
+  wishlistCount?: number;
+  cartCount?: number;
+  tree: CategoryNode[];
+};
+
+const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
   const navigate = useNavigate();
-  const { user, logout, loading } = useAuth();
-  const dispatch = useAppDispatch();
-
-  const wishlistCount = useAppSelector((s) => s.wishlist.totalItems);
-  const cartCount = useAppSelector((s) => s.cart.totalItems);
-  const { tree } = useAppSelector((s) => s.categoryTree);
-
+  const { user, logout } = useAuth();
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState<ProductSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["category-tree"],
-    queryFn: async () => {
-      const res = await categoryService.getTree();
-      return res.data;
-    },
-    enabled: tree.length === 0,
-  });
-
-  useEffect(() => {
-    if (data) dispatch(setCategoryTree(data));
-  }, [data, dispatch]);
-
   useEffect(() => {
     if (search.trim().length < 2) {
       setSuggestions([]);
       return;
     }
-
+    
     const timeout = setTimeout(async () => {
       try {
         const res = await productService.getAll({
@@ -96,9 +76,6 @@ const Navbar: React.FC = () => {
     setShowSuggestions(false);
     setMobileSearchOpen(false);
   };
-
-  if (loading || isLoading) return <Loader />;
-
   return (
     <header>
       <nav className="w-full shadow-sm border-b bg-white">

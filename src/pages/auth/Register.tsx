@@ -19,7 +19,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { useAppDispatch } from "@/store/hooks";
 import { useAuth } from "@/providers/auth";
 
 const RegisterPage = () => {

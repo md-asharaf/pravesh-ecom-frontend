@@ -3,7 +3,7 @@ import { Category } from "@/types";
 
 export interface CategoryTreeState {
   tree: Category[];
-  expanded: Record<string, boolean>; // for UI handling (optional)
+  expanded: Record<string, boolean>;
 }
 
 const initialState: CategoryTreeState = {

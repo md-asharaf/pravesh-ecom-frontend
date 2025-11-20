@@ -26,4 +26,17 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
   );
 };
 
+export function CategoryCardSkeleton() {
+  return (
+    <div className="group h-48 bg-gradient-card overflow-hidden animate-pulse">
+      <div className="relative h-full">
+        <div className="absolute inset-0 bg-muted" />
+        <div className="absolute bottom-4 left-4 right-4 h-6 bg-muted rounded" />
+      </div>
+    </div>
+  );
+}
+
+
+
 export default CategoryCard;

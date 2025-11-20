@@ -1,13 +1,14 @@
 import Hero from "@/components/Hero";
-import ProductCard from "@/components/ProductCard";
+import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Wrench, Truck, ShieldCheck, Flame, Boxes } from "lucide-react";
+import { ArrowRight, Wrench, Truck, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
-import { bannerService } from "@/services/banner.service"; // if you have banners API
+import { bannerService } from "@/services/banner.service";
 import BrandShowcase from "@/components/BrandShowcase";
 import { categoryService } from "@/services/category.service";
+import CategoryCard, { CategoryCardSkeleton } from "@/components/CategoryCard";
 
 const Index = () => {
   const { data: banners = [] } = useQuery({
@@ -18,31 +19,32 @@ const Index = () => {
     },
   });
 
-  const { data:categoryResp } = useQuery({
+  const { data: categoryResp, isLoading: isCategoryLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: () => categoryService.getAll({ limit: 6 }).then((r) => r.data),
   });
 
   const categories = categoryResp?.categories || []
-  const { data: featuredRes } = useQuery({
+  const { data: featuredRes, isLoading: isFeaturedLoading } = useQuery({
     queryKey: ["featured-products"],
-    queryFn: () => productService.getAll({ isFeatured: true, limit: 12 }).then((r) => r.data),
+    queryFn: () => productService.getAll({ limit: 6, sort: "featured" }).then((r) => r.data),
+
   });
   const featuredProducts = featuredRes?.products || [];
 
-  const { data: bestSellingRes } = useQuery({
+  const { data: bestSellingRes, isLoading: isBestSellingLoading } = useQuery({
     queryKey: ["best-selling"],
     queryFn: () => productService.getAll({ sort: "bestSelling", limit: 8 }).then((r) => r.data),
   });
   const bestSelling = bestSellingRes?.products || [];
 
-  const { data: newArrivalsRes } = useQuery({
+  const { data: newArrivalsRes, isLoading: isNewArrivalsLoading } = useQuery({
     queryKey: ["new-arrivals"],
     queryFn: () => productService.getAll({ isNewArrival: true, limit: 8 }).then((r) => r.data),
   });
   const newArrivals = newArrivalsRes?.products || [];
 
-  const { data: trendingRes } = useQuery({
+  const { data: trendingRes, isLoading: isTrendingLoading } = useQuery({
     queryKey: ["trending-products"],
     queryFn: () => productService.getAll({ sort: "trending", limit: 8 }).then((r) => r.data),
   });
@@ -89,63 +91,52 @@ const Index = () => {
 
       <BrandShowcase />
 
-      <section className="py-14 bg-muted/10">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8">Shop by Categories</h2>
+      {!isCategoryLoading && categories.length == 0 ? null :
+        <section className="py-14 bg-muted/10">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold mb-8">Shop by Categories</h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
-            {categories?.map((cat, i) => (
-              <Link
-                to={`/category/${cat.slug}`}
-                key={i}
-                className="group p-4 shadow flex flex-col items-center text-center border rounded-xl hover:shadow-sm transition cursor-pointer"
-              >
-                <img
-                  src={""}
-                  className="h-20 w-20 object-contain mb-3 group-hover:scale-105 transition"
-                />
-                <span className="font-medium">{cat.title}</span>
-              </Link>
-            ))}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
+              {isCategoryLoading ? [1, 2, 3, 4, 5, 6].map((i) => (
+                <CategoryCardSkeleton key={i} />
+              )) : categories?.map((cat, i) => (
+                <CategoryCard key={i} category={cat} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>}
 
-      {featuredProducts.length > 0 && (
-        <LandingSection
-          title="Featured Products"
-          link="/products?sort=featured"
-          products={featuredProducts}
-          bg="bg-white"
-        />
-      )}
+      <ProductSection
+        loading={isFeaturedLoading}
+        title="Featured Products"
+        link="/products?sort=featured"
+        products={featuredProducts}
+        bg="bg-white"
+      />
 
-      {bestSelling.length > 0 && (
-        <LandingSection
-          title="Best Selling"
-          link="/products?sort=bestSelling"
-          products={bestSelling}
-          bg="bg-muted/10"
-        />
-      )}
+      <ProductSection
+        loading={isBestSellingLoading}
+        title="Best Selling"
+        link="/products?sort=bestSelling"
+        products={bestSelling}
+        bg="bg-muted/10"
+      />
 
-      {trending.length > 0 && (
-        <LandingSection
-          title="Trending Now"
-          link="/products?sort=trending"
-          products={trending}
-          bg="bg-white"
-        />
-      )}
+      <ProductSection
+        loading={isTrendingLoading}
+        title="Trending Now"
+        link="/products?sort=trending"
+        products={trending}
+        bg="bg-white"
+      />
 
-      {newArrivals.length > 0 && (
-        <LandingSection
-          title="New Arrivals"
-          link="/products?sort=newArrivals"
-          products={newArrivals}
-          bg="bg-muted/10"
-        />
-      )}
+      <ProductSection
+        loading={isNewArrivalsLoading}
+        title="New Arrivals"
+        link="/products?sort=newArrivals"
+        products={newArrivals}
+        bg="bg-muted/10"
+      />
 
       {/* <section className="py-20 bg-gradient-hero text-center">
         <div className="container mx-auto px-4">
@@ -170,25 +161,30 @@ const Index = () => {
   );
 };
 
-const LandingSection = ({ title, link, products, bg }) => (
-  <section className={`py-16 ${bg}`}>
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-        <Button variant="outline" asChild>
-          <Link to={link}>
-            View All <ArrowRight className="ml-2 h-4 w-4" />
-          </Link>
-        </Button>
-      </div>
+const ProductSection = ({ title, link, products, bg, loading }) => (
+  !loading && products.length === 0 ? null :
+    <section className={`py-16 ${bg}`}>
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+          <Button variant="outline" asChild>
+            <Link to={link}>
+              View All <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((p) => (
-          <ProductCard key={p._id} product={p} />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {loading ? [1, 2, 3, 4].map((i) => (
+            <ProductCardSkeleton key={i} />
+          )) :
+            products.map((p) => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 );
+
 
 export default Index;
