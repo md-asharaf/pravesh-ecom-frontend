@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { walletService } from "@/services/wallet.service";
-import { ArrowLeft, ArrowRight, LogOut } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, LogOut } from "lucide-react";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { EditProfileModal } from "@/components/modals/EditProfile";
@@ -15,6 +15,7 @@ import { userService } from "@/services/user.service";
 import { toast } from "sonner";
 import { UpdateUser } from "@/types";
 import { Link } from "react-router-dom";
+import { Loader } from "@/components/Loader";
 
 const Profile = () => {
   const { user, loading, logout, login } = useAuth();
@@ -66,7 +67,7 @@ const Profile = () => {
   const hasNext = page * pageSize < transactions.length;
   const hasPrev = page > 1;
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loader />;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -93,7 +94,7 @@ const Profile = () => {
             <EditProfileModal user={user} onSave={updateProfileMutation.mutate} />
 
             {/* <ChangePasswordModal onChangePassword={changePasswordMutation.mutate} /> */}
-            
+
             <div className="flex flex-col space-y-4">
               <Link to="/orders">
                 <Button
@@ -187,7 +188,7 @@ const Profile = () => {
             </h3>
             <Separator />
 
-            {isTxLoading && <div>Loading...</div>}
+            {isTxLoading && <div><Loader2 className="animate-spin" /></div>}
             {!isTxLoading && transactions.length === 0 && (
               <p className="text-center text-muted-foreground py-6">
                 No transactions found

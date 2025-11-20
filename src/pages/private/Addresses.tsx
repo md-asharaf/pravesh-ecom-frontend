@@ -26,7 +26,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addressService } from "@/services/address.service";
 
-import { MapPin, Edit, Trash, MoreVertical } from "lucide-react";
+import { MapPin, Edit, Trash, MoreVertical, Loader2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -338,7 +338,7 @@ export default function Addresses() {
       <div className="space-y-4">
         {isPending && (
           <Card>
-            <CardContent className="p-6">Loading...</CardContent>
+            <CardContent className="p-6"><Loader2 className="animate-spin" /></CardContent>
           </Card>
         )}
 
