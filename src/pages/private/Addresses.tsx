@@ -148,8 +148,6 @@ export default function Addresses() {
     });
   };
 
-  console.log({ editing, openForm });
-
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
       {/* title */}
@@ -327,9 +325,7 @@ export default function Addresses() {
           className="flex items-center gap-2 text-accent font-medium text-sm cursor-pointer mb-4 select-none"
           onClick={(e) => {
             e.preventDefault();
-            // clear any lingering values when opening create form
             form.reset(emptyAddress);
-            console.log({ form })
             setEditing(null);
             setOpenForm(true);
           }}

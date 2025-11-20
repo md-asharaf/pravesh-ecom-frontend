@@ -20,7 +20,6 @@ export default function EmailForm() {
     const onSubmit = async (data: FormValues) => {
         setLoading(true)
         try {
-            console.log("EmailForm submit:", data)
             await new Promise((r) => setTimeout(r, 600))
             setNotice("Thanks — we received your message and will reply within 2 business hours.")
             reset()

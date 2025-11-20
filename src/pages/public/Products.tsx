@@ -44,6 +44,17 @@ const Products: React.FC = () => {
     () => searchParams.get("s") ?? ""
   );
 
+  const {
+    data: filtersData,
+    isLoading: isFiltersLoading,
+  } = useQuery({
+    queryKey: ["product-filters"],
+    queryFn: async () => {
+      const res = await productService.getFilters();
+      return res.data;
+    },
+  });
+  
   const urlFilters = useMemo<FiltersState>(() => {
     const s = searchParams;
     return {
@@ -62,17 +73,6 @@ const Products: React.FC = () => {
     };
   }, [searchParams]);
 
-  const {
-    data: filtersData,
-    isLoading: isFiltersLoading,
-  } = useQuery({
-    queryKey: ["product-filters"],
-    queryFn: async () => {
-      const res = await productService.getFilters();
-      return res.data;
-    },
-    staleTime: 1000 * 60 * 5,
-  });
 
   const categories = filtersData?.categories ?? [];
   const brands = filtersData?.brands ?? [];
@@ -327,15 +327,22 @@ const Products: React.FC = () => {
               <Slider
                 min={minPriceLimit}
                 max={maxPriceLimit}
-                step={100}
                 value={[
-                  urlFilters.minPrice ?? minPriceLimit,
-                  urlFilters.maxPrice ?? maxPriceLimit,
+                  Number(urlFilters.minPrice ?? minPriceLimit),
+                  Number(urlFilters.maxPrice ?? maxPriceLimit),
                 ]}
                 onValueChange={(value) => {
-                  updateParam("mnp", value[0]);
-                  updateParam("mxp", value[1]);
-                }}
+                  const next: Record<string, string> = {};
+                  for (const [k, v] of searchParams.entries()) {
+                    next[k] = v;
+                  }
+
+                  next["mnp"] = String(value[0]);
+                  next["mxp"] = String(value[1]);
+
+                  setSearchParams(next);
+                }
+              }
               />
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>₹{urlFilters.minPrice ?? minPriceLimit}</span>

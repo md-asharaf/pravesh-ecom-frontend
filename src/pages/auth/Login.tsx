@@ -19,12 +19,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader } from "@/components/Loader";
 
 type LoginForm = { phoneOrEmail: string; password?: string };
 
 const Login = () => {
-  console.log("Login component rendered");
   const navigate = useNavigate();
   const { login } = useAuth();
 
