@@ -19,6 +19,7 @@ export const userService = {
   },
 
   async updatePassword(currentPassword: string, newPassword: string) {
+    console.log('Updating password', currentPassword, newPassword);
     const response = await axiosInstance.patch<ApiResponse<User>>(`/users/password`, {
       currentPassword,
       newPassword,

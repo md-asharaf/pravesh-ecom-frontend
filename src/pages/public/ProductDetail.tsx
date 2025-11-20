@@ -29,6 +29,14 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { addToWishlist, removeFromWishlist } from "@/store/slices/wishlist";
 import { addItem } from "@/store/slices/cart";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+
 
 const ProductDetail: React.FC = () => {
   const dispatch = useAppDispatch()
@@ -45,7 +53,7 @@ const ProductDetail: React.FC = () => {
   const { data: productRes, isLoading: isProductLoading } = useQuery({
     queryKey: ["product", slug],
     queryFn: async () => {
-      const res = await productService.getBySlug(slug);
+      const res = await productService.getBySlug(slug, true);
       return res.data;
     },
   });
@@ -217,10 +225,30 @@ const ProductDetail: React.FC = () => {
 
         {/* RIGHT: PRODUCT INFO */}
         <div className="flex flex-col gap-4">
+          {product.category.path && product.category.path.length > 0 && (
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+
+                {product.category.path.map((cat, i) => (
+                  <React.Fragment key={i}>
+                    <BreadcrumbSeparator />
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href={`/products?c=${product.category._id}`}>
+                        {cat}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  </React.Fragment>
+                ))}
+              </BreadcrumbList>
+            </Breadcrumb>
+          )}
           <h1 className="text-3xl font-semibold">{product.name}</h1>
           <p className="text-sm text-muted-foreground">
-            by <span className="font-medium">{product.brand?.name}</span> • SKU:{" "}
-            {product.sku}
+            <div></div>
+            <Badge className="font-medium">{product.brand?.name}</Badge> •  #{product.sku}
           </p>
 
           {/* Product Rating */}
@@ -237,7 +265,7 @@ const ProductDetail: React.FC = () => {
               ))}
             </div>
             <span className="text-xs text-muted-foreground">
-              {product.rating} • {product.reviewCount} reviews
+              ( {product.reviewCount} reviews )
             </span>
           </div>
 
@@ -499,71 +527,73 @@ const ProductDetail: React.FC = () => {
         </div>
       </section>
 
-      {isReviewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div
-            className="fixed inset-0 bg-black/40"
-            onClick={() => setReviewModalOpen(false)}
-          />
+      {
+        isReviewModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+            <div
+              className="fixed inset-0 bg-black/40"
+              onClick={() => setReviewModalOpen(false)}
+            />
 
-          <div className="relative bg-card w-full max-w-lg rounded-lg shadow-xl p-6 z-10">
-            <div className="flex justify-between mb-4">
-              <h3 className="text-lg font-semibold">Write a Review</h3>
-              <button onClick={() => setReviewModalOpen(false)}>✕</button>
-            </div>
+            <div className="relative bg-card w-full max-w-lg rounded-lg shadow-xl p-6 z-10">
+              <div className="flex justify-between mb-4">
+                <h3 className="text-lg font-semibold">Write a Review</h3>
+                <button onClick={() => setReviewModalOpen(false)}>✕</button>
+              </div>
 
-            <form onSubmit={handleSubmitReview}>
-              {/* Stars */}
-              <div className="mb-4">
-                <p className="mb-2 text-sm font-medium">Your Rating</p>
-                <div className="flex gap-2">
-                  {Array.from({ length: 5 }).map((_, i) => {
-                    const star = i + 1;
-                    return (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => setRatingInput(star)}
-                        className={`p-1 rounded ${star <= ratingInput ? "bg-yellow-100" : ""
-                          }`}
-                      >
-                        <Star
-                          className={`h-6 w-6 ${star <= ratingInput
-                            ? "fill-yellow-400 text-yellow-400"
-                            : "text-muted-foreground"
+              <form onSubmit={handleSubmitReview}>
+                {/* Stars */}
+                <div className="mb-4">
+                  <p className="mb-2 text-sm font-medium">Your Rating</p>
+                  <div className="flex gap-2">
+                    {Array.from({ length: 5 }).map((_, i) => {
+                      const star = i + 1;
+                      return (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setRatingInput(star)}
+                          className={`p-1 rounded ${star <= ratingInput ? "bg-yellow-100" : ""
                             }`}
-                        />
-                      </button>
-                    );
-                  })}
+                        >
+                          <Star
+                            className={`h-6 w-6 ${star <= ratingInput
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-muted-foreground"
+                              }`}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              {/* Comment */}
-              <div className="mb-4">
-                <p className="mb-1 text-sm font-medium">Your review</p>
-                <textarea
-                  rows={4}
-                  className="w-full border border-border rounded p-2"
-                  value={commentInput}
-                  onChange={(e) => setCommentInput(e.target.value)}
-                  required
-                />
-              </div>
+                {/* Comment */}
+                <div className="mb-4">
+                  <p className="mb-1 text-sm font-medium">Your review</p>
+                  <textarea
+                    rows={4}
+                    className="w-full border border-border rounded p-2"
+                    value={commentInput}
+                    onChange={(e) => setCommentInput(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <div className="flex justify-end gap-3">
-                <Button variant="ghost" onClick={() => setReviewModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={createReviewMutation.isPending}>
-                  {createReviewMutation.isPending ? "Posting..." : "Submit"}
-                </Button>
-              </div>
-            </form>
+                <div className="flex justify-end gap-3">
+                  <Button variant="ghost" onClick={() => setReviewModalOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={createReviewMutation.isPending}>
+                    {createReviewMutation.isPending ? "Posting..." : "Submit"}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

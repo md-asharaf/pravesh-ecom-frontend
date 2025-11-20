@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { UpdateUser } from "@/types";
 import { Link } from "react-router-dom";
 import { Loader } from "@/components/Loader";
+import { ChangePasswordModal } from "@/components/modals/ChangePassword";
 
 const Profile = () => {
   const { user, loading, logout, login } = useAuth();
@@ -93,7 +94,7 @@ const Profile = () => {
 
             <EditProfileModal user={user} onSave={updateProfileMutation.mutate} />
 
-            {/* <ChangePasswordModal onChangePassword={changePasswordMutation.mutate} /> */}
+            <ChangePasswordModal onChangePassword={changePasswordMutation.mutate} />
 
             <div className="flex flex-col space-y-4">
               <Link to="/orders">

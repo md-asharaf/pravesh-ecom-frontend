@@ -100,6 +100,7 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
 
             <div className="hidden md:flex flex-1 max-w-2xl relative">
               <Input
+                type="text"
                 placeholder="Search for products…"
                 className="h-12 pl-12 pr-12 rounded-full bg-gray-100"
                 value={search}
@@ -122,7 +123,7 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
               </button>
 
               {showSuggestions && search.trim().length >= 2 && (
-                <div className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-xl border z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full mt-2 w-full bg-white rounded-xl border z-50 max-h-80 overflow-y-auto">
                   {suggestions.length === 0 ? (
                     <div className="p-4 text-sm text-gray-500">No products found</div>
                   ) : (
