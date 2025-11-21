@@ -31,7 +31,7 @@ const Hero = ({ banners }: HeroProps) => {
     const { type, targetId, targetUrl } = banner;
 
     // external link
-    if (type === "external") {
+    if (type === "external" || type === "offer") {
       if (targetUrl?.startsWith("http")) {
         window.open(targetUrl, "_blank");
       } else if (targetUrl) {
@@ -55,12 +55,6 @@ const Hero = ({ banners }: HeroProps) => {
     // brand
     if (type === "brand" && targetId) {
       navigate(`/products?b=${targetId}`);
-      return;
-    }
-
-    // offer
-    if (type === "offer" && targetId) {
-      navigate(`/offers/${targetId}`);
       return;
     }
   };

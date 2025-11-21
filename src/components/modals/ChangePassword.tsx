@@ -113,7 +113,7 @@ export const ChangePasswordModal = ({ onChangePassword }: any) => {
               )}
             />
 
-            <DialogFooter className="mt-6 flex justify-between items-center gap-2">
+            <DialogFooter className="mt-6 gap-2">
               <DialogClose asChild>
                 <Button variant="outline" type="button">Cancel</Button>
               </DialogClose>

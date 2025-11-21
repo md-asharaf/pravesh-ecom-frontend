@@ -154,8 +154,7 @@ export const ChangePhotoModal = ({ onUpload }: { onUpload: (file: File) => void 
 
         {InnerUI}
 
-        <DialogFooter>
-          <div className="mt-6 flex justify-between items-center gap-2">
+        <DialogFooter className="mt-6 gap-2">
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
@@ -163,7 +162,6 @@ export const ChangePhotoModal = ({ onUpload }: { onUpload: (file: File) => void 
             <Button onClick={() => onUpload(file!)} disabled={!file}>
               Upload Photo
             </Button>
-          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
