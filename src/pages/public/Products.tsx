@@ -304,7 +304,7 @@ const Products: React.FC = () => {
                 selectedFilters.sort ||
                 (selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit) ||
                 (selectedFilters.maxPrice && selectedFilters.maxPrice !== maxPriceLimit)) && (
-                  <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                  <div className="bg-muted/50 rounded-lg p-4 border border-border sm:hidden">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-sm font-semibold">Active Filters</h3>
                       <button

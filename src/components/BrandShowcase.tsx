@@ -32,14 +32,13 @@ const BrandShowcase = () => {
               <Link
                 key={brand._id}
                 to={`/products?b=${brand._id}`}
-                className="min-w-[130px] h-28 flex flex-col items-center justify-center 
-                  p-4 rounded-xl bg-gray-50 border transition-all duration-200
+                className="min-w-[150px] h-32 flex flex-col items-center justify-center 
+                  p-4 rounded-xl border transition-all duration-200
                   hover:shadow-md hover:border-primary cursor-pointer"
               >
                 <img
                   src={brand.image}
-                  className="h-12 w-auto object-contain mb-2 transition-all duration-300 
-                    grayscale hover:grayscale-0"
+                  className="h-12 w-auto object-contain mb-2 transition-all duration-300"
                 />
 
                 <span className="text-xs font-semibold text-gray-700 text-center 
