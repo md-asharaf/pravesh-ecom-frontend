@@ -16,7 +16,7 @@ const initialState: CartState = {
 const calculateSummary = (state: CartState) => {
   state.totalItems = state.items.reduce((sum, item) => sum + item.quantity, 0);
   state.totalPrice = state.items.reduce(
-    (sum, item) => sum + item.quantity * (item.product as any).finalPrice,
+    (sum, item) => sum + item.quantity * (item.product as any).originalPrice,
     0
   );
 };
