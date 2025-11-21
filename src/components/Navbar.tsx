@@ -91,6 +91,7 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
             </Link>
 
             <ul className="hidden lg:flex items-center gap-3 xl:gap-4 2xl:gap-6 font-medium text-[15px] text-gray-700">
+              <li><Link to="/" className="hover:text-accent">Home</Link></li>
               <li><Link to="/categories" className="hover:text-accent">Categories</Link></li>
               <li><Link to="/brands" className="hover:text-accent">Brands</Link></li>
               <li><Link to="/blog" className="hover:text-accent">Blog</Link></li>

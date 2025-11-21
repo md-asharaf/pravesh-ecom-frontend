@@ -22,8 +22,8 @@ type FiltersState = {
   search?: string
   categoryId?: string
   brandId?: string
-  minPrice?: number
-  maxPrice?: number
+  // minPrice?: number
+  // maxPrice?: number
   sort?: string
   order?: string
   rating?: number
@@ -55,8 +55,8 @@ const Products: React.FC = () => {
       search: s.get("s") ?? undefined,
       categoryId: s.get("c") ?? undefined,
       brandId: s.get("b") ?? undefined,
-      minPrice: s.get("mnp") !== null ? Number(s.get("mnp")) : undefined,
-      maxPrice: s.get("mxp") !== null ? Number(s.get("mxp")) : undefined,
+      // minPrice: s.get("mnp") !== null ? Number(s.get("mnp")) : undefined,
+      // maxPrice: s.get("mxp") !== null ? Number(s.get("mxp")) : undefined,
       sort: s.get("sort") ?? undefined,
       order: s.get("order") ?? undefined,
       isFeatured: s.get("sort") === "featured" ? true : undefined,
@@ -97,10 +97,10 @@ const Products: React.FC = () => {
 
   useEffect(() => {
     const persist: any = {}
-    for (const key of ["s", "c", "b", "mnp", "mxp", "sort", "order", "rating"]) {
+    for (const key of ["s", "c", "b", "sort", "order", "rating"]) {
       const v = searchParams.get(key)
       if (v == null) continue
-      if (["mnp", "mxp", "rating"].includes(key)) {
+      if (["rating"].includes(key)) {
         persist[key] = Number(v)
       } else {
         persist[key] = v
@@ -135,8 +135,8 @@ const Products: React.FC = () => {
       if (urlFilters.search) payload.search = urlFilters.search
       if (urlFilters.categoryId) payload.categoryId = urlFilters.categoryId
       if (urlFilters.brandId) payload.brandId = urlFilters.brandId
-      if (typeof urlFilters.minPrice === "number") payload.minPrice = urlFilters.minPrice
-      if (typeof urlFilters.maxPrice === "number") payload.maxPrice = urlFilters.maxPrice
+      // if (typeof urlFilters.minPrice === "number") payload.minPrice = urlFilters.minPrice
+      // if (typeof urlFilters.maxPrice === "number") payload.maxPrice = urlFilters.maxPrice
       if (urlFilters.sort) payload.sort = urlFilters.sort
       if (urlFilters.order) payload.order = urlFilters.order
       if (typeof urlFilters.rating === "number") payload.rating = urlFilters.rating
@@ -243,7 +243,7 @@ const Products: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="border-b border-border pb-4">
+                {/* <div className="border-b border-border pb-4">
                   <h3 className="text-sm font-medium mb-3">Price Range</h3>
                   <Slider
                     min={minPriceLimit}
@@ -262,7 +262,7 @@ const Products: React.FC = () => {
                     <span>₹{urlFilters.minPrice ?? minPriceLimit}</span>
                     <span>₹{urlFilters.maxPrice ?? maxPriceLimit}</span>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="pb-4">
                   <h3 className="text-sm font-medium mb-3">Other Filters</h3>
@@ -301,9 +301,10 @@ const Products: React.FC = () => {
             <div className="mb-6 space-y-4">
               {(selectedFilters.categoryId ||
                 selectedFilters.brandId ||
-                selectedFilters.sort ||
-                (selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit) ||
-                (selectedFilters.maxPrice && selectedFilters.maxPrice !== maxPriceLimit)) && (
+                selectedFilters.sort)
+                // (selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit) ||
+                // (selectedFilters.maxPrice && selectedFilters.maxPrice !== maxPriceLimit)) 
+                && (
                   <div className="bg-muted/50 rounded-lg p-4 border border-border sm:hidden">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-sm font-semibold">Active Filters</h3>
@@ -331,7 +332,7 @@ const Products: React.FC = () => {
                           </button>
                         </Badge>
                       )}
-                      {selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit && (
+                      {/* {selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit && (
                         <Badge variant="secondary" className="gap-2">
                           Min: ₹{selectedFilters.minPrice}
                           <button onClick={() => updateParam("mnp", undefined)} className="ml-1 hover:opacity-70">
@@ -346,7 +347,7 @@ const Products: React.FC = () => {
                             ×
                           </button>
                         </Badge>
-                      )}
+                      )} */}
                       {selectedFilters.sort === "featured" && (
                         <Badge variant="secondary" className="gap-2">
                           Featured
@@ -464,10 +465,10 @@ const Products: React.FC = () => {
                                       </div>
                                     ))}
                                 </div>
-                              </AccordionContent>
+                              </AccordionContent>``
                             </AccordionItem>
 
-                            <AccordionItem value="price" className="border-b border-border">
+                            {/* <AccordionItem value="price" className="border-b border-border">
                               <AccordionTrigger className="text-base font-semibold hover:no-underline py-4">
                                 Price Range
                               </AccordionTrigger>
@@ -495,7 +496,7 @@ const Products: React.FC = () => {
                                   </div>
                                 </div>
                               </AccordionContent>
-                            </AccordionItem>
+                            </AccordionItem> */}
 
                             <AccordionItem value="others" className="border-b border-border">
                               <AccordionTrigger className="text-base font-semibold hover:no-underline py-4">
@@ -566,13 +567,14 @@ const Products: React.FC = () => {
                   <Select
                     defaultValue={urlFilters.sort ?? "newest"}
                     onValueChange={(value) => {
-                      if (value === "price_low") {
-                        updateParam("sort", "price")
-                        updateParam("order", "asc")
-                      } else if (value === "price_high") {
-                        updateParam("sort", "price")
-                        updateParam("order", "desc")
-                      } else if (value === "newest") {
+                      // if (value === "price_low") {
+                      //   updateParam("sort", "price")
+                      //   updateParam("order", "asc")
+                      // } else if (value === "price_high") {
+                      //   updateParam("sort", "price")
+                      //   updateParam("order", "desc")
+                      // } else 
+                        if (value === "newest") {
                         updateParam("sort", "createdAt")
                         updateParam("order", "desc")
                       } else {
@@ -588,8 +590,8 @@ const Products: React.FC = () => {
                       <SelectItem value="bestSelling">Best Selling</SelectItem>
                       <SelectItem value="rating">Top Rated</SelectItem>
                       <SelectItem value="newest">Newest</SelectItem>
-                      <SelectItem value="price_low">Price: Low → High</SelectItem>
-                      <SelectItem value="price_high">Price: High → Low</SelectItem>
+                      {/* <SelectItem value="price_low">Price: Low → High</SelectItem> */}
+                      {/* <SelectItem value="price_high">Price: High → Low</SelectItem> */}
                     </SelectContent>
                   </Select>
                 </div>
