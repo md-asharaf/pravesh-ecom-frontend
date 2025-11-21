@@ -13,6 +13,10 @@ const BrandShowcase = () => {
 
   const brands = data?.brands || [];
 
+  if(!isLoading && brands.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-12 bg-white border-b">
       <div className="container mx-auto px-4">

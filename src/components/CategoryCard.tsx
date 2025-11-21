@@ -20,7 +20,7 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
         <div className="relative h-full w-full">
           {/* Enable when using images */}
           <img
-            src={"/placeholder.svg"}
+            src={category.image || "/placeholder.svg"}
             alt={category.title}
             className="absolute inset-0 w-full h-full object-cover
                        transition-transform duration-500
