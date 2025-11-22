@@ -50,7 +50,7 @@ const ProductSectionCarousel = ({ title, link, products, bg, loading }) => {
               ? [1, 2, 3, 4, 5].map((i) => (
                   <CarouselItem
                     key={i}
-                    className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                    className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 max-w-xs"
                   >
                     <ProductCardSkeleton />
                   </CarouselItem>
@@ -58,7 +58,7 @@ const ProductSectionCarousel = ({ title, link, products, bg, loading }) => {
               : products.map((p) => (
                   <CarouselItem
                     key={p._id}
-                    className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                    className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5 max-w-xs"
                   >
                     <ProductCard product={p} />
                   </CarouselItem>

@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
+// import { Slider } from "@/components/ui/slider"
 import { Drawer, DrawerTrigger, DrawerContent, DrawerTitle } from "@/components/ui/drawer"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Filter, X } from "lucide-react"
@@ -71,8 +71,8 @@ const Products: React.FC = () => {
 
   const categories = filtersData?.categories ?? []
   const brands = filtersData?.brands ?? []
-  const minPriceLimit = filtersData?.priceRange?.minPrice ?? 0
-  const maxPriceLimit = filtersData?.priceRange?.maxPrice ?? 50000
+  // const minPriceLimit = filtersData?.priceRange?.minPrice ?? 0
+  // const maxPriceLimit = filtersData?.priceRange?.maxPrice ?? 50000
 
   useEffect(() => {
     const hasAnyParam = Array.from(searchParams.keys()).length > 0
@@ -299,11 +299,9 @@ const Products: React.FC = () => {
 
           <main className="flex-1 min-w-0">
             <div className="mb-6 space-y-4">
-              {(selectedFilters.categoryId ||
+              {/* {(selectedFilters.categoryId ||
                 selectedFilters.brandId ||
                 selectedFilters.sort)
-                // (selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit) ||
-                // (selectedFilters.maxPrice && selectedFilters.maxPrice !== maxPriceLimit)) 
                 && (
                   <div className="bg-muted/50 rounded-lg p-4 border border-border sm:hidden">
                     <div className="flex items-center justify-between mb-3">
@@ -332,22 +330,6 @@ const Products: React.FC = () => {
                           </button>
                         </Badge>
                       )}
-                      {/* {selectedFilters.minPrice && selectedFilters.minPrice !== minPriceLimit && (
-                        <Badge variant="secondary" className="gap-2">
-                          Min: ₹{selectedFilters.minPrice}
-                          <button onClick={() => updateParam("mnp", undefined)} className="ml-1 hover:opacity-70">
-                            ×
-                          </button>
-                        </Badge>
-                      )}
-                      {selectedFilters.maxPrice && selectedFilters.maxPrice !== maxPriceLimit && (
-                        <Badge variant="secondary" className="gap-2">
-                          Max: ₹{selectedFilters.maxPrice}
-                          <button onClick={() => updateParam("mxp", undefined)} className="ml-1 hover:opacity-70">
-                            ×
-                          </button>
-                        </Badge>
-                      )} */}
                       {selectedFilters.sort === "featured" && (
                         <Badge variant="secondary" className="gap-2">
                           Featured
@@ -366,7 +348,7 @@ const Products: React.FC = () => {
                       )}
                     </div>
                   </div>
-                )}
+                )} */}
 
               {/* Mobile search bar */}
               <div className="lg:hidden">
