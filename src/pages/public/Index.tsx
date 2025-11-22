@@ -1,14 +1,16 @@
 import Hero from "@/components/Hero";
-import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Wrench, Truck, ShieldCheck } from "lucide-react";
-import { Link } from "react-router-dom";
+// import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
+// import { Button } from "@/components/ui/button";
+// import { ArrowRight } from "lucide-react";
+// import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
 import { bannerService } from "@/services/banner.service";
 import BrandShowcase from "@/components/BrandShowcase";
 import { categoryService } from "@/services/category.service";
 import CategoryCard, { CategoryCardSkeleton } from "@/components/CategoryCard";
+import FeaturesSection from "@/components/landing/FeaturesSection";
+import ProductSectionCarousel from "@/components/landing/ProductSection";
 
 const Index = () => {
   const { data: banners = [] } = useQuery({
@@ -21,7 +23,7 @@ const Index = () => {
 
   const { data: categoryResp, isLoading: isCategoryLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: () => categoryService.getAll({ limit: 6,parentCategoryId:"null" }).then((r) => r.data),
+    queryFn: () => categoryService.getAll({ limit: 6, parentCategoryId: "null" }).then((r) => r.data),
   });
 
   const categories = categoryResp?.categories || []
@@ -53,41 +55,9 @@ const Index = () => {
   return (
     <>
       <Hero banners={banners} />
+      {/* <BannerCarousel banners={banners} /> */}
 
-      <section className="py-10 bg-muted/10 border-b">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: <Wrench className="h-7 w-7 text-primary" />,
-              title: "Industrial Grade Quality",
-              sub: "Trusted material from certified manufacturers",
-            },
-            {
-              icon: <Truck className="h-7 w-7 text-primary" />,
-              title: "Pan-India Delivery",
-              sub: "Fast & reliable shipping for all orders",
-            },
-            {
-              icon: <ShieldCheck className="h-7 w-7 text-primary" />,
-              title: "100% Genuine Products",
-              sub: "Guaranteed authentic & verified items",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-4 bg-muted/10 p-5 rounded-xl hover:shadow-sm transition"
-            >
-              <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
-                {item.icon}
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg">{item.title}</h3>
-                <p className="text-sm text-muted-foreground">{item.sub}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <FeaturesSection />
 
       <BrandShowcase />
 
@@ -106,33 +76,40 @@ const Index = () => {
           </div>
         </section>}
 
-      <ProductSection
+      {/* <ProductSection
         loading={isFeaturedLoading}
         title="Featured Products"
         link="/products?sort=featured"
         products={featuredProducts}
         bg="bg-white"
+      /> */}
+      <ProductSectionCarousel
+        loading={isFeaturedLoading}
+        title="Top Industrial Picks"
+        link="/products?sort=featured"
+        products={featuredProducts}
+        bg="bg-white"
       />
 
-      <ProductSection
+      <ProductSectionCarousel
         loading={isBestSellingLoading}
-        title="Best Selling"
+        title="High-Demand Products"
         link="/products?sort=bestSelling"
         products={bestSelling}
         bg="bg-muted/10"
       />
 
-      <ProductSection
+      <ProductSectionCarousel
         loading={isTrendingLoading}
-        title="Trending Now"
+        title="Currently Trending"
         link="/products?sort=trending"
         products={trending}
         bg="bg-white"
       />
 
-      <ProductSection
+      <ProductSectionCarousel
         loading={isNewArrivalsLoading}
-        title="New Arrivals"
+        title="Recently Stocked Items"
         link="/products?sort=newArrivals"
         products={newArrivals}
         bg="bg-muted/10"
@@ -161,30 +138,30 @@ const Index = () => {
   );
 };
 
-const ProductSection = ({ title, link, products, bg, loading }) => (
-  !loading && products.length === 0 ? null :
-    <section className={`py-16 ${bg}`}>
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-          <Button variant="outline" asChild>
-            <Link to={link}>
-              View All <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
+// const ProductSection = ({ title, link, products, bg, loading }) => (
+//   !loading && products.length === 0 ? null :
+//     <section className={`py-16 ${bg}`}>
+//       <div className="container mx-auto px-4">
+//         <div className="flex justify-between items-center mb-8">
+//           <h2 className="text-3xl font-bold text-foreground">{title}</h2>
+//           <Button variant="outline" asChild>
+//             <Link to={link}>
+//               View All <ArrowRight className="ml-2 h-4 w-4" />
+//             </Link>
+//           </Button>
+//         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {loading ? [1, 2, 3, 4].map((i) => (
-            <ProductCardSkeleton key={i} />
-          )) :
-            products.map((p) => (
-              <ProductCard key={p._id} product={p} />
-            ))}
-        </div>
-      </div>
-    </section>
-);
+//         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+//           {loading ? [1, 2, 3, 4].map((i) => (
+//             <ProductCardSkeleton key={i} />
+//           )) :
+//             products.map((p) => (
+//               <ProductCard key={p._id} product={p} />
+//             ))}
+//         </div>
+//       </div>
+//     </section>
+// );
 
 
 export default Index;

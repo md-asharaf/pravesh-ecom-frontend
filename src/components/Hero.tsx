@@ -10,7 +10,7 @@ type HeroProps = {
 
 const Hero = ({ banners }: HeroProps) => {
   const [current, setCurrent] = useState(0);
-  const timeoutRef = useRef<any>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +20,11 @@ const Hero = ({ banners }: HeroProps) => {
       setCurrent((prev) => (prev + 1) % banners.length);
     }, 4500);
 
-    return () => clearTimeout(timeoutRef.current);
+    return () => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
   }, [current, banners]);
 
   const next = () => setCurrent((prev) => (prev + 1) % banners.length);
@@ -60,7 +64,7 @@ const Hero = ({ banners }: HeroProps) => {
   };
 
   return (
-    <section className="relative w-full overflow-hidden min-h-[450px] md:min-h-[520px] bg-black">
+    <section className="relative w-full overflow-hidden min-h-72 md:min-h-[520px] bg-black">
       {/* Carousel */}
       <div
         className="flex transition-transform duration-700 ease-out"
@@ -70,7 +74,7 @@ const Hero = ({ banners }: HeroProps) => {
           banners.map((banner) => (
             <div
               key={banner._id}
-              className="relative min-w-full h-[450px] md:h-[520px] cursor-pointer group"
+              className="relative min-w-full h-72 md:h-[520px] cursor-pointer group"
               onClick={() => handleBannerClick(banner)}
             >
               <img
