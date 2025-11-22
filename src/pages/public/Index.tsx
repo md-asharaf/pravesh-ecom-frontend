@@ -1,16 +1,12 @@
 import Hero from "@/components/Hero";
-// import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
-// import { Button } from "@/components/ui/button";
-// import { ArrowRight } from "lucide-react";
-// import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
 import { bannerService } from "@/services/banner.service";
 import BrandShowcase from "@/components/BrandShowcase";
 import { categoryService } from "@/services/category.service";
-import CategoryCard, { CategoryCardSkeleton } from "@/components/CategoryCard";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import ProductSectionCarousel from "@/components/landing/ProductSection";
+import CategoryShowcase from "@/components/CategoryShowcase";
 
 const Index = () => {
   const { data: banners = [] } = useQuery({
@@ -55,37 +51,16 @@ const Index = () => {
   return (
     <>
       <Hero banners={banners} />
-      {/* <BannerCarousel banners={banners} /> */}
 
       <FeaturesSection />
 
       <BrandShowcase />
 
-      {!isCategoryLoading && categories.length == 0 ? null :
-        <section className="py-12 bg-white border-b">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-8">Shop by Categories</h2>
+      <CategoryShowcase categories={categories} isCategoryLoading={isCategoryLoading} />
 
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
-              {isCategoryLoading ? [1, 2, 3, 4, 5, 6].map((i) => (
-                <CategoryCardSkeleton key={i} />
-              )) : categories?.map((cat, i) => (
-                <CategoryCard key={i} category={cat} />
-              ))}
-            </div>
-          </div>
-        </section>}
-
-      {/* <ProductSection
-        loading={isFeaturedLoading}
-        title="Featured Products"
-        link="/products?sort=featured"
-        products={featuredProducts}
-        bg="bg-white"
-      /> */}
       <ProductSectionCarousel
         loading={isFeaturedLoading}
-        title="Top Industrial Picks"
+        title="Featured Products"
         link="/products?sort=featured"
         products={featuredProducts}
         bg="bg-white"
@@ -114,54 +89,8 @@ const Index = () => {
         products={newArrivals}
         bg="bg-muted/10"
       />
-
-      {/* <section className="py-20 bg-gradient-hero text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-white mb-4">
-            Build Better. Build Stronger.
-          </h2>
-          <p className="text-lg text-white/90 max-w-2xl mx-auto mb-8">
-            Explore India's most trusted construction materials marketplace.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="rounded-full bg-white text-primary hover:bg-gray-200"
-          >
-            <Link to="/products">
-              Start Shopping <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
-      </section> */}
     </>
   );
 };
-
-// const ProductSection = ({ title, link, products, bg, loading }) => (
-//   !loading && products.length === 0 ? null :
-//     <section className={`py-16 ${bg}`}>
-//       <div className="container mx-auto px-4">
-//         <div className="flex justify-between items-center mb-8">
-//           <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-//           <Button variant="outline" asChild>
-//             <Link to={link}>
-//               View All <ArrowRight className="ml-2 h-4 w-4" />
-//             </Link>
-//           </Button>
-//         </div>
-
-//         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-//           {loading ? [1, 2, 3, 4].map((i) => (
-//             <ProductCardSkeleton key={i} />
-//           )) :
-//             products.map((p) => (
-//               <ProductCard key={p._id} product={p} />
-//             ))}
-//         </div>
-//       </div>
-//     </section>
-// );
-
 
 export default Index;

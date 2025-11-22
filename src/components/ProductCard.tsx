@@ -63,7 +63,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const isWishlistMutationPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
   return (
     <Card className="group hover:shadow-md transition-shadow duration-300 bg-gradient-card h-full flex flex-col w-full">
-      <Link to={`/product/${product.slug}`}>
+      <Link to={`/product/${product.slug}`} className="h-3/4">
         <div className="relative overflow-hidden rounded-t-lg">
           <img
             src={product.thumbnail || "/placeholder.svg"}
@@ -72,13 +72,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
           />
         </div>
       </Link>
-      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
+      <CardContent className="p-3 sm:p-4 flex-1 flex flex-col justify-between space-y-2">
         <Link to={`/product/${product.slug}`}>
-          <h3 className="font-semibold text-sm sm:text-base md:text-lg mb-2 line-clamp-2 hover:text-primary transition-colors min-h-[3.5rem]">
+          <h3 className="font-semibold text-sm sm:text-base md:text-lg line-clamp-2 transition-colors">
             {product.name}
           </h3>
         </Link>
-        <div className="flex items-center gap-1 mb-3">
+        <div className="flex items-center gap-1">
           <Star className="h-3 w-3 sm:h-4 sm:w-4 fill-accent text-accent" />
           <span className="text-xs sm:text-sm font-medium">{product.rating}</span>
           <span className="text-xs sm:text-sm text-muted-foreground">({product.reviewCount})</span>

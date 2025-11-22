@@ -1,89 +1,81 @@
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+"use client";
+
+import { ArrowRight } from "lucide-react";
 import ProductCard, { ProductCardSkeleton } from "../ProductCard";
 import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
-import useEmblaCarousel from "embla-carousel-react";
-import { useCallback } from "react";
-import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const ProductSectionCarousel = ({ title, link, products, bg, loading }) => {
 
-    const [emblaRef, emblaApi] = useEmblaCarousel({
-        loop: false,
-        align: "start",
-        slidesToScroll: 1,
-    });
+  if (!loading && products.length === 0) return null;
 
-    const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
-    const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  return (
+    <section className={`py-10 sm:py-12 md:py-16 ${bg} relative`}>
+      <div className="container mx-auto px-3 sm:px-4 space-y-6 sm:space-y-8">
 
-    if (!loading && products.length === 0) {
-        return null;
-    }
+        {/* header */}
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+            {title}
+          </h2>
 
-    return (
-        <section className={`py-16 ${bg} relative group`}>
-            <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-                    <Button variant="outline" asChild>
-                        <Link to={link}>
-                            View All <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
+          <Button
+            variant="outline"
+            className="text-xs sm:text-sm h-8 sm:h-9 px-3 sm:px-4"
+            asChild
+          >
+            <Link to={link}>
+              View All <ArrowRight className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+            </Link>
+          </Button>
+        </div>
 
-                <div className="overflow-hidden" ref={emblaRef}>
-                    <div className="flex gap-6">
-                        {loading ? [1, 2, 3, 4].map((i) => (
-                            <div key={i} className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_calc(50%-12px)] md:flex-[0_0_calc(33.333%-16px)] lg:flex-[0_0_calc(25%-18px)]">
-                                <ProductCardSkeleton />
-                            </div>
-                        )) :
-                            products.map((p) => (
-                                <div key={p._id} className="flex-[0_0_100%] min-w-0 sm:flex-[0_0_calc(50%-12px)] md:flex-[0_0_calc(33.333%-16px)] lg:flex-[0_0_calc(25%-18px)]">
-                                    <ProductCard product={p} />
-                                </div>
-                            ))
-                        }
-                    </div>
-                </div>
-            </div>
+        {/* carousel */}
+        <Carousel
+          opts={{
+            align: "start",
+            loop: false,
+          }}
+          className="w-full relative"
+        >
+          <CarouselContent className="flex gap-3 sm:gap-4 md:gap-6">
+            {loading
+              ? [1, 2, 3, 4, 5].map((i) => (
+                  <CarouselItem
+                    key={i}
+                    className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                  >
+                    <ProductCardSkeleton />
+                  </CarouselItem>
+                ))
+              : products.map((p) => (
+                  <CarouselItem
+                    key={p._id}
+                    className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                  >
+                    <ProductCard product={p} />
+                  </CarouselItem>
+                ))}
+          </CarouselContent>
 
-            {!loading && products.length > 4 && (
-                <>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10",
-                            "h-10 w-10 rounded-full bg-primary backdrop-blur-sm shadow-md",
-                            "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                            "hover:bg-blue-400"
-                        )}
-                        onClick={scrollPrev}
-                        aria-label="Previous products"
-                    >
-                        <ChevronLeft className="h-5 w-5" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10",
-                            "h-10 w-10 rounded-full bg-primary   backdrop-blur-sm shadow-md",
-                            "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                            "hover:bg-blue-400"
-                        )}
-                        onClick={scrollNext}
-                        aria-label="Next products"
-                    >
-                        <ChevronRight className="h-5 w-5" />
-                    </Button>
-                </>
-            )}
-        </section>
-    );
+          {/* navigation buttons */}
+          {!loading && products.length > 5 && (
+            <>
+              <CarouselPrevious className="hidden md:flex absolute -left-3 lg:-left-5 top-1/2 -translate-y-1/2 h-8 w-8 lg:h-10 lg:w-10 rounded-full" />
+              <CarouselNext className="hidden md:flex absolute -right-3 lg:-right-5 top-1/2 -translate-y-1/2 h-8 w-8 lg:h-10 lg:w-10 rounded-full" />
+            </>
+          )}
+        </Carousel>
+      </div>
+    </section>
+  );
 };
 
 export default ProductSectionCarousel;
