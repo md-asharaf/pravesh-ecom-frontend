@@ -297,7 +297,7 @@ const ProductDetail: React.FC = () => {
             <Button
               className="flex-1 rounded-full"
               onClick={() => addToCartMutation.mutate({ productId: product._id, quantity })}
-              disabled={addToCartMutation.isPending || removeFromWishlistMutation.isPending}
+              disabled={addToCartMutation.isPending}
             >
               <ShoppingCart className="h-4 w-4 mr-1" />
               Add to Cart

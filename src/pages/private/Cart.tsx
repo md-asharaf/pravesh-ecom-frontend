@@ -1,7 +1,6 @@
 import { Loader } from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-// import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/providers/auth";
 import { cartService } from "@/services/cart.service";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -17,20 +16,14 @@ const Cart = () => {
   const { user } = useAuth();
   const dispatch = useAppDispatch()
   const { items: cartItems } = useAppSelector((state) => state.cart);
-
   const { data, isLoading } = useQuery({
-    queryKey: ["cart"],
+    queryKey: ["cart", user?._id],
     queryFn: async () => {
       const res = await cartService.getMyCart();
       return res.data;
     },
-    enabled: cartItems.length === 0,
-  });
-
-  // const { data: cartSummary } = useQuery({
-  //   queryKey: ["cart-summary", user?._id],
-  //   queryFn: async () => (await cartService.getCartSummary()).data,
-  // });
+    enabled: user?._id && cartItems.length === 0,
+  })
 
   const updateCartMutation = useMutation({
     mutationFn: async ({ productId, quantity }: { productId: string, quantity: number }) => await cartService.updateCart(productId, quantity),
@@ -57,8 +50,6 @@ const Cart = () => {
       dispatch(setCart(data));
     }
   }, [data, dispatch]);
-
-  // const shipping = cartSummary?.totalPrice <= 10000 ? 50 : 0;
 
   if (isLoading) {
     return <Loader />

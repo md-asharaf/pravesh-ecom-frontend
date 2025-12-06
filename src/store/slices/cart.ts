@@ -24,20 +24,20 @@ const calculateSummary = (state: CartState) => {
 export const cartSlice = createSlice({
   name: "cart",
   initialState,
-    reducers: {
+  reducers: {
     setCart: (state, action: PayloadAction<Cart>) => {
       state.items = action.payload.items || [];
       calculateSummary(state);
     },
 
-    addItem: (state, action: PayloadAction<{product: Partial<Product>; quantity: number}>) => {
+    addItem: (state, action: PayloadAction<{ product: Partial<Product>; quantity: number }>) => {
       const { product, quantity } = action.payload;
       const existing = state.items.find((i) => i.product._id === product._id);
 
       if (existing) {
         existing.quantity += quantity
       } else {
-        state.items.push({ product, quantity: 1 });
+        state.items.push({ product, quantity: quantity ?? 1 });
       }
       calculateSummary(state);
     },
