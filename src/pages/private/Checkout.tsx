@@ -6,7 +6,7 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from "@/component
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { orderService } from "@/services/order.service";
 import { addressService } from "@/services/address.service";
 import { cartService } from "@/services/cart.service";
@@ -16,6 +16,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { Loader2, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Product } from "@/types";
+import { clearCart } from "@/store/slices/cart";
+import { useAppDispatch } from "@/store/hooks";
 
 const checkoutSchema = z.object({
   shippingAddressId: z.string().min(1, "Select a shipping address"),
@@ -24,9 +26,10 @@ const checkoutSchema = z.object({
 type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 
 const Checkout = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  const dispatch = useAppDispatch();
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
@@ -73,6 +76,8 @@ const Checkout = () => {
     },
     onSuccess: ({data,message}) => {
       toast.success(message ?? "Order placed successfully");
+      dispatch(clearCart());
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
       navigate("/orders");
     },
     onError: (error:any) => {
@@ -99,8 +104,12 @@ const Checkout = () => {
     <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Checkout</h1>
-        <Button variant="ghost" asChild className="text-sm sm:text-base">
-          <Link to="/cart">Back to Cart</Link>
+        <Button 
+          variant="ghost" 
+          onClick={() => navigate(-1)}
+          className="text-sm sm:text-base"
+        >
+          Back
         </Button>
       </div>
 
@@ -259,7 +268,7 @@ const Checkout = () => {
                 <Separator />
 
                 {/* Totals */}
-                <div className="space-y-2 text-xs sm:text-sm">
+                {/* <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-medium">₹{subtotal.toLocaleString()}</span>
@@ -270,14 +279,14 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <Separator />
+                <Separator /> */}
 
-                <div className="flex justify-between items-center">
+                {/* <div className="flex justify-between items-center">
                   <span className="font-semibold text-base sm:text-lg">Total</span>
                   <span className="text-xl sm:text-2xl font-bold text-primary">
                     ₹{total.toLocaleString()}
                   </span>
-                </div>
+                </div> */}
 
                 <Button
                   type="submit"

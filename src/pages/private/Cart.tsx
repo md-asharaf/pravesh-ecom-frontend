@@ -22,7 +22,7 @@ const Cart = () => {
       const res = await cartService.getMyCart();
       return res.data;
     },
-    enabled: user?._id && cartItems.length === 0,
+    enabled: cartItems.length === 0,
   })
 
   const updateCartMutation = useMutation({
@@ -46,7 +46,7 @@ const Cart = () => {
   });
 
   useEffect(() => {
-    if (data) {
+    if (data && data.items.length > 0) {
       dispatch(setCart(data));
     }
   }, [data, dispatch]);
@@ -137,7 +137,7 @@ const Cart = () => {
           );
         })}
         <Button asChild className="w-full py-3 sm:py-4 text-base sm:text-lg rounded-none">
-          <Link to="/checkout">CHECKOUT</Link>
+          <Link to="/checkout" className="w-full py-3 sm:py-4 text-base sm:text-lg rounded-none">CHECKOUT</Link>
         </Button>
       </div>
 

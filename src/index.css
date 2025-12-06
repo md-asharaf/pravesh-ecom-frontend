@@ -2,135 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Saffron–White–Black theme (all HSL) */
-
 @layer base {
   :root {
-    /* --- Core Theme Colors --- */
-    --saffron: 33 100% 60%;       /* #FF9933 (approx) */
-    --white: 0 0% 100%;
-    --black: 0 0% 0%;
-
-    /* --- Base --- */
-    --background: var(--white);
-    --foreground: var(--black);
-
-    --card: var(--white);
-    --card-foreground: var(--black);
-
-    --popover: var(--white);
-    --popover-foreground: var(--black);
-
-    --primary: var(--saffron);
-    --primary-foreground: var(--black);
-
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 30 100% 50%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 0 0% 96%;
-    --secondary-foreground: var(--black);
-
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 40%;
-
-    --accent: var(--saffron);
-    --accent-foreground: var(--black);
-
-    --destructive: 0 75% 50%;
-    --destructive-foreground: var(--white);
-
-    --border: 0 0% 88%;
-    --input: 0 0% 88%;
-    --ring: var(--saffron);
-
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 30 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 30 100% 50%;
     --radius: 0.5rem;
-
-    /* --- Extended Colors (Updated to fit theme) --- */
-    --industrial: 0 0% 15%;          /* deep black-gray */
-    --industrial-light: 0 0% 35%;    /* lighter gray */
-    --construction-orange: var(--saffron);
-    --steel-gray: 0 0% 65%;
-
-    /* --- Gradients (Now Saffron-based) --- */
-    --gradient-hero: linear-gradient(
-      135deg,
-      hsl(33 100% 60%) 0%,
-      hsl(33 90% 50%) 100%
-    );
-
-    --gradient-card: linear-gradient(
-      180deg,
-      hsl(0 0% 100%) 0%,
-      hsl(0 0% 98%) 100%
-    );
-
-    /* --- Sidebar --- */
-    --sidebar-background: var(--white);
-    --sidebar-foreground: var(--black);
-    --sidebar-primary: var(--saffron);
-    --sidebar-primary-foreground: var(--black);
-    --sidebar-accent: 0 0% 94%;
-    --sidebar-accent-foreground: var(--black);
-    --sidebar-border: 0 0% 88%;
-    --sidebar-ring: var(--saffron);
+    --chart-1: 30 100% 50%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
-  /* ---------------- DARK MODE ---------------- */
-
   .dark {
-    --background: var(--black);
-    --foreground: var(--white);
-
-    --card: 0 0% 10%;
-    --card-foreground: var(--white);
-
-    --popover: 0 0% 10%;
-    --popover-foreground: var(--white);
-
-    --primary: var(--saffron);
-    --primary-foreground: var(--black);
-
-    --secondary: 0 0% 20%;
-    --secondary-foreground: var(--white);
-
-    --muted: 0 0% 25%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: var(--saffron);
-    --accent-foreground: var(--black);
-
-    --destructive: 0 75% 45%;
-    --destructive-foreground: var(--white);
-
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 30 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 30 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: var(--saffron);
-
-    /* Extended */
-    --industrial: 0 0% 80%;
-    --industrial-light: 0 0% 60%;
-    --construction-orange: var(--saffron);
-    --steel-gray: 0 0% 45%;
-
-    /* Gradients */
-    --gradient-hero: linear-gradient(
-      135deg,
-      hsl(33 100% 55%) 0%,
-      hsl(33 90% 45%) 100%
-    );
-
-    --gradient-card: linear-gradient(
-      180deg,
-      hsl(0 0% 12%) 0%,
-      hsl(0 0% 15%) 100%
-    );
-
-    /* Sidebar (Dark Mode) */
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: var(--white);
-    --sidebar-primary: var(--saffron);
-    --sidebar-primary-foreground: var(--black);
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: var(--white);
-    --sidebar-border: 0 0% 20%;
-    --sidebar-ring: var(--saffron);
+    --ring: 30 100% 50%;
+    --chart-1: 30 100% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -138,8 +63,42 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* View Transitions API Styles */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.3s;
+    animation-timing-function: ease-in-out;
+  }
+
+  ::view-transition-old(root) {
+    animation: fade-out 0.3s ease-in-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 0.3s ease-in-out;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

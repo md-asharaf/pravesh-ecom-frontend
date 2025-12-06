@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import {
   useMutation,
   useQuery,
@@ -41,6 +41,7 @@ import {
 const ProductDetail: React.FC = () => {
   const dispatch = useAppDispatch()
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const wishlistItems = useAppSelector((state) => state.wishlist.items)
   const isWishlisted = wishlistItems.some(item => item.slug === slug);
   const [quantity, setQuantity] = useState(1);
@@ -205,13 +206,11 @@ const ProductDetail: React.FC = () => {
       {/* Back Button */}
       <Button
         variant="outline"
-        asChild
+        onClick={() => navigate(-1)}
         className="mb-6 text-muted-foreground hover:text-foreground"
       >
-        <Link to="/products">
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Link>
+        <ArrowLeft className="h-4 w-4" />
+        Back
       </Button>
 
       {/* PRODUCT TOP */}
@@ -246,10 +245,8 @@ const ProductDetail: React.FC = () => {
             </Breadcrumb>
           )}
           <h1 className="text-3xl font-semibold">{product.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            <div></div>
-            <Badge className="font-medium">{product.brand?.name}</Badge> •  #{product.sku}
-          </p>
+          <div className="text-sm text-muted-foreground">
+            {product.brand?.name && <Badge className="font-medium">{product.brand?.name}</Badge>} {product.sku && <Badge className="font-medium">{product.sku}</Badge>}</div>
 
           {/* Product Rating */}
           <div className="flex items-center gap-3">

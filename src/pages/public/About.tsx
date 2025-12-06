@@ -1,181 +1,266 @@
 import { Link } from "react-router-dom";
+import { ShieldCheck, Truck, DollarSign, Users, Award, Building2, Package, Paintbrush, Wrench, Layers, Gauge } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useAppSelector } from "@/store/hooks";
 
 const About = () => {
-  const companyName = "Pravesh Hardware";
+  const settings = useAppSelector((s) => s.settings.settings);
+
+  // Fallback data
+  const companyName = settings?.businessName || "Pravesh Tread Industries Pvt Ltd";
+  const aboutTitle = settings?.aboutTitle || "Building India's Future, One Material at a Time";
+  const aboutDescription = settings?.aboutDescription || "Pravesh Tread Industries Pvt Ltd has been a cornerstone in the building materials industry, providing quality products that lay the foundation for countless structures across the region.\n\nOur commitment to excellence is reflected in our diverse product range, catering to both wholesale and retail markets. With years of expertise and a reputation for reliability, we have built a legacy of trust.";
+  const whyChooseUs = settings?.whyChooseUs || "We offer a broad selection of products tailored to the specific needs of our customers. We source our products from reputable manufacturers and ensure consistent quality. Our strength lies in our ability to provide a wide range of building materials under one roof, backed by exceptional customer service.";
+
+  const logo = settings?.logo || "https://img.freepik.com/premium-vector/white-logo-construction-project-called-construction_856308-794.jpg";
 
   const productSpecialization = [
     {
-      category: "Cement & Concrete",
-      description: `The essential binding agents for superior strength and long-term durability in all foundational work.
-We supply various grades of Portland cement, specialized concrete mixes, and additives for robust slabs, footings, and load-bearing structures.`,
-      visual:
-        "https://plus.unsplash.com/premium_photo-1661963687013-36b88a78062e?q=80&w=1470&auto=format&fit=crop",
-    },
-    {
-      category: "Steel Reinforcement Rods (Rebars)",
-      description: `Crucial for adding tensile strength to concrete and preventing cracking.
-We stock high-yield, corrosion-resistant rebar in all major sizes, ensuring stability for beams, columns, and foundations.`,
+      category: "TMT Bars",
+      description: `Our TMT bars ensure durability and strength in every build. We offer a wide range of TMT bars from top brands like Moira, Jindal, BS Thermax, and more, known for their high tensile strength and corrosion resistance.`,
       visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      icon: Layers,
     },
     {
-      category: "Paints & Finishes",
-      description: `Not just aesthetics — durable coatings, primers, and weather-resistant paints that protect while elevating exterior and interior appeal.`,
-      visual:
-        "https://www.bhg.com/thmb/eOoKuE3HJYQaXB5bfeomxNGRz_E=/750x0/filters:no_upscale():format(webp)/BHG-types-of-paint-finishes-and-surfaces-5651272-01.webp",
+      category: "Pipes (MS, GI, GP)",
+      description: `Our range of pipes includes MS (Mild Steel), GI (Galvanized Iron), and GP (Galvanized Plain) pipes. These pipes are perfect for plumbing, structural, and industrial applications. These pipes are durable, resistant to corrosion, and come in various sizes and thicknesses.`,
+      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      icon: Package,
     },
     {
-      category: "General Construction Materials",
-      description: `Essential secondary materials like aggregates, bricks, blocks, and tiling materials — every foundational accessory for a complete construction pipeline.`,
+      category: "Bright Bars",
+      description: `Bright bars are used in various engineering components, construction, and manufacturing. Our bright bars are known for their precision and smooth surface finish, making them ideal for applications requiring high dimensional accuracy.`,
+      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      icon: Gauge,
+    },
+    {
+      category: "Steel Angles & Flats",
+      description: `Our steel angles and flats provide the backbone for various structural applications. Available in a range of sizes, they are suitable for both heavy-duty and light-weight constructions.`,
+      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      icon: Building2,
+    },
+    {
+      category: "Cement",
+      description: `We offer premium quality cement from top brands like MP Birla ensuring strong, durable builds. Whether for residential or industrial use, our cement provides consistent performance.`,
+      visual: "https://plus.unsplash.com/premium_photo-1661963687013-36b88a78062e?q=80&w=1470&auto=format&fit=crop",
+      icon: Building2,
+    },
+    {
+      category: "Paints and Hardware",
+      description: `Our selection of paints and hardware includes everything needed to finish a project, from high-quality Berger paints to essential hardware like nails, screws, and welding rods.`,
+      visual: "https://www.bhg.com/thmb/eOoKuE3HJYQaXB5bfeomxNGRz_E=/750x0/filters:no_upscale():format(webp)/BHG-types-of-paint-finishes-and-surfaces-5651272-01.webp",
+      icon: Paintbrush,
+    },
+    {
+      category: "Steel Channels & Beams",
+      description: `Steel channels and beams are critical for constructing strong frameworks. Our selection includes various sizes to meet your specific construction needs.`,
+      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      icon: Building2,
+    },
+    {
+      category: "Roofing Sheets",
+      description: `We provide a variety of roofing options, including PPGL, GC, and cement sheets, suitable for residential, commercial, and industrial applications. These sheets are durable and designed to withstand harsh weather conditions.`,
       visual: "https://cdn.pixabay.com/photo/2016/11/29/13/46/rocks-1869970_1280.jpg",
+      icon: Building2,
     },
   ];
 
-  const whyChooseUs = [
-    {
-      point: "Top-Grade Quality",
-      detail:
-        "We partner only with verified manufacturers following strict quality standards.",
-      icon: "/icons/quality.png",
-    },
-    {
-      point: "Fast & Reliable Delivery",
-      detail: "Order anytime, get assured doorstep delivery within committed timelines.",
-      icon: "/icons/convenience.png",
-    },
-    {
-      point: "Best Prices Guaranteed",
-      detail: "Because of our optimized supply chains, we give you the best rates openly and transparently.",
-      icon: "/icons/price.png",
-    },
-    {
-      point: "Expert Assistance",
-      detail:
-        "Our specialists help you choose the right materials for your exact project requirements.",
-      icon: "/icons/support.png",
-    },
+  const stats = [
+    { label: "Years of Experience", value: settings?.yearsOfExperience || "15+", icon: Award },
+    { label: "Happy Customers", value: settings?.happyCustomers || "10K+", icon: Users },
+    { label: "Products Available", value: settings?.productsAvailable || "500+", icon: Package },
+    { label: "Cities Served", value: settings?.citiesServed || "50+", icon: Building2 },
   ];
 
   return (
-    <div className="text-slate-900 bg-white">
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 md:py-16 lg:py-20 py-8 sm:py-12 space-y-12 sm:space-y-16">
-        <header className="space-y-6 sm:space-y-10 border-b border-slate-300 pb-8 sm:pb-14">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 sm:gap-8">
-            <div className="max-w-3xl space-y-3 sm:space-y-4">
-              <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Mission</p>
-
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-snug text-slate-900">
-                Building India's Future, One Material at a Time
-              </h1>
-
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-                At Pravesh Hardware, we provide reliable, high-quality construction materials
-                delivered straight to your site — supporting builders, contractors, and
-                households with trusted products.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <img
-                src="https://img.freepik.com/premium-vector/white-logo-construction-project-called-construction_856308-794.jpg"
-                className="h-16 w-16 rounded-full border shadow-sm object-cover"
-                alt="logo"
-              />
-              <span className="text-xl font-semibold tracking-wide text-primary uppercase">
-                {companyName}
-              </span>
-            </div>
-          </div>
-        </header>
-
-        <section className="space-y-8 sm:space-y-10">
-          <div className="space-y-2 sm:space-y-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">What We Deliver</p>
-            <h2 className="text-2xl sm:text-3xl font-semibold">Materials for Every Construction Phase</h2>
-            <p className="text-sm sm:text-base text-slate-500">Reliable. Durable. Trusted by professionals.</p>
-          </div>
-
-          <div className="divide-y divide-slate-200/70">
-            {productSpecialization.map((item, index) => (
-              <article
-                key={item.category}
-                className="flex flex-col md:flex-row items-start gap-6 sm:gap-8 py-6 sm:py-10"
-              >
-                {/* Number */}
-                <div className="w-16 sm:w-20 shrink-0 space-y-1">
-                  <p className="text-[11px] tracking-[0.25em] text-slate-400 uppercase">Focus</p>
-                  <p className="text-base sm:text-lg font-semibold">{`0${index + 1}`}</p>
-                </div>
-
-                {/* Image */}
-                <div className="w-full md:w-60 h-32 sm:h-40 overflow-hidden rounded-lg shadow-sm bg-slate-100">
-                  <img
-                    src={item.visual}
-                    alt={item.category}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* text */}
-                <div className="flex-1 space-y-2 sm:space-y-3">
-                  <h3 className="text-lg sm:text-xl font-semibold">{item.category}</h3>
-                  <p className="text-sm sm:text-base text-slate-600 whitespace-pre-line leading-relaxed">
-                    {item.description}
+    <div className="bg-white">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-slate-50 via-white to-slate-50 border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-start">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="space-y-3 sm:space-y-4">
+                <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 font-medium">
+                  About {companyName}
+                </p>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight text-slate-900">
+                  {aboutTitle.includes("One Material") ? (
+                    <>
+                      Building India's Future,{" "}
+                      <span className="text-primary">One Material at a Time</span>
+                    </>
+                  ) : (
+                    aboutTitle
+                  )}
+                </h1>
+                {aboutDescription.split('\n\n').map((paragraph, index) => (
+                  <p key={index} className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed max-w-2xl">
+                    {paragraph}
                   </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+                ))}
+              </div>
 
-        <section className="space-y-8 sm:space-y-12 border-t border-slate-200 pt-8 sm:pt-14">
-          <div className="text-center space-y-2 sm:space-y-3">
-            <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Why Choose Us</p>
-            <h2 className="text-2xl sm:text-3xl font-semibold">Trusted by Contractors & Home Builders</h2>
-            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto px-4">
-              We stand for reliability, quality, and customer-first service.
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2">
+                <Button asChild size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8">
+                  <Link to="/products">Explore Products</Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8">
+                  <Link to="/contact">Contact Us</Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-lg sm:shadow-xl mt-6 lg:mt-0">
+              <img
+                src={logo}
+                className="w-full h-full object-cover aspect-square"
+                alt={companyName}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="bg-white border-b border-slate-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={index} className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                  <CardContent className="p-4 sm:p-6 lg:p-8 text-center">
+                    <div className="flex justify-center mb-3 sm:mb-4">
+                      <div className="p-2.5 sm:p-3 rounded-full bg-primary/10">
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary" />
+                      </div>
+                    </div>
+                    <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900 mb-1 sm:mb-2">
+                      {stat.value}
+                    </p>
+                    <p className="text-xs sm:text-sm text-slate-600 font-medium leading-tight">
+                      {stat.label}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20 space-y-8 sm:space-y-12 md:space-y-16">
+
+
+        {/* Product Specialization Section */}
+        <section className="space-y-6 sm:space-y-8">
+          <div className="text-center space-y-2 sm:space-y-3 max-w-3xl mx-auto px-4">
+            <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 font-medium">
+              What We Deliver
+            </p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">
+              Materials for Every Construction Phase
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600">
+              Reliable. Durable. Trusted by professionals.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
-            {whyChooseUs.map((item) => (
-              <div
-                key={item.point}
-                className="rounded-2xl border bg-white p-4 sm:p-6 shadow-sm hover:shadow-md transition hover:-translate-y-1"
-              >
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <img
-                    src={item.icon}
-                    alt={item.point}
-                    className="h-8 w-8 sm:h-10 sm:w-10 rounded-full border bg-white p-2 flex-shrink-0"
-                  />
-                  <p className="text-base sm:text-lg font-semibold">{item.point}</p>
-                </div>
-
-                <p className="mt-2 sm:mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">{item.detail}</p>
-              </div>
-            ))}
+          {/* Medium Square Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+            {productSpecialization.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <Card
+                  key={item.category}
+                  className="group overflow-hidden border-slate-200 hover:border-primary/50 hover:shadow-xl transition-all duration-300 flex flex-col"
+                >
+                  <div className="relative aspect-square overflow-hidden">
+                    <img
+                      src={item.visual}
+                      alt={item.category}
+                      className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                    <div className="absolute top-2.5 sm:top-3 left-2.5 sm:left-3">
+                      <div className="flex items-center gap-1.5 sm:gap-2 bg-white/90 backdrop-blur-sm px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full">
+                        <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary" />
+                        <span className="text-[10px] sm:text-xs font-semibold text-slate-900">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <CardContent className="p-3 sm:p-4 lg:p-5 flex-1 flex flex-col">
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-slate-900 mb-1.5 sm:mb-2">
+                      {item.category}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed flex-1">
+                      {item.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </section>
 
-        <section className="bg-gradient-to-br from-blue-50 to-slate-100 rounded-3xl p-6 sm:p-8 lg:p-10 mt-6 sm:mt-8 shadow-inner">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
-            <div className="space-y-2 sm:space-y-3 max-w-lg">
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">
-                Let's Build Something Strong Together.
+        {/* Why Choose Us Section */}
+        <section className="space-y-6 sm:space-y-8 md:space-y-12 border-t border-slate-200 pt-8 sm:pt-12 md:pt-16">
+          <div className="text-center space-y-2 sm:space-y-3 max-w-3xl mx-auto px-4">
+            <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-400 font-medium">
+              Why Choose Us
+            </p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">
+              Trusted by Contractors & Home Builders
+            </h2>
+          </div>
+
+          <div className="max-w-4xl mx-auto px-4">
+            <Card className="border-slate-200">
+              <CardContent className="p-6 sm:p-8 md:p-10 lg:p-12">
+                <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 md:gap-6">
+                  <div className="inline-flex p-2.5 sm:p-3 md:p-4 rounded-xl bg-primary/10 flex-shrink-0">
+                    <Package className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary" />
+                  </div>
+                  <div className="space-y-2 sm:space-y-3 md:space-y-4 flex-1">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-900">
+                      Why Choose Us?
+                    </h3>
+                    <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed">
+                      {whyChooseUs}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-slate-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 lg:p-12 mt-6 sm:mt-8 md:mt-12 border border-primary/20">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+            <div className="space-y-2 sm:space-y-3 md:space-y-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-slate-900">
+                Let's Build Something Strong Together
               </h2>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
                 {companyName} is dedicated to making material procurement simple,
-                transparent, and dependable.
+                transparent, and dependable. Start your project with quality materials today.
               </p>
             </div>
 
-            <Link
-              to="/products"
-              className="self-start md:self-center text-sm font-semibold text-primary underline hover:text-primary/80"
-            >
-              Shop Materials →
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-0">
+              <Button asChild size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8">
+                <Link to="/products">Shop Materials</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8">
+                <Link to="/contact">Get Quote</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </section>

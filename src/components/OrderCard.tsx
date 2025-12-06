@@ -1,22 +1,31 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 export const OrderCard = ({ order, statusColors }: any) => {
+  const navigate = useNavigate();
+  const [showAllItems, setShowAllItems] = useState(false);
+  const MAX_VISIBLE_ITEMS = 2;
+  const items = order.items || [];
+  const visibleItems = showAllItems ? items : items.slice(0, MAX_VISIBLE_ITEMS);
+  const remainingItemsCount = items.length - MAX_VISIBLE_ITEMS;
+  const hasManyItems = items.length > 5;
+
   return (
-    <Link to={`/orders/${order._id}`}>
+    <div onClick={() => navigate(`/orders/${order._id}`)}>
       <Card className="rounded-md border shadow-sm hover:shadow-md transition-shadow cursor-pointer">
         <div className="p-4 border-b">
           <div className="flex items-center justify-between mb-2">
             <div>
               <p className="text-xs text-muted-foreground">Order ID</p>
-              <p className="text-sm font-medium">{order._id}</p>
+              <p className="text-sm font-medium break-all">{order._id}</p>
             </div>
             <Badge
-              className={`${
-                statusColors[order.status] ||
+              className={`${statusColors[order.status] ||
                 "bg-gray-100 text-gray-700"
-              } capitalize`}
+                } capitalize`}
             >
               {order.status.replace(/_/g, " ")}
             </Badge>
@@ -36,45 +45,102 @@ export const OrderCard = ({ order, statusColors }: any) => {
               "Your order was cancelled"}
           </p>
         </div>
-        {order.items.map((item: any) => {
-          const product = item.product;
 
-          return (
-            <div
-              key={product._id}
-              className="flex gap-4 p-4 border-b last:border-0"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={product.thumbnail}
-                className="w-20 h-20 object-contain"
-              />
+        <div className="divide-y">
+          <div
+            className={showAllItems && hasManyItems ? "max-h-[400px] overflow-y-auto" : ""}
+          >
+            {visibleItems.map((item: any, index: number) => {
+              const product = item.product;
+              if (!product) return null;
 
-              <div className="flex-1">
-                <Link
-                  to={`/product/${product.slug}`}
-                  className="font-semibold text-lg hover:underline"
+              return (
+                <div
+                  key={product._id || index}
+                  className="flex gap-3 sm:gap-4 p-3 sm:p-4"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {product.name}
-                </Link>
-                <div className="mt-1 text-sm text-muted-foreground">
-                  Quantity: {item.quantity} × ₹{item.price.toLocaleString()}
+                  <img
+                    src={product.thumbnail || "/placeholder-product.png"}
+                    alt={product.name || "Product"}
+                    className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-md flex-shrink-0"
+                  />
+
+                  <div className="flex-1 min-w-0">
+                    {product.slug ? (
+                      <Link
+                        to={`/product/${product.slug}`}
+                        className="font-semibold text-sm sm:text-base md:text-lg hover:underline block break-words"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {product.name || "Product"}
+                      </Link>
+                    ) : (
+                      <p className="font-semibold text-sm sm:text-base md:text-lg break-words">
+                        {product.name || "Product"}
+                      </p>
+                    )}
+                    <div className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                      <span>Quantity: {item.quantity}</span>
+                    </div>
+                  </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {items.length > MAX_VISIBLE_ITEMS && (
+            <div
+              className="p-3 sm:p-4 border-t bg-muted/30"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowAllItems(!showAllItems);
+              }}
+            >
+              <button
+                className="flex items-center justify-center gap-2 w-full text-sm sm:text-base text-primary hover:text-primary/80 font-medium transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAllItems(!showAllItems);
+                }}
+              >
+                {showAllItems ? (
+                  <>
+                    <span>Show Less</span>
+                    <ChevronUp className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>View {remainingItemsCount} more item{remainingItemsCount !== 1 ? 's' : ''}</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </button>
+              {hasManyItems && !showAllItems && (
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Click to view all {items.length} items or view order details for full information
+                </p>
+              )}
+            </div>
+          )}
+
+          {items.length > 1 && (
+            <div className="p-3 sm:p-4 border-t bg-muted/20">
+              <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground">
+                <span>
+                  {items.length} item{items.length !== 1 ? 's' : ''} in this order
+                </span>
+                {hasManyItems && (
+                  <span className="text-primary font-medium">
+                    View details →
+                  </span>
+                )}
               </div>
             </div>
-          );
-        })}
-        <div className="p-4 border-t bg-muted/50">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Total Amount</span>
-            <span className="text-lg font-semibold">
-              ₹{order.totalAmount.toLocaleString()}
-            </span>
-          </div>
+          )}
         </div>
       </Card>
-    </Link>
+    </div>
   );
 };
 

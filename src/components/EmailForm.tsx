@@ -1,9 +1,12 @@
-import { useState } from "react"
 import { useForm } from "react-hook-form"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { contactService } from "@/services/contact.service"
+import { useAppSelector } from "@/store/hooks"
 
 type FormValues = {
     name: string
@@ -14,51 +17,54 @@ type FormValues = {
 
 export default function EmailForm() {
     const { register, handleSubmit, reset } = useForm<FormValues>()
-    const [notice, setNotice] = useState<string | null>(null)
-    const [loading, setLoading] = useState(false)
+    const settings = useAppSelector((s) => s.settings.settings);
+    const email = settings?.email || "support@praveshmart.com";
 
-    const onSubmit = async (data: FormValues) => {
-        setLoading(true)
-        try {
-            await new Promise((r) => setTimeout(r, 600))
-            setNotice("Thanks — we received your message and will reply within 2 business hours.")
-            reset()
-        } catch (err) {
-            setNotice("Something went wrong. Please try again later.")
-            console.error("EmailForm error:", err)
-        } finally {
-            setLoading(false)
-        }
+    const { mutate: sendEmail, isPending } = useMutation({
+        mutationFn: (data: FormValues) => contactService.sendEmail(data),
+        onSuccess: ({message}) => {
+            toast.success(message || "Message sent successfully! We'll get back to you within 2 business hours.");
+            reset();
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Failed to send message. Please try again later.");
+        },
+    });
+
+    const onSubmit = (data: FormValues) => {
+        sendEmail(data);
     }
 
     return (
-        <div id="contact-form" className="mt-8 pt-6 border-t border-gray-400">
-            <h4 className="text-lg font-semibold mb-3">Email Us</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-                Prefer email? Send us a quick message and we'll route it to the right team.
-            </p>
+        <div id="contact-form" className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-slate-200">
+            <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
+                <p className="text-xs uppercase tracking-[0.25em] text-slate-500">Email Us</p>
+                <h4 className="text-xl sm:text-2xl md:text-3xl font-semibold text-slate-900">Send Us a Message</h4>
+                <p className="text-sm sm:text-base text-slate-600">
+                    Prefer email? Send us a quick message and we'll route it to the right team.
+                </p>
+            </div>
 
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start"
+                className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8"
             >
-                {/* inputs (left) */}
-                <div className="md:col-span-2 space-y-3">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                     <div>
-                        <Label htmlFor="name" className="text-xs text-primary block mb-1">
+                        <Label htmlFor="name" className="text-sm font-medium text-slate-700 block mb-2">
                             Your Name
                         </Label>
                         <Input
                             id="name"
                             placeholder="Your full name"
                             {...register("name", { required: true })}
-                            className="w-full rounded-md border border-gray-400 px-3 py-2 text-sm bg-white focus:border-none"
+                            className="w-full h-10 sm:h-11 text-sm sm:text-base"
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <div>
-                            <Label htmlFor="email" className="text-xs text-primary block mb-1">
+                            <Label htmlFor="email" className="text-sm font-medium text-slate-700 block mb-2">
                                 Email Address
                             </Label>
                             <Input
@@ -66,56 +72,60 @@ export default function EmailForm() {
                                 type="email"
                                 placeholder="you@example.com"
                                 {...register("email", { required: true })}
-                                className="w-full rounded-md border border-gray-400 px-3 py-2 text-sm focus:border-none"
+                                className="w-full h-10 sm:h-11 text-sm sm:text-base"
                             />
                         </div>
 
                         <div>
-                            <Label htmlFor="subject" className="text-xs text-primary block mb-1">
+                            <Label htmlFor="subject" className="text-sm font-medium text-slate-700 block mb-2">
                                 Subject
                             </Label>
                             <Input
                                 id="subject"
-                                placeholder="subject"
+                                placeholder="Subject"
                                 {...register("subject")}
-                                className="w-full rounded-md border border-gray-400 px-3 py-2 text-sm bg-white focus:border-none"
+                                className="w-full h-10 sm:h-11 text-sm sm:text-base"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <Label htmlFor="message" className="text-xs text-primary block mb-1">
+                        <Label htmlFor="message" className="text-sm font-medium text-slate-700 block mb-2">
                             Message
                         </Label>
                         <Textarea
-
-                            id="message" placeholder="Enter your message here "
-                            rows={5}
+                            id="message" 
+                            placeholder="Enter your message here"
+                            rows={6}
                             {...register("message", { required: true })}
-                            className="w-full rounded-md border border-gray-400 px-3 py-2 text-sm bg-white focus:border-none"
+                            className="w-full text-sm sm:text-base resize-none"
                         />
                     </div>
                 </div>
 
-                {/* actions / meta (right) */}
-                <div className="md:col-span-1 flex flex-col items-start md:items-end gap-3">
-                    <div className="w-full md:w-auto items-end flex flex-col">
-                        <Button type="submit" className="inline-flex items-center justify-center px-4 py-2 text-sm" disabled={loading}>
-                            {loading ? "Sending..." : "Send Message"}
+                <div className="lg:col-span-1 flex flex-col gap-4 sm:gap-6">
+                    <div className="flex flex-col gap-3 sm:gap-4">
+                        <Button 
+                            type="submit" 
+                            className="w-full sm:w-auto px-6 sm:px-8 h-10 sm:h-11 text-sm sm:text-base" 
+                            disabled={isPending}
+                        >
+                            {isPending ? "Sending..." : "Send Message"}
                         </Button>
-                    </div>
 
-                    <div className="text-xs text-muted-foreground mt-1 md:text-right">
-                        {notice ?? <span className="opacity-70">We usually reply within 2 business hours.</span>}
-                    </div>
-
-                    <div className="text-xs text-muted-foreground mt-2 text-left md:text-right">
-                        Or email us directly:
-                        <div className="mt-1">
-                            <a className="text-sm text-primary hover:underline" href="mailto:support@praveshmart.com">
-                                support@praveshmart.com
-                            </a>
+                        <div className="text-xs sm:text-sm text-slate-600">
+                            <span className="opacity-70">We usually reply within 2 business hours.</span>
                         </div>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200">
+                        <p className="text-xs sm:text-sm text-slate-600 mb-2">Or email us directly:</p>
+                        <a 
+                            className="text-sm sm:text-base text-primary hover:text-primary/80 hover:underline font-medium break-all" 
+                            href={`mailto:${email}`}
+                        >
+                            {email}
+                        </a>
                     </div>
                 </div>
             </form>

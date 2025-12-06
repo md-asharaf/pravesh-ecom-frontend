@@ -1,75 +1,126 @@
 import EmailForm from "../../components/EmailForm"
 import SocialMediaHandle from "../../components/SocialMediaHandle"
-
-const LOCATION_ADDRESS = [
-  "Plot 21, Industrial Estate Road",
-  "Mumbai, India",
-]
+import { MapPin, Clock, Phone, Mail } from "lucide-react"
+import { useAppSelector } from "@/store/hooks"
 
 export default function Contact() {
+  const settings = useAppSelector((s) => s.settings.settings);
+  
+  const businessName = settings?.businessName || "Pravesh Hardware";
+  const email = settings?.email || "support@praveshmart.com";
+  const phone = settings?.phone || "+91 98765 43210";
+  const address = settings?.address || "Plot 21, Industrial Estate Road\nMumbai, India";
+  
+  const addressLines = address 
+    ? address.split('\n').filter(line => line.trim())
+    : ["Plot 21, Industrial Estate Road", "Mumbai, India"];
+  
+  const displayAddressLines = addressLines.length > 0 
+    ? addressLines 
+    : ["Plot 21, Industrial Estate Road", "Mumbai, India"];
   return (
-    <section className="sm:max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <header className="mb-6 sm:mb-10">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold">Get In Touch: How Can We Help You Build?</h1>
-        <p className="mt-2 sm:mt-3 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl">
-          We are committed to making your material sourcing experience as seamless as possible. Whether you have a question about a product, need a large-volume quote, or require support for an existing order, we're here to help.
-        </p>
-      </header>
+    <div className="bg-white">
+      <section className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12 lg:py-16 space-y-6 sm:space-y-8 md:space-y-12 lg:space-y-16">
+        {/* Header */}
+        <header className="space-y-3 sm:space-y-4 md:space-y-6 border-b border-slate-200 pb-6 sm:pb-8 md:pb-12">
+          <div className="space-y-2 sm:space-y-3 md:space-y-4 text-center w-full mx-auto">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight sm:leading-snug text-slate-900">
+              How Can We Help You Build?
+            </h1>
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed max-w-4xl text-center w-full mx-auto px-4">
+              We are committed to making your material sourcing experience as seamless as possible. Whether you have a question about a product, need a large-volume quote, or require support for an existing order, we're here to help.
+            </p>
+          </div>
+        </header>
 
-      <div className="space-y-4 sm:space-y-6">
         {/* Visit Our Hardware Hub */}
-        <article className="grid md:grid-cols-2 gap-4 sm:gap-6 py-4 sm:py-6 border-t border-black items-center justify-between w-full">
-          <div className="flex flex-col items-start space-y-3 sm:space-y-4">
+        <article className="grid md:grid-cols-2 gap-5 sm:gap-6 md:gap-8 lg:gap-12">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
             <div>
-              <div className="text-xs sm:text-sm text-muted-foreground mb-2 uppercase tracking-wide">Location</div>
-
-              <div className="text-base sm:text-lg font-medium">Pravesh Hardware Showroom</div>
-
-              <address className="not-italic mt-2 text-xs sm:text-sm text-muted-foreground">
-                {LOCATION_ADDRESS.map((line, i) => (
-                  <div key={i}>{line}</div>
-                ))}
-              </address>
-
-              <div className="mt-2 text-xs sm:text-sm text-muted-foreground">Hours: Mon–Sat · 7:00 AM – 7:00 PM</div>
-              <div className="mt-2 text-xs sm:text-sm text-muted-foreground">Phone: +91 98765 43210</div>
-              <div className="mt-2 text-xs sm:text-sm text-muted-foreground">Email: support@praveshmart.com</div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-lg sm:text-xl font-semibold">Visit Our Hardware Hub</h3>
-              <p className="mt-2 text-sm sm:text-base text-muted-foreground">
+              <p className="text-xs sm:text-sm uppercase tracking-[0.25em] text-slate-500 mb-3 sm:mb-4">Location</p>
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold text-slate-900 mb-3 sm:mb-4">
+                {businessName} Showroom
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4 sm:mb-6">
                 Walk in to see stocked inventory, confirm specs, and meet the specialists behind every order.
               </p>
+            </div>
 
-              <div className="mt-3 sm:mt-4 flex items-end justify-between">
-
-                <a href="https://maps.app.goo.gl/Jzcj4cTBrhCyPM3Q9" className="text-xs sm:text-sm text-primary transition-transform duration-200  inline-flex items-center gap-2 hover:underline font-bold"
-                  target="_blank" rel="noopener noreferrer"
-                >Visit now→</a>
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary flex-shrink-0 mt-0.5" />
+                <address className="not-italic text-sm sm:text-base text-slate-600 leading-relaxed">
+                  {displayAddressLines.map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                </address>
               </div>
+
+              <div className="flex items-start gap-3 sm:gap-4">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary flex-shrink-0 mt-0.5" />
+                <div className="text-sm sm:text-base text-slate-600">
+                  <p className="font-medium mb-0.5">Business Hours</p>
+                  <p>{settings?.workingHours || "Mon–Sat · 7:00 AM – 7:00 PM"}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 sm:gap-4">
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary flex-shrink-0 mt-0.5" />
+                <div className="text-sm sm:text-base text-slate-600">
+                  <p className="font-medium mb-0.5">Phone</p>
+                  {phone ? (
+                    <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-primary transition-colors break-all">
+                      {phone}
+                    </a>
+                  ) : (
+                    <span>+91 98765 43210</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 sm:gap-4">
+                <Mail className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary flex-shrink-0 mt-0.5" />
+                <div className="text-sm sm:text-base text-slate-600">
+                  <p className="font-medium mb-0.5">Email</p>
+                  {email ? (
+                    <a href={`mailto:${email}`} className="hover:text-primary transition-colors break-all">
+                      {email}
+                    </a>
+                  ) : (
+                    <span>support@praveshmart.com</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-1 sm:pt-2">
+              <a 
+                href="https://maps.app.goo.gl/Jzcj4cTBrhCyPM3Q9" 
+                className="inline-flex items-center gap-2 text-sm sm:text-base font-semibold text-primary hover:text-primary/80 transition-colors"
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                Visit on Google Maps →
+              </a>
             </div>
           </div>
 
-          <div className="h-full w-full"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14972.712311746767!2d84.95959226748488!3d20.251448049365123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a187fdbf49314bf%3A0x3767ebe7c3ad5b07!2sNuagaon%2C%20Odisha%20752083!5e0!3m2!1sen!2sin!4v1765026377192!5m2!1sen!2sin" className="border-0 h-full w-full min-h-[250px] sm:min-h-[300px]" allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+          <div className="w-full h-full min-h-[250px] sm:min-h-[300px] md:min-h-[400px] lg:min-h-[500px] rounded-lg sm:rounded-xl overflow-hidden shadow-md border border-slate-200">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14972.712311746767!2d84.95959226748488!3d20.251448049365123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a187fdbf49314bf%3A0x3767ebe7c3ad5b07!2sNuagaon%2C%20Odisha%20752083!5e0!3m2!1sen!2sin!4v1765026377192!5m2!1sen!2sin" 
+              className="w-full h-full border-0" 
+              allowFullScreen={true} 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title={`${businessName} Location`}
+            />
           </div>
         </article>
 
-      </div>
+        <EmailForm />
 
-      <EmailForm />
-
-      {/* Social media */}
-      <SocialMediaHandle />
-      {/* FAQ snippet */}
-      <footer className="mt-6 sm:mt-10 pt-4 sm:pt-6 border-t border-gray-200/50">
-        <h4 className="text-base sm:text-lg font-semibold">Frequently Asked Questions</h4>
-        <p className="mt-2 text-xs sm:text-sm text-muted-foreground">Before contacting us, you may find your answer instantly in our FAQ:</p>
-        <ul className="mt-2 sm:mt-3 space-y-1 text-xs sm:text-sm text-muted-foreground list-disc list-inside">
-          <li>What are your delivery timelines? (Link to FAQ page)</li>
-          <li>How do I request a tax-exempt status? (Link to Account/FAQ page)</li>
-          <li>What is your return policy for bulk items? (Link to Policy page)</li>
-        </ul>
-      </footer>
-    </section>
+        <SocialMediaHandle />
+      </section>
+    </div>
   )
 }

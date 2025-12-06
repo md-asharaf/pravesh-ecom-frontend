@@ -33,7 +33,7 @@ const BrandShowcase = () => {
         repeat: Infinity,
       },
     });
-  }, [brands]);
+  }, [brands, controls]);
 
 
   if (!isLoading && brands.length === 0) return null;

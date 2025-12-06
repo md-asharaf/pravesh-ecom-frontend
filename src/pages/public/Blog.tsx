@@ -72,9 +72,9 @@ const Blog = () => {
                 <h3 className="font-semibold text-xl mb-3 group-hover:text-primary transition-colors">
                   {blog.title}
                 </h3>
-                <p className="text-muted-foreground mb-4 line-clamp-3">
-                  {blog.content}
-                </p>
+                <p className="text-muted-foreground mb-4 line-clamp-3 whitespace-pre-line"
+                  dangerouslySetInnerHTML={{ __html: blog.content }}
+                />
                 {blog.tags && (
                   <div className="flex flex-wrap gap-2">
                     {blog.tags.map((tag) => (

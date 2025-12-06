@@ -3,7 +3,7 @@ import { Facebook, Instagram, Youtube, Twitter } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gradient-hero text-white pt-14 pb-8">
+    <footer className="bg-primary text-white pt-14 pb-8">
       <div className="container mx-auto px-4">
 
         {/* TOP SECTION */}
@@ -19,16 +19,16 @@ const Footer = () => {
 
             {/* Social */}
             <div className="flex gap-4 mt-5">
-              <a href="#" className="hover:text-yellow-300 transition">
+              <a href="#" className="hover:text-white transition">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-yellow-300 transition">
+              <a href="#" className="hover:text-white transition">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-yellow-300 transition">
+              <a href="#" className="hover:text-white transition">
                 <Youtube className="h-5 w-5" />
               </a>
-              <a href="#" className="hover:text-yellow-300 transition">
+              <a href="#" className="hover:text-white transition">
                 <Twitter className="h-5 w-5" />
               </a>
             </div>
@@ -38,10 +38,10 @@ const Footer = () => {
           <div>
             <h4 className="text-base font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm text-white/80">
-              <li><Link to="/products" className="hover:text-yellow-300">Products</Link></li>
-              <li><Link to="/brands" className="hover:text-yellow-300">Brands</Link></li>
-              <li><Link to="/categories" className="hover:text-yellow-300">Categories</Link></li>
-              <li><Link to="/about" className="hover:text-yellow-300">About Us</Link></li>
+              <li><Link to="/products" className="hover:text-white">Products</Link></li>
+              <li><Link to="/brands" className="hover:text-white">Brands</Link></li>
+              <li><Link to="/categories" className="hover:text-white">Categories</Link></li>
+              <li><Link to="/about" className="hover:text-white">About Us</Link></li>
             </ul>
           </div>
 
@@ -49,10 +49,8 @@ const Footer = () => {
           <div>
             <h4 className="text-base font-semibold mb-4">Customer Service</h4>
             <ul className="space-y-2 text-sm text-white/80">
-              <li><Link to="/contact" className="hover:text-yellow-300">Contact Us</Link></li>
-              <li><Link to="/shipping" className="hover:text-yellow-300">Shipping Info</Link></li>
-              <li><Link to="/returns" className="hover:text-yellow-300">Returns & Refunds</Link></li>
-              <li><Link to="/faq" className="hover:text-yellow-300">FAQ</Link></li>
+              <li><Link to="/contact" className="hover:text-white">Contact Us</Link></li>
+              <li><Link to="/returns" className="hover:text-white">Returns & Refunds</Link></li>
             </ul>
           </div>
 
