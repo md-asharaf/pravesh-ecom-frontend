@@ -149,20 +149,20 @@ export default function Addresses() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       {/* title */}
-      <h1 className="text-2xl font-bold mb-6">Manage Addresses</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Manage Addresses</h1>
 
 
       {(openForm && !editing) ? (
-        <Card className="shadow-sm border border-gray-200 mb-6">
-          <CardHeader className="bg-[#F5F8FF] border-b border-gray-200 p-4">
-            <CardTitle className="text-sm font-semibold text-accent uppercase">
+        <Card className="shadow-sm border border-gray-200 mb-4 sm:mb-6">
+          <CardHeader className="bg-[#F5F8FF] border-b border-gray-200 p-3 sm:p-4">
+            <CardTitle className="text-xs sm:text-sm font-semibold text-accent uppercase">
               ADD A NEW ADDRESS
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <Form {...form}>
               <form onSubmit={form.handleSubmit((values) => addMutation.mutate(values))} className="space-y-4">
                 {/* Full name */}
@@ -294,10 +294,10 @@ export default function Addresses() {
                 />
 
                 {/* actions */}
-                <div className="flex gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4">
                   <Button
                     type="submit"
-                    className="px-10 h-12"
+                    className="px-6 sm:px-10 h-11 sm:h-12 text-sm sm:text-base"
                     disabled={addMutation.isPending || updateMutation.isPending}
                   >
                     {editing ? (updateMutation.isPending ? "Saving..." : "Save") : (addMutation.isPending ? "Adding..." : "Save")}
@@ -305,7 +305,7 @@ export default function Addresses() {
 
                   <Button
                     variant="outline"
-                    className="h-12"
+                    className="h-11 sm:h-12 text-sm sm:text-base"
                     type="button"
                     onClick={() => {
                       // ensure form cleared on cancel
@@ -353,14 +353,14 @@ export default function Addresses() {
         {addresses.map((addr) => (
           <Card key={addr._id} className="shadow-sm border border-gray-200">
             {(openForm && editing?._id === addr._id) ? (
-              <Card className="shadow-sm border border-gray-200 mb-6">
-                <CardHeader className="bg-[#F5F8FF] border-b border-gray-200 p-4">
-                  <CardTitle className="text-sm font-semibold text-accent uppercase">
+              <Card className="shadow-sm border border-gray-200 mb-4 sm:mb-6">
+                <CardHeader className="bg-[#F5F8FF] border-b border-gray-200 p-3 sm:p-4">
+                  <CardTitle className="text-xs sm:text-sm font-semibold text-accent uppercase">
                     EDIT ADDRESS
                   </CardTitle>
                 </CardHeader>
 
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit((values) => updateMutation.mutate(values))} className="space-y-4">
                       {/* Full name */}
@@ -492,10 +492,10 @@ export default function Addresses() {
                       />
 
                       {/* actions */}
-                      <div className="flex gap-4 mt-4">
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-4">
                         <Button
                           type="submit"
-                          className="px-10 h-12"
+                          className="px-6 sm:px-10 h-11 sm:h-12 text-sm sm:text-base"
                           disabled={addMutation.isPending || updateMutation.isPending}
                         >
                           {editing ? (updateMutation.isPending ? "Saving..." : "Save") : (addMutation.isPending ? "Adding..." : "Save")}
@@ -503,7 +503,7 @@ export default function Addresses() {
 
                         <Button
                           variant="outline"
-                          className="h-12"
+                          className="h-11 sm:h-12 text-sm sm:text-base"
                           type="button"
                           onClick={() => {
                             // clear and close edit form
@@ -520,19 +520,19 @@ export default function Addresses() {
                 </CardContent>
               </Card>
             ) :
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
                   <div className="flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-gray-500 mt-1" />
+                    <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 mt-1" />
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold text-base">
-                          {addr.fullname} &nbsp; <span className="text-sm font-normal">{addr.phone}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm sm:text-base break-words">
+                          {addr.fullname} &nbsp; <span className="text-xs sm:text-sm font-normal">{addr.phone}</span>
                         </p>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-xs sm:text-sm text-gray-600 mt-1 break-words">
                           {addr.line1}
                           {addr.line2 ? `, ${addr.line2}` : ""}
                           , {addr.city}, {addr.state} - <strong>{addr.postalCode}</strong>, {addr.country}

@@ -71,11 +71,11 @@ const Profile = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10 grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
 
       <div className="col-span-1">
-        <Card className="rounded-3xl border-none shadow-sm sticky top-24">
-          <CardContent className="p-8 text-center space-y-4">
+        <Card className="rounded-3xl border-none shadow-sm sticky top-6 sm:top-24">
+          <CardContent className="p-4 sm:p-6 lg:p-8 text-center space-y-4">
 
             <div className="relative inline-block">
               <Avatar className="h-24 w-24 mx-auto ring-4 ring-primary/10">
@@ -87,8 +87,8 @@ const Profile = () => {
               <ChangePhotoModal onUpload={(file: any) => updateProfileMutation.mutate({ img: file })} />
             </div>
 
-            <h2 className="text-xl font-bold tracking-tight">{user?.name}</h2>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight">{user?.name}</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground break-words">{user?.email}</p>
 
             <Separator />
 
@@ -148,43 +148,43 @@ const Profile = () => {
       <div className="col-span-1 lg:col-span-3 space-y-8">
 
         <Card className="rounded-3xl border-none shadow-sm">
-          <CardContent className="p-8 space-y-6">
-            <h2 className="text-xl font-semibold tracking-tight">
+          <CardContent className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+            <h2 className="text-lg sm:text-xl font-semibold tracking-tight">
               Personal Information
             </h2>
             <Separator />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <p className="text-sm text-muted-foreground">Full Name</p>
-                <p className="text-lg font-medium">{user?.name}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Full Name</p>
+                <p className="text-base sm:text-lg font-medium mt-1">{user?.name}</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="text-lg font-medium">{user?.email}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Email</p>
+                <p className="text-base sm:text-lg font-medium mt-1 break-words">{user?.email}</p>
               </div>
 
               <div>
-                <p className="text-sm text-muted-foreground">Phone</p>
-                <p className="text-lg font-medium">{user?.phone}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">Phone</p>
+                <p className="text-base sm:text-lg font-medium mt-1">{user?.phone}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="rounded-3xl border-none shadow-sm">
-          <CardContent className="p-8">
-            <p className="text-xl font-semibold tracking-tight">Wallet Balance</p>
-            <Badge className="text-4xl font-bold mt-2">
+          <CardContent className="p-4 sm:p-6 lg:p-8">
+            <p className="text-lg sm:text-xl font-semibold tracking-tight">Wallet Balance</p>
+            <Badge className="text-2xl sm:text-3xl lg:text-4xl font-bold mt-2">
               ₹{isBalanceLoading ? "..." : balance.toLocaleString()}
             </Badge>
           </CardContent>
         </Card>
 
         <Card className="rounded-3xl border-none shadow-sm">
-          <CardContent className="p-8 space-y-6">
-            <h3 className="text-xl font-semibold tracking-tight">
+          <CardContent className="p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-semibold tracking-tight">
               Recent Transactions
             </h3>
             <Separator />
@@ -196,14 +196,14 @@ const Profile = () => {
               </p>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {paginated.map((t, i) => (
                 <div
                   key={i}
-                  className="flex justify-between items-center p-4 rounded-xl border bg-gray-50"
+                  className="flex justify-between items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border bg-gray-50"
                 >
-                  <div className="space-y-1">
-                    <p className="text-sm text-gray-600">{t.description}</p>
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm text-gray-600 break-words">{t.description}</p>
                     <p className="text-xs text-muted-foreground">
                       {new Date(t.createdAt).toLocaleString()}
                     </p>
@@ -211,9 +211,11 @@ const Profile = () => {
 
                   <p
                     className={
-                      t.amount > 0
-                        ? "text-green-600 font-semibold text-lg"
-                        : "text-red-600 font-semibold text-lg"
+                      `flex-shrink-0 ${
+                        t.amount > 0
+                          ? "text-green-600 font-semibold text-base sm:text-lg"
+                          : "text-red-600 font-semibold text-base sm:text-lg"
+                      }`
                     }
                   >
                     ₹{t.amount.toLocaleString()}

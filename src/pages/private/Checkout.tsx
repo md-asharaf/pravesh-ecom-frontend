@@ -96,10 +96,10 @@ const Checkout = () => {
   const total = cartSummary?.totalPrice ?? subtotal + shipping;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold">Checkout</h1>
-        <Button variant="ghost" asChild>
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Checkout</h1>
+        <Button variant="ghost" asChild className="text-sm sm:text-base">
           <Link to="/cart">Back to Cart</Link>
         </Button>
       </div>
@@ -118,15 +118,15 @@ const Checkout = () => {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Left: Addresses + Payment */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Shipping Address Selection */}
             <Card>
-              <CardHeader>
-                <CardTitle>Shipping Address</CardTitle>
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">Shipping Address</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-4 sm:p-6 pt-0 space-y-4">
                 {addressesLoading && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" /> Loading addresses...
@@ -216,35 +216,35 @@ const Checkout = () => {
 
           {/* Right: Order Summary */}
           <div className="lg:col-span-1 space-y-6">
-            <Card className="sticky top-24">
-              <CardHeader>
-                <CardTitle>Order Summary</CardTitle>
+            <Card className="sticky top-6 sm:top-24">
+              <CardHeader className="p-4 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">Order Summary</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-4 sm:p-6 pt-0 space-y-4">
                 {/* Items */}
                 <div className="space-y-3 max-h-[280px] overflow-y-auto pr-1">
                   {cartLoading && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                       <Loader2 className="h-4 w-4 animate-spin" /> Loading cart...
                     </div>
                   )}
                   {!cartLoading && items.length === 0 && (
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Your cart is empty. <Link to="/products" className="underline">Shop now</Link>
                     </p>
                   )}
                   {items.map(({ product, quantity }: { product: Product, quantity: number }) => (
-                    <div key={product?._id} className="flex gap-3">
+                    <div key={product?._id} className="flex gap-2 sm:gap-3">
                       <img
                         src={
                           product.thumbnail ||
                           "/placeholder.svg"
                         }
                         alt={product?.name || "Product"}
-                        className="w-16 h-16 object-cover rounded-lg bg-muted"
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg bg-muted flex-shrink-0"
                       />
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm line-clamp-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-xs sm:text-sm line-clamp-2 break-words">
                           {product?.name || "Unnamed Product"}
                         </p>
                         <p className="text-xs text-muted-foreground">Qty: {quantity}</p>
@@ -259,7 +259,7 @@ const Checkout = () => {
                 <Separator />
 
                 {/* Totals */}
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-medium">₹{subtotal.toLocaleString()}</span>
@@ -273,8 +273,8 @@ const Checkout = () => {
                 <Separator />
 
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-lg">Total</span>
-                  <span className="text-2xl font-bold text-primary">
+                  <span className="font-semibold text-base sm:text-lg">Total</span>
+                  <span className="text-xl sm:text-2xl font-bold text-primary">
                     ₹{total.toLocaleString()}
                   </span>
                 </div>
@@ -282,7 +282,7 @@ const Checkout = () => {
                 <Button
                   type="submit"
                   size="lg"
-                  className="w-full"
+                  className="w-full text-sm sm:text-base"
                   disabled={
                     createOrderMutation.isPending ||
                     !form.getValues("shippingAddressId") ||

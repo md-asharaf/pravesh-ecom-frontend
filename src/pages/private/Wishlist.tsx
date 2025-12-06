@@ -23,20 +23,20 @@ const Wishlist = () => {
     }
   })
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">
+    <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-4xl">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
         My Wishlist ({items.length})
       </h1>
 
       {items.length === 0 && (
         <Card>
-          <CardContent className="p-6 text-center text-muted-foreground">
-            Your wishlist is empty.
+          <CardContent className="p-4 sm:p-6 text-center text-muted-foreground">
+            <p className="text-sm sm:text-base">Your wishlist is empty.</p>
           </CardContent>
         </Card>
       )}
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {items.map((it: Product) => {
           // const discountedPercent = it.originalPrice
           //   ? Math.round(
@@ -46,23 +46,23 @@ const Wishlist = () => {
 
           return (
             <Card key={it._id} className="border rounded-none shadow-sm">
-              <CardContent className="p-4 flex gap-4 items-start">
+              <CardContent className="p-3 sm:p-4 flex gap-3 sm:gap-4 items-start">
 
                 {/* Product Image */}
-                <Link to={`/product/${it.slug}`}>
+                <Link to={`/product/${it.slug}`} className="flex-shrink-0">
                   <img
                     src={it.thumbnail}
                     alt={it.name}
-                    className="w-24 h-24 object-contain border rounded-md bg-white"
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-contain border rounded-md bg-white"
                   />
                 </Link>
 
                 {/* Product Details */}
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 space-y-1 min-w-0">
 
                   <Link
                     to={`/product/${it.slug}`}
-                    className="font-semibold text-lg hover:text-primary leading-tight"
+                    className="font-semibold text-base sm:text-lg hover:text-primary leading-tight block break-words"
                   >
                     {it.name}
                   </Link>
@@ -103,10 +103,11 @@ const Wishlist = () => {
 
                 {/* Delete Icon */}
                 <button
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-gray-400 hover:text-red-600 flex-shrink-0 p-1"
                   onClick={() => removeFromWishlistMutation.mutate(it._id)}
+                  aria-label="Remove from wishlist"
                 >
-                  <Trash className="h-5 w-5" />
+                  <Trash className="h-4 w-4 sm:h-5 sm:w-5" />
                 </button>
               </CardContent>
             </Card>

@@ -72,24 +72,25 @@ const Cart = () => {
     );
 
   return (
-    <div className="max-w-4xl mx-auto px-2 sm:px-4 py-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
       {/* LEFT: ITEMS */}
-      <div className="lg:col-span-2 space-y-4">
+      <div className="lg:col-span-2 space-y-3 sm:space-y-4">
         {cartItems.map((item) => {
           const product = item.product;
           return (
             <Card key={product._id} className="rounded-none shadow-sm">
-              <CardContent className="p-4 flex gap-4">
-                <Link to={`/product/${product.slug}`}>
+              <CardContent className="p-3 sm:p-4 flex gap-3 sm:gap-4">
+                <Link to={`/product/${product.slug}`} className="flex-shrink-0">
                   <img
                     src={product.thumbnail}
-                    className="w-28 h-28 object-contain border rounded"
+                    className="w-20 h-20 sm:w-28 sm:h-28 object-contain border rounded"
+                    alt={product.name}
                   />
                 </Link>
 
-                <div className="flex-1 space-y-1">
+                <div className="flex-1 space-y-1 min-w-0">
                   <Link to={`/product/${product.slug}`}>
-                    <p className="text-lg font-medium leading-tight hover:text-primary">{product.name}</p>
+                    <p className="text-base sm:text-lg font-medium leading-tight hover:text-primary break-words">{product.name}</p>
                   </Link>
                   <p className="text-xs text-green-700 font-semibold">In stock</p>
                   <p className="text-xs text-muted-foreground">SKU: {product.sku}</p>
@@ -99,30 +100,32 @@ const Cart = () => {
                     <p className="text-sm text-muted-foreground">₹{product.originalPrice.toLocaleString()} each</p>
                   </div> */}
 
-                  <div className="flex gap-4 mt-3 items-center">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-3 items-start sm:items-center">
                     <div className="flex items-center border rounded">
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8 sm:h-10 sm:w-10"
                         onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity - 1 })}
                         disabled={item.quantity <= 1}
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
-                      <span className="px-4 font-semibold">{item.quantity}</span>
+                      <span className="px-3 sm:px-4 font-semibold text-sm sm:text-base">{item.quantity}</span>
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8 sm:h-10 sm:w-10"
                         onClick={() => updateCartMutation.mutate({ productId: product._id, quantity: item.quantity + 1 })}
                       // disabled={item.quantity >= product.stock}
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                       </Button>
                     </div>
                     {/* <Button variant="link" className="text-sm">SAVE FOR LATER</Button> */}
                     <Button
                       variant="link"
-                      className="text-sm text-red-500"
+                      className="text-xs sm:text-sm text-red-500 p-0 h-auto"
                       onClick={() => removeFromCartMutation.mutate(product._id)}
                     >
                       REMOVE
@@ -133,7 +136,7 @@ const Cart = () => {
             </Card>
           );
         })}
-        <Button asChild className="w-full py-4 text-lg rounded-none">
+        <Button asChild className="w-full py-3 sm:py-4 text-base sm:text-lg rounded-none">
           <Link to="/checkout">CHECKOUT</Link>
         </Button>
       </div>

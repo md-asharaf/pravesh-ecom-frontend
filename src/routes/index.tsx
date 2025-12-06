@@ -13,13 +13,14 @@ import Brands from "@/pages/public/Brands";
 import Blog from "@/pages/public/Blog";
 import BlogDetail from "@/pages/public/BlogDetail";
 import Orders from "@/pages/private/Orders";
+import OrderDetails from "@/pages/private/OrderDetails";
 import Profile from "@/pages/private/Profile";
 import NotFound from "@/pages/NotFound";
 import PrivateLayout from "@/layouts/PrivateLayout";
 import Addresses from "@/pages/private/Addresses";
 import AuthLayout from "@/layouts/AuthLayout";
-import About from "@/components/About";
-import Contact from "@/components/Contact";
+import About from "@/pages/public/About";
+import Contact from "@/pages/public/Contact";
 
 const AppRoutes = () => {
   return (
@@ -42,6 +43,7 @@ const AppRoutes = () => {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/orders" element={<Orders />} />
+          <Route path="/orders/:orderId" element={<OrderDetails />} />
           <Route path="/addresses" element={<Addresses />} />
           <Route path="/profile" element={<Profile />} />
         </Route>

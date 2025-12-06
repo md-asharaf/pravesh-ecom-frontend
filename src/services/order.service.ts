@@ -45,7 +45,11 @@ export const orderService = {
   },
 
   async getById(orderId: string) {
-    const response = await instance.get<ApiResponse<Order>>(`/orders/${orderId}`);
+    const response = await instance.get<ApiResponse<Order>>(`/orders/${orderId}`, {
+      params: {
+        populate: true
+      }
+    });
     return response.data;
   }
 };
