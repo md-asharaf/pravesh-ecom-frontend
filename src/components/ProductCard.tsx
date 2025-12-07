@@ -10,6 +10,9 @@ import { useMutation } from "@tanstack/react-query";
 import { wishlistService } from "@/services/wishlist.service";
 import { toast } from "sonner";
 import { cartService } from "@/services/cart.service";
+import { useAuth } from "@/providers/auth";
+import { LoginModal } from "@/components/modals/LoginModal";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -17,13 +20,17 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const dispatch = useAppDispatch();
+  const { user } = useAuth();
   const wishlistItems = useAppSelector((state) => state.wishlist.items)
   const isWishlisted = wishlistItems.some(item => item._id === product._id);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalAction, setLoginModalAction] = useState<"cart" | "wishlist">("cart");
 
   const addToWishlistMutation = useMutation({
     mutationFn: wishlistService.addProduct,
-    onSuccess: (data) => {
+    onSuccess: (data, productId) => {
       toast.success(data.message);
+      dispatch(addToWishlist(product));
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to add to wishlist");
@@ -32,8 +39,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   const removeFromWishlistMutation = useMutation({
     mutationFn: wishlistService.removeProduct,
-    onSuccess: (data) => {
+    onSuccess: (data, productId) => {
       toast.success(data.message);
+      dispatch(removeFromWishlist(productId));
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to remove from wishlist");
@@ -44,6 +52,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     mutationFn: cartService.addToCart,
     onSuccess: (data) => {
       toast.success(data.message);
+      dispatch(addItem({ product, quantity: 1 }));
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to add to cart");
@@ -51,13 +60,25 @@ const ProductCard = ({ product }: ProductCardProps) => {
   })
 
   const handleWishlistClick = () => {
+    if (!user) {
+      setLoginModalAction("wishlist");
+      setLoginModalOpen(true);
+      return;
+    }
     if (isWishlisted) {
       removeFromWishlistMutation.mutate(product._id!);
-      dispatch(removeFromWishlist(product._id!));
     } else {
       addToWishlistMutation.mutate(product._id!);
-      dispatch(addToWishlist(product));
     }
+  };
+
+  const handleAddToCart = () => {
+    if (!user) {
+      setLoginModalAction("cart");
+      setLoginModalOpen(true);
+      return;
+    }
+    addToCartMutation.mutate({ productId: product._id, quantity: 1 });
   };
 
   const isWishlistMutationPending = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
@@ -91,10 +112,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <CardFooter className="p-3 sm:p-4 pt-0 flex gap-2">
         <Button
           className="flex-1 h-9 sm:h-10 text-xs sm:text-sm"
-          onClick={() => {
-            addToCartMutation.mutate({ productId: product._id, quantity: 1 })
-            dispatch(addItem({ product, quantity: 1 }))
-          }}
+          onClick={handleAddToCart}
         >
           {addToCartMutation.isPending ? (
             <Loader2 className="animate-spin mr-2 h-4 w-4" />
@@ -114,6 +132,11 @@ const ProductCard = ({ product }: ProductCardProps) => {
           {isWishlistMutationPending ? <Loader2 className="animate-spin h-4 w-4" /> : <Heart className="h-4 w-4" />}
         </Button>
       </CardFooter>
+      <LoginModal 
+        open={loginModalOpen} 
+        onOpenChange={setLoginModalOpen}
+        action={loginModalAction}
+      />
     </Card>
   )
 }

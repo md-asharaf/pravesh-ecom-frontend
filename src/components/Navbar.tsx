@@ -24,6 +24,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { productService } from "@/services/product.service";
+import { useAppSelector } from "@/store/hooks";
 
 type ProductSuggestion = any;
 type CategoryNode = any;
@@ -36,6 +37,7 @@ type NavbarProps = {
 
 const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
   const navigate = useNavigate();
+  const settings = useAppSelector((s) => s.settings.settings);
   const { user, logout } = useAuth();
   const [search, setSearch] = useState("");
   const [suggestions, setSuggestions] = useState<ProductSuggestion[]>([]);
@@ -84,7 +86,7 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
 
             <Link to="/" className="flex items-center gap-3">
               <img
-                src="https://img.freepik.com/premium-vector/white-logo-construction-project-called-construction_856308-794.jpg?semt=ais_hybrid&w=740&q=80"
+                src={settings?.logo || "https://img.freepik.com/premium-vector/white-logo-construction-project-called-construction_856308-794.jpg?semt=ais_hybrid&w=740&q=80"}
                 className="h-12 w-auto rounded-md"
               />
               <span className="text-lg font-bold">Pravesh</span>

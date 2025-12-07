@@ -33,6 +33,9 @@ const Cart = () => {
       queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
       toast.success(message ?? "Cart updated");
     },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message ?? "Failed to update cart");
+    },
   });
 
   const removeFromCartMutation = useMutation({
@@ -42,6 +45,9 @@ const Cart = () => {
       queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
       dispatch(removeItem(productId));
       toast.success(message ?? "Removed from cart");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message ?? "Failed to remove from cart");
     },
   });
 

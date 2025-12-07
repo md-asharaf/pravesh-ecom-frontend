@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShieldCheck, Truck, DollarSign, Users, Award, Building2, Package, Paintbrush, Wrench, Layers, Gauge } from "lucide-react";
+import { Users, Award, Building2, Package, Paintbrush, Layers, Gauge } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/store/hooks";
@@ -19,49 +19,49 @@ const About = () => {
     {
       category: "TMT Bars",
       description: `Our TMT bars ensure durability and strength in every build. We offer a wide range of TMT bars from top brands like Moira, Jindal, BS Thermax, and more, known for their high tensile strength and corrosion resistance.`,
-      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      visual: "https://zhuzoor.com/wp-content/uploads/2025/01/wholesale-TMT-Bars-suppliers-India-.jpg",
       icon: Layers,
     },
     {
       category: "Pipes (MS, GI, GP)",
       description: `Our range of pipes includes MS (Mild Steel), GI (Galvanized Iron), and GP (Galvanized Plain) pipes. These pipes are perfect for plumbing, structural, and industrial applications. These pipes are durable, resistant to corrosion, and come in various sizes and thicknesses.`,
-      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      visual: "https://images.jdmagicbox.com/quickquotes/images_main/gp-ms-pipes-and-tubes-375183878-u849d.jpg",
       icon: Package,
     },
     {
       category: "Bright Bars",
       description: `Bright bars are used in various engineering components, construction, and manufacturing. Our bright bars are known for their precision and smooth surface finish, making them ideal for applications requiring high dimensional accuracy.`,
-      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      visual: "https://www.venuswires.com/images/blog/everything-you-need-to-know-about-bright-bars.png",
       icon: Gauge,
     },
     {
       category: "Steel Angles & Flats",
       description: `Our steel angles and flats provide the backbone for various structural applications. Available in a range of sizes, they are suitable for both heavy-duty and light-weight constructions.`,
-      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      visual: "https://southaustinmetals.com/wp-content/uploads/2021/12/assorted-steel-1024x576.jpg",
       icon: Building2,
     },
     {
       category: "Cement",
       description: `We offer premium quality cement from top brands like MP Birla ensuring strong, durable builds. Whether for residential or industrial use, our cement provides consistent performance.`,
-      visual: "https://plus.unsplash.com/premium_photo-1661963687013-36b88a78062e?q=80&w=1470&auto=format&fit=crop",
+      visual: "https://media.istockphoto.com/id/1133989173/photo/sand-destined-to-the-manufacture-of-cement-in-a-quarry.jpg?s=612x612&w=0&k=20&c=kbLMm9vuxoYfzIsBiu-_TyZ52EX7C3OSm_YdhZ5heM0=",
       icon: Building2,
     },
     {
       category: "Paints and Hardware",
       description: `Our selection of paints and hardware includes everything needed to finish a project, from high-quality Berger paints to essential hardware like nails, screws, and welding rods.`,
-      visual: "https://www.bhg.com/thmb/eOoKuE3HJYQaXB5bfeomxNGRz_E=/750x0/filters:no_upscale():format(webp)/BHG-types-of-paint-finishes-and-surfaces-5651272-01.webp",
+      visual: "https://c8.alamy.com/comp/2BBYTE2/wall-and-ceiling-paint-hardware-store-bavaria-germany-2BBYTE2.jpg",
       icon: Paintbrush,
     },
     {
       category: "Steel Channels & Beams",
       description: `Steel channels and beams are critical for constructing strong frameworks. Our selection includes various sizes to meet your specific construction needs.`,
-      visual: "https://cdn.pixabay.com/photo/2014/10/05/08/11/iron-rods-474792_1280.jpg",
+      visual: "https://cloudfrontgharpediabucket.gharpedia.com/uploads/2023/08/Steel-Sections-01-0311040001.jpg",
       icon: Building2,
     },
     {
       category: "Roofing Sheets",
       description: `We provide a variety of roofing options, including PPGL, GC, and cement sheets, suitable for residential, commercial, and industrial applications. These sheets are durable and designed to withstand harsh weather conditions.`,
-      visual: "https://cdn.pixabay.com/photo/2016/11/29/13/46/rocks-1869970_1280.jpg",
+      visual: "https://cpimg.tistatic.com/10071956/b/4/PPGI-Corrugated-Sheet..jpg",
       icon: Building2,
     },
   ];

@@ -14,9 +14,9 @@ const Wishlist = () => {
 
   const removeFromWishlistMutation = useMutation({
     mutationFn: wishlistService.removeProduct,
-    onSuccess: (data,id) => {
+    onSuccess: (data, productId) => {
       toast.success(data.message);
-      dispatch(removeFromWishlist(id));
+      dispatch(removeFromWishlist(productId));
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to remove from wishlist");

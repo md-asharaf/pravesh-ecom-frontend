@@ -38,7 +38,7 @@ const MainLayout = () => {
   });
 
   useEffect(() => {
-    if (data) dispatch(setCategoryTree(data));
+    if (data && data.length > 0) dispatch(setCategoryTree(data));
   }, [data, dispatch]);
 
   useEffect(() => {

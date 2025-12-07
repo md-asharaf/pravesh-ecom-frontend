@@ -111,9 +111,9 @@ const RegisterPage = () => {
       return res;
     },
     onSuccess: ({ message, data }) => {
-      toast.success("Account created successfully!");
+      toast.success(message ?? "Account created successfully!");
       login(data.user);
-      navigate("/login");
+      navigate("/");
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || err.message || "Invalid OTP");

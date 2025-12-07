@@ -36,10 +36,13 @@ import {
   BreadcrumbLink,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useAuth } from "@/providers/auth";
+import { LoginModal } from "@/components/modals/LoginModal";
 
 
 const ProductDetail: React.FC = () => {
   const dispatch = useAppDispatch()
+  const { user } = useAuth();
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const wishlistItems = useAppSelector((state) => state.wishlist.items)
@@ -48,6 +51,8 @@ const ProductDetail: React.FC = () => {
   const [isReviewModalOpen, setReviewModalOpen] = useState(false);
   const [ratingInput, setRatingInput] = useState<number>(5);
   const [commentInput, setCommentInput] = useState("");
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalAction, setLoginModalAction] = useState<"cart" | "wishlist">("cart");
 
   const queryClient = useQueryClient();
 
@@ -116,9 +121,10 @@ const ProductDetail: React.FC = () => {
   const createReviewMutation = useMutation({
     mutationFn: async (payload: { rating: number; comment: string }) => {
       const res = await reviewService.create({ productId, ...payload });
-      return res.data;
+      return res;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      toast.success(data?.message || "Review submitted successfully");
       setReviewModalOpen(false);
       setCommentInput("");
       setRatingInput(5);
@@ -126,13 +132,17 @@ const ProductDetail: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", productId] });
       queryClient.invalidateQueries({ queryKey: ["product", slug] });
     },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Failed to submit review");
+    },
   });
 
 
   const addToWishlistMutation = useMutation({
     mutationFn: wishlistService.addProduct,
-    onSuccess: (data) => {
+    onSuccess: (data, productId) => {
       toast.success(data.message);
+      dispatch(addToWishlist(product));
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to add to wishlist");
@@ -141,8 +151,9 @@ const ProductDetail: React.FC = () => {
 
   const removeFromWishlistMutation = useMutation({
     mutationFn: wishlistService.removeProduct,
-    onSuccess: (data) => {
+    onSuccess: (data, productId) => {
       toast.success(data.message);
+      dispatch(removeFromWishlist(productId));
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to remove from wishlist");
@@ -154,6 +165,8 @@ const ProductDetail: React.FC = () => {
     onSuccess: (data) => {
       toast.success(data.message);
       dispatch(addItem({ product, quantity }));
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: ["cart-summary"] });
       setQuantity(1);
     },
     onError: (error: any) => {
@@ -162,13 +175,25 @@ const ProductDetail: React.FC = () => {
   })
 
   const handleWishlistClick = () => {
+    if (!user) {
+      setLoginModalAction("wishlist");
+      setLoginModalOpen(true);
+      return;
+    }
     if (isWishlisted) {
       removeFromWishlistMutation.mutate(product._id!);
-      dispatch(removeFromWishlist(product._id!));
     } else {
       addToWishlistMutation.mutate(product._id!);
-      dispatch(addToWishlist(product));
     }
+  };
+
+  const handleAddToCart = () => {
+    if (!user) {
+      setLoginModalAction("cart");
+      setLoginModalOpen(true);
+      return;
+    }
+    addToCartMutation.mutate({ productId: product._id, quantity });
   };
 
   const handleSubmitReview = (e: React.FormEvent) => {
@@ -293,7 +318,7 @@ const ProductDetail: React.FC = () => {
           <div className="flex gap-3">
             <Button
               className="flex-1 rounded-full"
-              onClick={() => addToCartMutation.mutate({ productId: product._id, quantity })}
+              onClick={handleAddToCart}
               disabled={addToCartMutation.isPending}
             >
               <ShoppingCart className="h-4 w-4 mr-1" />
@@ -590,6 +615,11 @@ const ProductDetail: React.FC = () => {
           </div>
         )
       }
+      <LoginModal 
+        open={loginModalOpen} 
+        onOpenChange={setLoginModalOpen}
+        action={loginModalAction}
+      />
     </div >
   );
 };

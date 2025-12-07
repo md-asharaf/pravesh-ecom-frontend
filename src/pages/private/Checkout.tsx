@@ -78,6 +78,8 @@ const Checkout = () => {
       toast.success(message ?? "Order placed successfully");
       dispatch(clearCart());
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["cart", user?._id] });
+      queryClient.invalidateQueries({ queryKey: ["cart-summary", user?._id] });
       navigate("/orders");
     },
     onError: (error:any) => {
