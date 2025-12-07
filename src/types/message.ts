@@ -1,18 +1,18 @@
-export type ContactStatus = "pending" | "read" | "replied" | "archived";
+export type MessageStatus = "pending" | "read" | "replied" | "archived";
 
-export interface Contact {
+export interface Message {
   _id: string;
   name: string;
   email: string;
   subject?: string;
   message: string;
-  status: ContactStatus;
+  status: MessageStatus;
   isDeleted?: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ContactFormData {
+export interface MessageFormData {
   name: string;
   email: string;
   subject?: string;

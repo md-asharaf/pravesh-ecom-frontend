@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { contactService } from "@/services/contact.service"
+import { messageService } from "@/services/message.service"
 import { useAppSelector } from "@/store/hooks"
 
 type FormValues = {
@@ -21,7 +21,7 @@ export default function EmailForm() {
     const email = settings?.email || "support@praveshmart.com";
 
     const { mutate: sendEmail, isPending } = useMutation({
-        mutationFn: (data: FormValues) => contactService.sendEmail(data),
+        mutationFn: (data: FormValues) => messageService.sendEmail(data),
         onSuccess: ({message}) => {
             toast.success(message || "Message sent successfully! We'll get back to you within 2 business hours.");
             reset();

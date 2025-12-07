@@ -27,7 +27,7 @@ export * from './blog';
 export * from './brand';
 export * from './cart';
 export * from './category';
-export * from './contact';
+export * from './message';
 export * from './order';
 export * from './product';
 export * from './review';
