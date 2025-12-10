@@ -193,13 +193,16 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
                 <Search className="h-5 w-5" />
               </Button>
 
-              <Link to="/cart" className="p-2 rounded-md">
+              <Link to="/cart" className="relative p-2 rounded-md">
                 <Button
                   variant="ghost"
                   size="icon"
                 >
                   <ShoppingCart className="h-5 w-5" />
                 </Button>
+                <span className="absolute top-1 right-2 bg-accent text-white text-xs px-1 rounded-full">
+                  {cartCount}
+                </span>
               </Link>
 
               <Sheet>
@@ -291,8 +294,9 @@ const Navbar: React.FC<NavbarProps> = ({ wishlistCount, cartCount, tree }) => {
 
             <div className="flex items-center gap-3">
               <Button
+                variant="outline"
                 onClick={() => setMobileSearchOpen(false)}
-                className="p-2 bg-gray-100 rounded-full"
+                className="p-2 rounded-full"
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>

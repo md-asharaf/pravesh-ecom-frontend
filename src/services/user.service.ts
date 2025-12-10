@@ -14,7 +14,11 @@ export const userService = {
     }
     if (data.name) formdata.append("name", data.name);
     if (data.email) formdata.append("email", data.email);
-    const response = await axiosInstance.patch<ApiResponse<User>>(`/users`, formdata);
+    const response = await axiosInstance.patch<ApiResponse<User>>(`/users`, formdata,{
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   },
 
