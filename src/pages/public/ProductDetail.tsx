@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Shield,
   Truck,
+  Loader2,
 } from "lucide-react";
 import { useIntersection } from "@mantine/hooks";
 
@@ -38,6 +39,14 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useAuth } from "@/providers/auth";
 import { LoginModal } from "@/components/modals/LoginModal";
+import ProductCard, { ProductCardSkeleton } from "@/components/ProductCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 
 const ProductDetail: React.FC = () => {
@@ -68,6 +77,35 @@ const ProductDetail: React.FC = () => {
   const productId = product?._id;
 
   const {
+    data: relatedProductsData,
+    fetchNextPage: fetchMoreRelatedProducts,
+    hasNextPage: hasMoreRelatedProducts,
+    isFetchingNextPage: isFetchingMoreRelatedProducts,
+    isLoading: isRelatedProductsLoading,
+  } = useInfiniteQuery({
+    queryKey: ["related-products", productId],
+    queryFn: async ({ pageParam }) => {
+      const page = Number(pageParam) || 1;
+      const res = await productService.getRelated(productId!, {
+        limit: 8,
+        page: page,
+      });
+      return res.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined;
+      const currentPage = Number(lastPage.page) || 1;
+      const totalPages = Number(lastPage.totalPages) || 1;
+      if (currentPage >= totalPages) return undefined;
+      return currentPage + 1;
+    },
+    enabled: !!productId,
+  });
+
+  const relatedProducts = relatedProductsData?.pages?.flatMap((page) => page.products) || [];
+
+  const {
     data: reviewsData,
     fetchNextPage,
     hasNextPage,
@@ -76,26 +114,29 @@ const ProductDetail: React.FC = () => {
   } = useInfiniteQuery({
     queryKey: ["reviews", productId],
     queryFn: async ({ pageParam }) => {
+      const page = Number(pageParam) || 1;
       const response = await reviewService.getProductReviews(productId, {
         limit: 12,
-        page: pageParam,
+        page: page,
       });
       return response.data;
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       if (!lastPage) return undefined;
-      return lastPage.page >= lastPage.totalPages ? null : lastPage.page + 1;
+      const currentPage = Number(lastPage.page) || 1;
+      const totalPages = Number(lastPage.totalPages) || 1;
+      if (currentPage >= totalPages) return undefined;
+      return currentPage + 1;
     },
+    enabled: !!productId,
   })
 
   const reviews =
     reviewsData?.pages?.flatMap((page: any) => page.reviews) || [];
 
-  const loadMoreRef = useRef(null);
   const { ref: intersectionRef, entry } = useIntersection({
-    root: loadMoreRef.current,
-    threshold: 1,
+    threshold: 0.1,
   });
 
   useEffect(() => {
@@ -227,40 +268,43 @@ const ProductDetail: React.FC = () => {
 
 
   return (
-    <div className="container mx-auto px-6 py-10">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
       {/* Back Button */}
       <Button
-        variant="outline"
+        variant="ghost"
         onClick={() => navigate(-1)}
-        className="mb-6 text-muted-foreground hover:text-foreground"
+        className="mb-4 sm:mb-6 text-muted-foreground hover:text-foreground -ml-2"
       >
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </Button>
 
       {/* PRODUCT TOP */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 lg:mb-16">
         {/* LEFT: IMAGE */}
-        <div className="flex justify-center">
-          <div className="relative w-full max-w-md aspect-square rounded-2xl bg-muted overflow-hidden">
-            <img src={product.thumbnail || "/placeholder.svg"} className="object-contain w-full h-full" />
+        <div className="flex justify-center lg:justify-start">
+          <div className="relative w-full max-w-lg aspect-square rounded-xl sm:rounded-2xl bg-muted/50 overflow-hidden border border-border/50 shadow-sm">
+            <img 
+              src={product.thumbnail || "/placeholder.svg"} 
+              alt={product.name}
+              className="object-contain w-full h-full p-4" 
+            />
           </div>
         </div>
 
         {/* RIGHT: PRODUCT INFO */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5 sm:gap-6">
           {product.category.path && product.category.path.length > 0 && (
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                  <BreadcrumbLink href="/" className="text-xs sm:text-sm">Home</BreadcrumbLink>
                 </BreadcrumbItem>
-
                 {product.category.path.map((cat, i) => (
                   <React.Fragment key={i}>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
-                      <BreadcrumbLink href={`/products?c=${product.category._id}`}>
+                      <BreadcrumbLink href={`/products?c=${product.category._id}`} className="text-xs sm:text-sm">
                         {cat}
                       </BreadcrumbLink>
                     </BreadcrumbItem>
@@ -269,82 +313,128 @@ const ProductDetail: React.FC = () => {
               </BreadcrumbList>
             </Breadcrumb>
           )}
-          <h1 className="text-3xl font-semibold">{product.name}</h1>
-          <div className="text-sm text-muted-foreground">
-            {product.brand?.name && <Badge className="font-medium">{product.brand?.name}</Badge>} {product.sku && <Badge className="font-medium">{product.sku}</Badge>}</div>
-
-          {/* Product Rating */}
-          <div className="flex items-center gap-3">
-            <div className="flex">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${i < Math.floor(product.rating || 0)
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-muted-foreground"
-                    }`}
-                />
-              ))}
+          
+          <div className="space-y-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+              {product.name}
+            </h1>
+            
+            <div className="flex flex-wrap items-center gap-2">
+              {product.brand?.name && (
+                <Badge variant="secondary" className="font-medium text-xs sm:text-sm">
+                  {product.brand.name}
+                </Badge>
+              )}
+              {product.sku && (
+                <Badge variant="outline" className="font-mono text-xs sm:text-sm">
+                  SKU: {product.sku}
+                </Badge>
+              )}
             </div>
-            <span className="text-xs text-muted-foreground">
-              ( {product.reviewCount} reviews )
-            </span>
-          </div>
 
-          {/* Qty */}
-          <div className="flex items-center gap-3">
-            <span className="text-sm">Qty</span>
-            <div className="flex items-center border border-border rounded-full">
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={quantity <= 1}
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-              <span className="px-4">{quantity}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
+            {/* Product Rating */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 sm:h-5 sm:w-5 ${i < Math.floor(product.rating || 0)
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-muted-foreground"
+                      }`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm sm:text-base font-medium">
+                {product.rating?.toFixed(1) || "0.0"}
+              </span>
+              <span className="text-xs sm:text-sm text-muted-foreground">
+                ({product.reviewCount || 0} {product.reviewCount === 1 ? 'review' : 'reviews'})
+              </span>
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3">
-            <Button
-              className="flex-1 rounded-full"
-              onClick={handleAddToCart}
-              disabled={addToCartMutation.isPending}
-            >
-              <ShoppingCart className="h-4 w-4 mr-1" />
-              Add to Cart
-            </Button>
-            <Button
-              disabled={addToWishlistMutation.isPending}
-              variant="outline"
-              onClick={() => handleWishlistClick()}
-              className={`rounded-full ${isWishlisted ? "text-pink-700 border-pink-700" : ""}`}
-            >
-              <Heart className="h-4 w-4" fill={isWishlisted ? "pink" : "white"} />
-            </Button>
+          {/* Qty and Buttons Section */}
+          <div className="space-y-4 pt-2 border-t border-border">
+            <div className="flex items-center gap-4">
+              <span className="text-sm sm:text-base font-medium">Quantity:</span>
+              <div className="flex items-center border border-border rounded-lg overflow-hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-none"
+                  disabled={quantity <= 1}
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="px-4 sm:px-6 text-sm sm:text-base font-medium min-w-[3rem] text-center">
+                  {quantity}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 rounded-none"
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Button
+                className="flex-1 h-11 sm:h-12 text-sm sm:text-base font-semibold rounded-lg"
+                onClick={handleAddToCart}
+                disabled={addToCartMutation.isPending}
+              >
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                Add to Cart
+              </Button>
+              <Button
+                disabled={addToWishlistMutation.isPending}
+                variant="outline"
+                size="icon"
+                onClick={() => handleWishlistClick()}
+                className={`h-11 sm:h-12 w-11 sm:w-12 rounded-lg ${isWishlisted ? "text-pink-600 border-pink-600 bg-pink-50 dark:bg-pink-950/20" : ""}`}
+              >
+                <Heart className="h-5 w-5" fill={isWishlisted ? "currentColor" : "none"} />
+              </Button>
+            </div>
           </div>
+
+          {/* Info Icons */}
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+              <Truck className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm">Fast Delivery</p>
+                <p className="text-xs text-muted-foreground mt-0.5">2–3 business days</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+              <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-sm">Quality Assured</p>
+                <p className="text-xs text-muted-foreground mt-0.5">100% Genuine</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Specifications */}
           {product.specifications &&
             Object.keys(product.specifications).length > 0 && (
-              <div className="pt-2 border-t border-border">
-                <h3 className="text-base font-medium mb-2">Specifications</h3>
-                <dl className="space-y-1 text-sm text-muted-foreground">
+              <div className="pt-4 border-t border-border">
+                <h3 className="text-base sm:text-lg font-semibold mb-3">Specifications</h3>
+                <dl className="space-y-2">
                   {Object.entries(product.specifications).map(([key, value]) => (
                     <div
                       key={key}
-                      className="flex justify-between border-b border-border/40 pb-1"
+                      className="flex justify-between items-start py-2 border-b border-border/40 last:border-0"
                     >
-                      <dt className="font-medium text-foreground">{key}</dt>
-                      <dd>{String(value)}</dd>
+                      <dt className="font-medium text-sm sm:text-base text-foreground pr-4">{key}</dt>
+                      <dd className="text-sm sm:text-base text-muted-foreground text-right flex-shrink-0">{String(value)}</dd>
                     </div>
                   ))}
                 </dl>
@@ -353,14 +443,14 @@ const ProductDetail: React.FC = () => {
 
           {/* Tags */}
           {product.tags?.length > 0 && (
-            <div className="pt-2">
-              <h3 className="text-base font-medium mb-2">Tags</h3>
+            <div className="pt-4 border-t border-border">
+              <h3 className="text-base sm:text-lg font-semibold mb-3">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {product.tags.map((tag: string) => (
                   <Badge
                     key={tag}
-                    variant="outline"
-                    className="rounded-full text-xs px-3 py-1"
+                    variant="secondary"
+                    className="rounded-md text-xs sm:text-sm px-3 py-1 font-normal"
                   >
                     {tag}
                   </Badge>
@@ -368,77 +458,144 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           )}
-
-          {/* Info Icons */}
-          <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border/60">
-            <div className="flex items-center gap-3">
-              <Truck className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium text-sm">Fast Delivery</p>
-                <p className="text-xs text-muted-foreground">2–3 days</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Shield className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium text-sm">Quality Assured</p>
-                <p className="text-xs text-muted-foreground">100% Genuine</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
-      <section className="mt-12">
-        <div className="flex justify-between items-start mb-6">
+      {/* Related Products Section */}
+      {(isRelatedProductsLoading || relatedProducts.length > 0) && (
+        <section className="mb-12 lg:mb-16">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight mb-2">
+              Related Products
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Similar products you might like
+            </p>
+          </div>
+
+          <Carousel
+            opts={{
+              align: "start",
+              loop: false,
+            }}
+            className="w-full relative"
+          >
+            <CarouselContent className="flex gap-3 sm:gap-4 md:gap-6">
+              {isRelatedProductsLoading
+                ? [1, 2, 3, 4].map((i) => (
+                    <CarouselItem
+                      key={i}
+                      className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 max-w-xs"
+                    >
+                      <ProductCardSkeleton />
+                    </CarouselItem>
+                  ))
+                : relatedProducts.length > 0
+                ? relatedProducts.map((p: any) => (
+                    <CarouselItem
+                      key={p._id}
+                      className="basis-[75%] sm:basis-1/2 md:basis-1/3 lg:basis-1/4 max-w-xs"
+                    >
+                      <ProductCard product={p} />
+                    </CarouselItem>
+                  ))
+                : (
+                    <div className="text-sm text-muted-foreground py-8 text-center">
+                      No related products found
+                    </div>
+                  )}
+            </CarouselContent>
+
+            {/* Navigation buttons */}
+            {!isRelatedProductsLoading && relatedProducts.length > 4 && (
+              <>
+                <CarouselPrevious className="hidden md:flex absolute -left-3 lg:-left-5 top-1/2 -translate-y-1/2 h-8 w-8 lg:h-10 lg:w-10 rounded-full" />
+                <CarouselNext className="hidden md:flex absolute -right-3 lg:-right-5 top-1/2 -translate-y-1/2 h-8 w-8 lg:h-10 lg:w-10 rounded-full" />
+              </>
+            )}
+          </Carousel>
+
+          {/* Load More Button */}
+          {hasMoreRelatedProducts && (
+            <div className="flex justify-center mt-6">
+              <Button
+                variant="outline"
+                onClick={() => fetchMoreRelatedProducts()}
+                disabled={isFetchingMoreRelatedProducts}
+              >
+                {isFetchingMoreRelatedProducts ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Loading...
+                  </>
+                ) : (
+                  "Load More Products"
+                )}
+              </Button>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Reviews Section */}
+      <section className="mb-12 lg:mb-16">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h2 className="text-lg font-medium">Customer Reviews</h2>
-            <p className="text-sm text-muted-foreground">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight mb-2">
+              Customer Reviews
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Verified buyer experiences
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => setReviewModalOpen(true)}>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setReviewModalOpen(true)}
+            className="w-full sm:w-auto"
+          >
             Write a Review
           </Button>
         </div>
 
         {/* Review Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="flex flex-col items-center border border-border p-4 rounded-lg bg-card">
-            <div className="text-3xl font-bold">{ratingSummary.avg.toFixed(1)}</div>
-            <div className="flex mt-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          <div className="flex flex-col items-center border border-border p-6 rounded-xl bg-card shadow-sm">
+            <div className="text-4xl sm:text-5xl font-bold mb-2">{ratingSummary.avg.toFixed(1)}</div>
+            <div className="flex gap-0.5 mb-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-5 w-5 ${i < Math.round(ratingSummary.avg)
+                  className={`h-5 w-5 sm:h-6 sm:w-6 ${i < Math.round(ratingSummary.avg)
                     ? "fill-yellow-400 text-yellow-400"
                     : "text-gray-300"
                     }`}
                 />
               ))}
             </div>
-            <p className="text-sm mt-1 text-muted-foreground">
-              Based on {ratingSummary.total} reviews
+            <p className="text-sm sm:text-base text-muted-foreground text-center">
+              Based on {ratingSummary.total} {ratingSummary.total === 1 ? 'review' : 'reviews'}
             </p>
           </div>
 
           {/* Bar Graph */}
-          <div className="md:col-span-2 border border-border rounded-lg p-4 bg-card">
+          <div className="md:col-span-2 border border-border rounded-xl p-4 sm:p-6 bg-card shadow-sm">
+            <h3 className="text-sm sm:text-base font-semibold mb-4 text-muted-foreground">Rating Distribution</h3>
             {[5, 4, 3, 2, 1].map((star, i) => {
               const count = ratingSummary.counts[i];
               const percent =
                 ratingSummary.total > 0 ? (count / ratingSummary.total) * 100 : 0;
 
               return (
-                <div className="flex items-center gap-3 mb-2" key={star}>
-                  <span className="w-10 text-sm">{star}★</span>
-                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="flex items-center gap-3 mb-3 last:mb-0" key={star}>
+                  <span className="w-8 sm:w-10 text-sm sm:text-base font-medium">{star}★</span>
+                  <div className="flex-1 h-2.5 sm:h-3 bg-muted rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-yellow-400 rounded-full"
+                      className="h-full bg-yellow-400 rounded-full transition-all duration-300"
                       style={{ width: `${percent}%` }}
                     ></div>
                   </div>
-                  <span className="w-10 text-xs text-right">{count}</span>
+                  <span className="w-8 sm:w-10 text-xs sm:text-sm text-right font-medium">{count}</span>
                 </div>
               );
             })}
@@ -456,13 +613,13 @@ const ProductDetail: React.FC = () => {
             reviews.map((review: any) => (
               <div
                 key={review._id}
-                className="border rounded-xl p-5 bg-white dark:bg-card shadow-sm hover:shadow-md transition-all duration-200 space-y-3"
+                className="border border-border rounded-xl p-5 sm:p-6 bg-card shadow-sm hover:shadow-md transition-all duration-200 space-y-4"
               >
                 {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div className="flex gap-3">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex gap-3 flex-1 min-w-0">
                     {/* Avatar */}
-                    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden text-sm font-medium">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-muted flex items-center justify-center overflow-hidden text-sm sm:text-base font-medium flex-shrink-0">
                       {review.user?.image ? (
                         <img
                           src={review.user.image}
@@ -476,19 +633,19 @@ const ProductDetail: React.FC = () => {
                       )}
                     </div>
 
-                    <div>
+                    <div className="flex-1 min-w-0">
                       {/* Name */}
-                      <p className="font-medium text-sm">
+                      <p className="font-semibold text-sm sm:text-base text-foreground">
                         {review.user?.name || "Anonymous"}
                       </p>
 
                       {/* Rating + Date */}
-                      <div className="flex items-center gap-2 mt-1">
-                        <div className="flex">
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <div className="flex gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
-                              className={`h-4 w-4 ${i < review.rating
+                              className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${i < review.rating
                                 ? "fill-yellow-400 text-yellow-400"
                                 : "text-gray-300"
                                 }`}
@@ -496,7 +653,7 @@ const ProductDetail: React.FC = () => {
                           ))}
                         </div>
 
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs sm:text-sm text-muted-foreground">
                           {review.createdAt}
                         </span>
                       </div>
@@ -504,7 +661,7 @@ const ProductDetail: React.FC = () => {
                   </div>
 
                   {/* Verified */}
-                  <span className="flex items-center text-xs text-green-600 font-medium gap-1">
+                  <span className="flex items-center text-xs sm:text-sm text-green-600 dark:text-green-400 font-medium gap-1 flex-shrink-0">
                     <svg
                       className="h-4 w-4"
                       viewBox="0 0 16 16"
@@ -512,24 +669,24 @@ const ProductDetail: React.FC = () => {
                     >
                       <path d="M16 8A8 8 0 11.002 8 8 8 0 0116 8zm-4.146-2.854l-4.95 4.95-2.122-2.122-.708.708L6.904 11.5l5.657-5.657-.707-.707z" />
                     </svg>
-                    Verified Purchase
+                    <span className="hidden sm:inline">Verified</span>
                   </span>
                 </div>
 
                 {/* Comment */}
-                <p className="text-sm leading-relaxed text-foreground">
+                <p className="text-sm sm:text-base leading-relaxed text-foreground">
                   {review.comment}
                 </p>
 
                 {/* Images (optional) */}
                 {review.images?.length > 0 && (
-                  <div className="grid grid-cols-3 gap-2 mt-2">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-2">
                     {review.images.map((img: string, idx: number) => (
                       <img
                         key={idx}
                         src={img}
                         alt="Review"
-                        className="h-20 w-full object-cover rounded-md border"
+                        className="h-20 sm:h-24 w-full object-cover rounded-lg border border-border hover:opacity-90 transition-opacity cursor-pointer"
                       />
                     ))}
                   </div>

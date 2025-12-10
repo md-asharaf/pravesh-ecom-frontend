@@ -27,4 +27,17 @@ export const productService = {
     const response = await axiosInstance.get<ApiResponse<Product>>(`/products/${id}`, { params: { populate } });
     return response.data;
   },
+
+  async getRelated(id: string, options?: { page?: number; limit?: number }) {
+    const params: { page: number; limit?: number } = {
+      page: options?.page && !isNaN(options.page) ? Number(options.page) : 1,
+    };
+    if (options?.limit !== undefined && !isNaN(options.limit)) {
+      params.limit = Number(options.limit);
+    }
+    const response = await axiosInstance.get<ApiResponse<PaginatedProducts>>(`/products/${id}/related`, {
+      params
+    });
+    return response.data;
+  },
 }
